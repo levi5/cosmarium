@@ -137,8 +137,8 @@ fn split_file_name(file_name: &str) -> (&str, Option<&str>) {
 
 fn numbered_copy_name(stem: &str, extension: Option<&str>, counter: u32) -> String {
     match extension {
-        Some(extension) => format!("{stem} (cópia {counter}).{extension}"),
-        None => format!("{stem} (cópia {counter})"),
+        Some(extension) => format!("{stem} (copy {counter}).{extension}"),
+        None => format!("{stem} (copy {counter})"),
     }
 }
 
@@ -157,7 +157,7 @@ fn unique_target(dest: &Path, file_name: &str) -> PathBuf {
         }
         counter += 1;
         if counter > 9999 {
-            return dest.join(format!("{stem} (cópia {counter}-{stem})"));
+            return dest.join(format!("{stem} (copy {counter}-{stem})"));
         }
     }
 }

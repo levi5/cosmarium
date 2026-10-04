@@ -151,9 +151,8 @@ fn measure_payload(payload: &std::path::Path, is_dir: bool) -> (u64, usize) {
     )
 )))]
 fn freedesktop_entries() -> Vec<TrashEntry> {
-    let root = match super::locations::get_locations() {
-        Ok(locations) => std::path::PathBuf::from(locations.trash),
-        Err(_) => return Vec::new(),
+    let Some(root) = super::locations::trash_root() else {
+        return Vec::new();
     };
     let Some(trash_folder) = root.parent() else {
         return Vec::new();
