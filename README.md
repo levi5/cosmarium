@@ -1,6 +1,6 @@
 # Cosmarium
 
-[![CI](https://github.com/levi5/electron-file-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/levi5/electron-file-manager/actions/workflows/ci.yml)
+[![CI](https://github.com/levi5/cosmarium/actions/workflows/ci.yml/badge.svg)](https://github.com/levi5/cosmarium/actions/workflows/ci.yml)
 
 A focused desktop file manager built with Tauri, React and TypeScript.
 
@@ -13,7 +13,7 @@ A focused desktop file manager built with Tauri, React and TypeScript.
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 24 or newer
 - pnpm 10 or newer
 - Rust stable and the [Tauri system dependencies](https://tauri.app/start/prerequisites/)
 
