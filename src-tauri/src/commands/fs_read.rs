@@ -8,8 +8,8 @@ use crate::platform::volumes::{self, Volume};
 use std::collections::HashMap;
 
 #[tauri::command]
-pub async fn get_locations() -> Result<locations::Locations, String> {
-    off_thread(locations::get_locations).await
+pub async fn get_locations(app: tauri::AppHandle) -> Result<locations::Locations, String> {
+    off_thread(move || locations::get_locations(&app)).await
 }
 
 #[tauri::command]

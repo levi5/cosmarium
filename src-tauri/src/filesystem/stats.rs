@@ -28,6 +28,7 @@ fn walk_budgeted(root: &Path, budget: &mut u64, stats: &mut FolderStats) {
     if *budget == 0 {
         return;
     }
+    #[cfg(unix)]
     let mut seen: std::collections::HashSet<(u64, u64)> = std::collections::HashSet::new();
     let mut stack = vec![root.to_path_buf()];
 

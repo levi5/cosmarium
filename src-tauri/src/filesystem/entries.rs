@@ -47,9 +47,8 @@ fn has_windows_hidden_attribute(path: &Path) -> bool {
     {
         use std::os::windows::fs::MetadataExt;
         const FILE_ATTRIBUTE_HIDDEN: u32 = 0x2;
-        return path
-            .symlink_metadata()
-            .is_ok_and(|metadata| metadata.file_attributes() & FILE_ATTRIBUTE_HIDDEN != 0);
+        path.symlink_metadata()
+            .is_ok_and(|metadata| metadata.file_attributes() & FILE_ATTRIBUTE_HIDDEN != 0)
     }
     #[cfg(not(target_os = "windows"))]
     {
