@@ -1,5 +1,7 @@
 # Cosmarium
 
+[![CI](https://github.com/levi5/electron-file-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/levi5/electron-file-manager/actions/workflows/ci.yml)
+
 A focused desktop file manager built with Tauri, React and TypeScript.
 
 ## Stack
@@ -11,8 +13,8 @@ A focused desktop file manager built with Tauri, React and TypeScript.
 
 ## Requirements
 
-- Node.js 18 or newer
-- pnpm 9 or newer
+- Node.js 20 or newer
+- pnpm 10 or newer
 - Rust stable and the [Tauri system dependencies](https://tauri.app/start/prerequisites/)
 
 ## Getting started
@@ -80,6 +82,17 @@ src-tauri/
 - Filesystem watching for live refresh
 - Live folder size and item counts
 
+## Continuous integration
+
+GitHub Actions runs on every push and pull request against `master`:
+
+- **Frontend** — type check, Biome lint and format check, and a production build
+- **Backend** — `cargo fmt`, `cargo clippy` with warnings denied, and `cargo check`
+
+Dependabot watches npm, Cargo and GitHub Actions dependencies on a weekly schedule.
+
 ## License
 
-MIT
+[MIT](LICENSE) — Copyright (c) 2020 Levi Araújo.
+
+Cosmarium began as an Electron file manager by Levi Araújo and was migrated to Tauri, React and TypeScript. If you fork this project, please keep the original copyright notice and license terms intact.
