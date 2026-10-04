@@ -1,0 +1,133 @@
+.trash-actions {
+  display: flex;
+  gap: 7px;
+  padding: 0 0 10px;
+}
+
+.trash-actions__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.trash-actions__button:hover:not(:disabled) {
+  background: var(--surface-4);
+  border-color: var(--line-strong);
+}
+
+.trash-actions__button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.trash-actions__button--danger {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.trash-actions__button--danger:hover:not(:disabled) {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 44%, transparent);
+}
+
+.trash-list {
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.trash-list__header,
+.trash-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(220px, 1.4fr) minmax(150px, 0.7fr);
+  align-items: center;
+  gap: 12px;
+  padding: 0 9px;
+}
+
+.trash-list__header {
+  height: 34px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.trash-row {
+  height: 38px;
+  color: var(--text);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12.5px;
+  transition: background 0.14s;
+}
+
+.trash-row:hover {
+  background: var(--hover);
+}
+
+.trash-row.is-selected {
+  background: var(--selected);
+}
+
+.trash-row__name {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.trash-row__name svg {
+  flex: 0 0 auto;
+  color: var(--accent-fg);
+}
+
+.trash-row__origin {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trash-row__date {
+  color: var(--muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+:root[data-material='acrylic'] .trash-actions__button,
+:root[data-material='mica'] .trash-actions__button {
+  background: #ffffff14;
+  border-color: var(--mat-border);
+}
+
+:root[data-theme='light'][data-material='acrylic'] .trash-actions__button,
+:root[data-theme='light'][data-material='mica'] .trash-actions__button {
+  background: #ffffff8f;
+}
+
+@media (max-width: 780px) {
+  .trash-list__header,
+  .trash-row {
+    grid-template-columns: minmax(0, 1fr) 150px;
+  }
+
+  .trash-list__header span:nth-of-type(2),
+  .trash-row__origin {
+    display: none;
+  }
+}

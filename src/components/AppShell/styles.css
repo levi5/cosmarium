@@ -1,0 +1,35 @@
+.app-shell {
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: 8px;
+}
+.app-shell.is-maximized {
+  border-radius: 0;
+}
+.app-shell__body {
+  height: calc(100vh - var(--chrome-h, 90px));
+  display: flex;
+}
+.app-content {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.app-content__scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 680px) {
+  .app-shell__body {
+    height: calc(100vh - 88px);
+  }
+}

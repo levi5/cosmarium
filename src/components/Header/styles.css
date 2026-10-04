@@ -1,0 +1,282 @@
+.titlebar {
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+  --chrome-h: 42px;
+  --row-h: 30px;
+}
+
+.titlebar__chrome {
+  height: var(--chrome-h);
+  display: flex;
+  align-items: stretch;
+  padding-left: 8px;
+  cursor: grab;
+}
+
+.window-controls {
+  margin-left: auto;
+  height: var(--chrome-h);
+  display: flex;
+  align-items: stretch;
+}
+
+.titlebar__navigation {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+}
+
+.navigation-actions {
+  height: var(--row-h);
+  display: flex;
+  gap: 2px;
+}
+
+.header-settings {
+  width: var(--row-h);
+  height: var(--row-h);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.breadcrumb {
+  min-width: 0;
+  height: var(--row-h);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 4px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.breadcrumb__home {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.breadcrumb__trail {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.breadcrumb__seg {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.breadcrumb__step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 190px;
+  padding: 4px 7px;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.breadcrumb__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb__chevron {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: var(--subtle);
+}
+
+.breadcrumb__copy,
+.breadcrumb__edit {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.breadcrumb__edit {
+  opacity: 0;
+}
+
+.breadcrumb:hover .breadcrumb__edit,
+.breadcrumb__edit:focus-visible {
+  opacity: 1;
+}
+
+.breadcrumb__input {
+  min-width: 0;
+  flex: 1;
+  height: 26px;
+  padding: 0 6px;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  outline: 0;
+  font-size: 13px;
+}
+
+.breadcrumb.is-editing {
+  background: var(--surface-4);
+  border-color: var(--accent-line);
+}
+
+.window-controls button {
+  width: 46px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.navigation-actions button {
+  width: var(--row-h);
+  height: var(--row-h);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.header-settings svg {
+  flex: 0 0 auto;
+}
+
+.breadcrumb svg {
+  flex: 0 0 auto;
+}
+
+.navigation-up svg {
+  transform: rotate(-90deg);
+}
+
+@media (max-width: 680px) {
+  .titlebar {
+    height: 88px;
+    --chrome-h: 40px;
+  }
+
+  .titlebar__navigation {
+    min-height: 48px;
+    grid-template-columns: auto 1fr auto;
+    padding: 7px 9px;
+  }
+
+  .breadcrumb {
+    min-width: 0;
+  }
+
+  .window-controls button {
+    width: 37px;
+  }
+}
+
+.navigation-actions button svg {
+  flex: 0 0 auto;
+}
+
+.header-settings.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.breadcrumb__step.is-current {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.titlebar__chrome:active {
+  cursor: grabbing;
+}
+
+.header-settings:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.breadcrumb__home:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.breadcrumb__trail::-webkit-scrollbar {
+  display: none;
+}
+
+.breadcrumb__copy:hover,
+.breadcrumb__edit:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.window-controls button:hover {
+  color: var(--win-hover-text);
+  background: var(--win-hover);
+}
+
+.navigation-actions button:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.navigation-actions button:disabled {
+  color: var(--subtle);
+  cursor: default;
+}
+
+.breadcrumb__step:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.window-controls .window-controls__close:hover {
+  color: #fff;
+  background: var(--win-close-hover);
+}
+
+.navigation-actions button:disabled:hover {
+  background: transparent;
+}

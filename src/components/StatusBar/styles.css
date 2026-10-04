@@ -1,0 +1,17 @@
+.status-bar {
+  height: 32px;
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  color: var(--muted);
+  background: var(--status);
+  border-top: 1px solid var(--status-line);
+  font-size: 11px;
+}
+.status-bar__divider {
+  width: 1px;
+  height: 13px;
+  background: var(--status-divider);
+}

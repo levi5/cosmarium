@@ -1,0 +1,122 @@
+.preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: #08090caa;
+  backdrop-filter: blur(5px);
+  animation: fade-in 0.18s ease-out;
+}
+.preview-pane {
+  width: min(920px, 100%);
+  max-height: min(760px, 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--menu);
+  border: 1px solid var(--menu-line);
+  border-radius: 14px;
+  box-shadow: 0 30px 80px #00000062;
+  animation: preview-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.preview-pane__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 14px 17px;
+  border-bottom: 1px solid var(--line);
+}
+.preview-pane__top p {
+  margin: 0 0 3px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.preview-pane__top strong {
+  font-size: 13px;
+}
+.preview-pane__top button {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-radius: 7px;
+  cursor: pointer;
+}
+.preview-pane__top button:hover {
+  color: var(--text);
+}
+.preview-pane__media {
+  min-height: 250px;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  background: var(--media-bg);
+}
+.preview-pane__media img,
+.preview-pane__media video {
+  max-width: 100%;
+  max-height: calc(min(760px, 100vh) - 85px);
+  display: block;
+  object-fit: contain;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes preview-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.preview-pane__top small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.preview-pane__text {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.preview-pane__text pre {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+.preview-pane__note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11.5px;
+}

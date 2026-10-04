@@ -1,0 +1,78 @@
+.transfer-panel {
+  position: fixed;
+  right: 14px;
+  bottom: 46px;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(330px, calc(100vw - 28px));
+}
+.transfer-card {
+  padding: 12px 13px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 14px 40px #00000055;
+  animation: dialog-in 0.18s ease-out;
+}
+.transfer-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+  font-size: 12px;
+}
+.transfer-card__top button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.transfer-card__top button:hover {
+  color: var(--text);
+  background: var(--surface-3);
+}
+.transfer-card__bar {
+  height: 4px;
+  overflow: hidden;
+  background: var(--track);
+  border-radius: 3px;
+  margin-bottom: 7px;
+}
+.transfer-card__bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+.transfer-card small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+:root[data-material='acrylic'] .transfer-card {
+  background: #202020e6;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+}
+:root[data-theme='light'][data-material='acrylic'] .transfer-card {
+  background: #ffffffeb;
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

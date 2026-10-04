@@ -1,0 +1,4 @@
+.sort-menu__button.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}

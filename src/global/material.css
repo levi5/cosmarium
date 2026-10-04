@@ -1,0 +1,344 @@
+:root[data-material='mica'] {
+  --mat-blur: 20px;
+  --mat-sat: 130%;
+  --mat-tint: #ffffff0a;
+  --mat-veil: #1f2026b8;
+  --mat-veil-hex: #1f2026;
+  --mat-border: #ffffff1a;
+}
+
+:root[data-material='acrylic'] {
+  --mat-blur: 34px;
+  --mat-sat: 165%;
+  --mat-tint: #ffffff12;
+  --mat-veil: #1c1d2499;
+  --mat-veil-hex: #1c1d24;
+  --mat-border: #ffffff24;
+}
+
+:root[data-material='acrylic'] .file-context-menu {
+  background: #302b32d9;
+}
+
+:root[data-material='acrylic'] .background-context-menu {
+  background: #2d2d2dd9;
+}
+
+:root[data-material='mica'] .app-shell {
+  position: relative;
+  isolation: isolate;
+  background: #1b1d24;
+}
+
+:root[data-material='acrylic'] .app-shell {
+  position: relative;
+  isolation: isolate;
+  background: #1b1d24;
+}
+
+:root[data-material='mica'] .home-panel {
+  background: transparent;
+  border-color: transparent;
+}
+
+:root[data-material='acrylic'] .home-panel {
+  background: transparent;
+  border-color: transparent;
+}
+
+:root[data-material='mica'] .app-content {
+  background: #24252775;
+  backdrop-filter: blur(calc(var(--mat-blur) * 0.7)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(calc(var(--mat-blur) * 0.7)) saturate(var(--mat-sat));
+}
+
+:root[data-material='acrylic'] .app-content {
+  background: #24252775;
+  backdrop-filter: blur(calc(var(--mat-blur) * 0.7)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(calc(var(--mat-blur) * 0.7)) saturate(var(--mat-sat));
+}
+
+:root[data-material='mica'] .status-bar {
+  background: #2b262e8f;
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  border-top-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .status-bar {
+  background: #2b262e8f;
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  border-top-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .tag-dialog,
+:root[data-material='mica'] .tag-dialog,
+:root[data-material='acrylic'] .properties-dialog,
+:root[data-material='mica'] .properties-dialog {
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .tag-dialog {
+  background: #202020e6;
+}
+
+:root[data-material='mica'] .tag-dialog {
+  background: #202020d9;
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+}
+
+:root[data-material='acrylic'] .properties-dialog {
+  background: #302b32d9;
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+}
+
+:root[data-material='mica'] .properties-dialog {
+  background: #302b32cc;
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+}
+
+:root[data-material='acrylic'] .system-open-dialog {
+  background: #202020e6;
+}
+
+:root[data-material='acrylic'] .preview-pane {
+  background: #202020e6;
+}
+
+:root[data-material='mica'] .titlebar {
+  background: var(--mat-veil);
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  border-color: var(--mat-border);
+}
+
+:root[data-material='mica'] .sidebar {
+  background: var(--mat-veil);
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .titlebar {
+  background: var(--mat-veil);
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .sidebar {
+  background: var(--mat-veil);
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .file-context-menu {
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .background-context-menu {
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .tag-dialog {
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .system-open-dialog {
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  border-color: var(--mat-border);
+}
+
+:root[data-material='acrylic'] .preview-pane {
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  border-color: var(--mat-border);
+}
+
+:root[data-material='mica'] .breadcrumb {
+  background: #ffffff12;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-material='acrylic'] .breadcrumb {
+  background: #ffffff12;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-material='mica'] .search,
+:root[data-material='mica'] .search-box {
+  background: #ffffff12;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-material='acrylic'] .search,
+:root[data-material='acrylic'] .search-box {
+  background: #ffffff12;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-material='mica'] .view-switch {
+  background: #ffffff12;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-material='acrylic'] .view-switch {
+  background: #ffffff12;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-material='mica'] {
+    --mat-veil: #202020;
+  }
+
+  :root[data-material='acrylic'] {
+    --mat-veil: #202020;
+  }
+
+  :root[data-material='mica'] .titlebar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :root[data-material='mica'] .sidebar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :root[data-material='acrylic'] .titlebar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :root[data-material='acrylic'] .sidebar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+:root[data-material='acrylic'] .drive-overview__grid button {
+  background: #ffffff24;
+  backdrop-filter: blur(22px) saturate(155%);
+  -webkit-backdrop-filter: blur(22px) saturate(155%);
+}
+
+:root[data-material='acrylic'] .quick-access__grid button {
+  background: #ffffff24;
+  backdrop-filter: blur(22px) saturate(155%);
+  -webkit-backdrop-filter: blur(22px) saturate(155%);
+}
+
+:root[data-material='mica'] .drive-overview__grid button {
+  background: #ffffff14;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+:root[data-material='mica'] .quick-access__grid button {
+  background: #ffffff14;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+:root[data-material='acrylic'] .drive-overview__grid button {
+  background: #ffffff14;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+:root[data-material='acrylic'] .quick-access__grid button {
+  background: #ffffff14;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+:root[data-material='mica'] .file-row.is-selected {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+:root[data-material='acrylic'] .file-row.is-selected {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+:root[data-material='mica'] .recents-row.is-selected {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+:root[data-material='acrylic'] .recents-row.is-selected {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+:root[data-material='mica'] .file-table--grid .file-row.is-selected {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+}
+
+:root[data-material='acrylic'] .file-table--grid .file-row.is-selected {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+}
+
+:root[data-material='mica'] .app-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 90% at 12% 8%, #4b3f8f 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%),
+    radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%), linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
+}
+
+:root[data-material='acrylic'] .app-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 90% at 12% 8%, #4b3f8f 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%),
+    radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%), linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
+}
+
+:root[data-material='mica'] .file-row:focus-visible {
+  background: #ffffff17;
+}
+
+:root[data-material='acrylic'] .file-row:focus-visible {
+  background: #ffffff17;
+}
+
+:root[data-material='mica'] .recents-row:focus-visible {
+  background: #ffffff17;
+}
+
+:root[data-material='acrylic'] .recents-row:focus-visible {
+  background: #ffffff17;
+}

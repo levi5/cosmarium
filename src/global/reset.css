@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  background: transparent;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  margin: 0;
+  border: 0;
+  background: none;
+}
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.tab-strip :focus-visible,
+.breadcrumb__trail :focus-visible,
+.file-table :focus-visible,
+.recents-list :focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+button:active:not(:disabled),
+.nav-item:active {
+  background-image: linear-gradient(var(--press-strong), var(--press-strong));
+}
+img,
+svg {
+  vertical-align: middle;
+}

@@ -1,0 +1,100 @@
+.shortcuts-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 46;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #08090c88;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fade-in 0.15s ease-out;
+}
+.shortcuts-dialog {
+  width: min(720px, 100%);
+  max-height: min(80vh, 640px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  box-shadow: 0 22px 60px #00000055;
+  animation: dialog-in 0.18s ease-out;
+}
+
+.shortcuts-dialog__header {
+  display: grid;
+  gap: 5px;
+  padding: 20px 22px 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.shortcuts-dialog__header strong {
+  font-size: 15px;
+}
+
+.shortcuts-dialog__header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.shortcuts-dialog__groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px 28px;
+  padding: 20px 22px 24px;
+  overflow-y: auto;
+}
+
+.shortcuts-dialog__group h3 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shortcuts-dialog__group dl {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+}
+
+.shortcuts-dialog__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 30px;
+  font-size: 12.5px;
+}
+
+.shortcuts-dialog__row dd {
+  flex: 0 0 auto;
+}
+
+:root[data-material='acrylic'] .shortcuts-dialog,
+:root[data-material='mica'] .shortcuts-dialog {
+  background: #202020e6;
+  border-color: var(--mat-border);
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+}
+
+:root[data-material='mica'] .shortcuts-dialog {
+  background: #202020d9;
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+}
+
+:root[data-theme='light'][data-material='acrylic'] .shortcuts-dialog,
+:root[data-theme='light'][data-material='mica'] .shortcuts-dialog {
+  background: #ffffffeb;
+}
+
+:root[data-theme='light'][data-material='mica'] .shortcuts-dialog {
+  background: #ffffffe0;
+}

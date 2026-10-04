@@ -1,0 +1,30 @@
+.context-menu {
+  position: fixed;
+  z-index: 70;
+  min-width: 170px;
+  padding: 5px;
+  color: var(--text);
+  background: var(--menu);
+  border: 1px solid var(--menu-line);
+  border-radius: 8px;
+  box-shadow: 0 16px 38px #00000073;
+  animation: dropdown-in 0.12s ease-out;
+}
+.context-menu .dropdown__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+}
+.context-menu .dropdown__item:hover {
+  background: var(--hover);
+}

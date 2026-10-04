@@ -1,0 +1,39 @@
+.home-page {
+  min-height: 100%;
+  padding: 16px 12px 12px;
+}
+.home-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 8px 12px;
+}
+.home-actions h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.home-new-folder {
+  width: 31px;
+  min-height: 31px;
+  padding: 0;
+}
+.home-panel {
+  overflow: hidden;
+  background: var(--surface-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+@media (max-width: 500px) {
+  .home-actions {
+    padding: 12px 18px 0;
+  }
+  .home-actions .button {
+    padding: 0 9px;
+    font-size: 0;
+  }
+  .home-actions .button svg {
+    margin: 0;
+  }
+}

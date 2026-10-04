@@ -1,0 +1,98 @@
+.properties-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #08090c88;
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.15s ease-out;
+}
+.properties-dialog {
+  width: min(420px, 100%);
+  max-height: min(640px, 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 20px;
+  color: var(--text);
+  background: var(--menu);
+  border: 1px solid var(--menu-line);
+  border-radius: 12px;
+  box-shadow: 0 22px 60px #00000055;
+  animation: properties-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.properties-dialog__head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--menu-divider);
+}
+.properties-dialog__head > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.properties-dialog__head strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.properties-dialog__head small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.properties-dialog__grid {
+  display: grid;
+  gap: 1px;
+  margin: 15px 0 0;
+  padding: 0;
+}
+.properties-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 0;
+}
+.properties-row dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+.properties-row dd {
+  margin: 0;
+  overflow: hidden;
+  font-size: 12px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.properties-row--strong dd {
+  font-size: 13px;
+  font-weight: 650;
+}
+.properties-dialog__truncated {
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+}
+.properties-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid var(--menu-divider);
+}
+@keyframes properties-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
