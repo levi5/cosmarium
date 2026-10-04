@@ -1,26 +1,41 @@
 {
-  "name": "nix",
-  "version": "0.3.14",
-  "main": "./src/main.js",
-  "author": "Levi Araújo",
-  "license": "MIT",
+  "name": "cosmarium",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "start": "electron  ."
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "lint": "biome lint ./src",
+    "lint:fix": "biome check ./src --write",
+    "format": "biome format ./src --write",
+    "check": "tsc --noEmit && biome lint ./src && biome format ./src"
   },
   "dependencies": {
-    "async": "^3.2.2",
-    "byte-size": "^7.0.0",
-    "electron": "^15.5.5",
-    "fs-extra": "^9.0.1",
-    "get-folder-size": "^2.0.1",
-    "lunr": "^2.3.8",
-    "moment": "^2.29.2",
-    "osenv": "^0.1.5",
-    "ansi-regex":"^5.0.1"
+    "@fluentui/react-icons": "^2.0.343",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/cli": "^2.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "eslint": "^7.4.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "@biomejs/biome": "^2.5.14",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "typescript": "^5.6.3",
+    "vite": "^4.5.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild"
+    ]
   }
 }
