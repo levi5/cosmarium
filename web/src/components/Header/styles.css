@@ -1,0 +1,173 @@
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--header-h);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+.site-header__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+}
+
+.brand__logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px -6px #9b7cffb3;
+}
+
+.brand__name {
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.site-nav a {
+  padding: 8px 12px;
+  color: var(--muted);
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    color 0.16s ease,
+    background 0.16s ease;
+}
+
+.site-nav a:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.lang-switch {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.lang-switch button {
+  min-width: 30px;
+  height: 26px;
+  color: var(--subtle);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  transition:
+    color 0.16s ease,
+    background 0.16s ease;
+}
+
+.lang-switch button:hover {
+  color: var(--text);
+}
+
+.lang-switch button.is-active {
+  color: var(--text);
+  background: var(--surface-4);
+  box-shadow: 0 1px 3px #00000033;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.16s ease,
+    background 0.16s ease;
+}
+
+.icon-button:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 13px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.github-link:hover {
+  background: var(--surface-3);
+  border-color: color-mix(in srgb, var(--line-strong) 65%, var(--accent));
+}
+
+@media (max-width: 920px) {
+  .site-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .site-header__inner {
+    gap: 12px;
+  }
+
+  .brand__name {
+    font-size: 15px;
+  }
+
+  .github-link {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .github-link span {
+    display: none;
+  }
+
+  .lang-switch button {
+    min-width: 26px;
+  }
+}

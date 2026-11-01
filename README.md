@@ -66,6 +66,7 @@ src-tauri/
     operations/   Mutations, transfers, undo stack
     platform/     Locations, paths, trash, volumes, open-with
     watcher/      Filesystem watcher
+web/            GitHub Pages site built with React and Vite
 ```
 
 ## Features
@@ -129,6 +130,24 @@ GitHub Actions runs on every push and pull request against `master`:
 - **Backend** — `cargo fmt`, `cargo clippy` with warnings denied, and `cargo check`
 
 Dependabot watches npm, Cargo and GitHub Actions dependencies on a weekly schedule.
+
+## Website
+
+The marketing site lives in [`web/`](web) and is published to GitHub Pages at
+<https://levi5.github.io/cosmarium/> by the `Website` workflow. It reuses the
+app's component layout (`components/base`, `components/<Feature>`, `pages`,
+`lib`, `global`) and its design tokens, with Portuguese and English content.
+
+```bash
+cd web
+pnpm install
+pnpm dev     # http://localhost:1422
+pnpm build   # static output in web/dist
+```
+
+Pages must use **GitHub Actions** as the publishing source in the repository
+settings. The site is built with the `/cosmarium/` base path expected by a
+project site.
 
 ## License
 

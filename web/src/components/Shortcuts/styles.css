@@ -1,0 +1,102 @@
+.shortcuts__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: 60px;
+}
+
+.shortcuts__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  max-width: 420px;
+  margin-top: 30px;
+  padding: 12px 14px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.shortcuts__note svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--accent-fg);
+}
+
+.shortcuts__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.shortcut-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 108px;
+  justify-content: space-between;
+  padding: 16px;
+  background: color-mix(in srgb, var(--surface-2) 62%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.shortcut-card:hover {
+  background: color-mix(in srgb, var(--surface-2) 88%, transparent);
+  border-color: var(--line-strong);
+}
+
+.shortcut-card__keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.shortcut-card kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 27px;
+  padding: 0 8px;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--surface-4), var(--surface-3));
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 #00000026;
+  font-family: 'Cascadia Code', 'SF Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.shortcut-card__label {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+@media (max-width: 900px) {
+  .shortcuts__layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+}
+
+@media (max-width: 520px) {
+  .shortcuts__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shortcut-card {
+    min-height: 92px;
+  }
+}
