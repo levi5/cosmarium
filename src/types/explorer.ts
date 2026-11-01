@@ -94,6 +94,8 @@ export type TransferSummary = {
   copied: number
   skipped: number
   cancelled: boolean
+  touched: [string, string][]
+  errors: string[]
 }
 
 export type SearchFilters = {
@@ -104,6 +106,11 @@ export type SearchFilters = {
   minSize: number
   limit: number
   includeHidden: boolean
+  maxSize?: number
+  modifiedAfter?: number
+  modifiedBefore?: number
+  content?: string
+  kind?: 'all' | 'file' | 'folder'
 }
 
 export type RecentFilters = {
@@ -127,6 +134,10 @@ export type ParsedQuery = {
   kind: 'all' | 'file' | 'folder'
   extensions: string[]
   minSize: number
+  maxSize?: number
+  modifiedAfter?: number
+  modifiedBefore?: number
+  content?: string
   maxDepth: number
   includeHidden: boolean
 }

@@ -1,14 +1,17 @@
 import { convertFileSrc } from '@tauri-apps/api/core'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
+import { useTextPreview } from '../../hooks/useTextPreview'
 import type { FileEntry } from '../../lib/files'
+import type { PreviewType } from '../../lib/format'
 import { formatSize } from '../../lib/format'
 import type { Language } from '../../lib/preferences'
 import { filesystem } from '../../services/tauri/filesystem'
-import { Icon } from '../base/Icon'
+import { IconButton } from '../base/IconButton'
 import './styles.css'
 import { Dialog } from '../base/Dialog'
 
 const EMPTY_CAPTIONS = `data:text/vtt,WEBVTT%0A%0A`
+const PdfPreview = lazy(() => import('./PdfPreview'))
 
 type Labels = {
   image: string
@@ -23,7 +26,7 @@ type Labels = {
 
 type Props = {
   entry: FileEntry
-  type: 'image' | 'video' | 'text'
+  type: PreviewType
   language: Language
   title: string
   labels: Labels
@@ -32,61 +35,59 @@ type Props = {
 
 export function PreviewPane({ entry, type, language, title, labels, onClose }: Props) {
   const source = convertFileSrc(entry.path)
-  const [text, setText] = useState<string | null>(null)
-  const [isText, setIsText] = useState(false)
-  const [truncated, setTruncated] = useState(false)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    if (type !== 'text') return
-    let cancelled = false
-    setText(null)
-    setFailed(false)
-    filesystem
-      .readTextPreview(entry.path)
-      .then((preview) => {
-        if (cancelled) return
-        setIsText(preview.isText)
-        setTruncated(preview.truncated)
-        setText(preview.isText ? preview.text : null)
-      })
-      .catch(() => {
-        if (!cancelled) setFailed(true)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [type, entry.path])
+  const state = useTextPreview(entry.path, type === 'text')
+  const [mediaError, setMediaError] = useState<string | null>(null)
+  const openLabel = language === 'pt-BR' ? 'Abrir no aplicativo padrão' : 'Open in default application'
 
   return (
-    <Dialog backdropClass="preview-backdrop" dismissLabel={labels.close} onClose={onClose}>
+    <Dialog backdropClass="preview-backdrop" dismissLabel={`${title}: ${entry.name}`} onClose={onClose}>
       <section className="preview-pane">
         <div className="preview-pane__top">
-          <div>
+          <div className="preview-pane__heading">
             <p>{title}</p>
-            <strong>{entry.name}</strong>
+            <strong title={entry.name}>{entry.name}</strong>
             <small>{formatSize(entry.size, language)}</small>
           </div>
-          <button type="button" onClick={onClose} aria-label={labels.close}>
-            <Icon name="close" size={14} />
-          </button>
+          <div className="preview-pane__actions">
+            <IconButton
+              icon="arrow"
+              label={openLabel}
+              onClick={() => void filesystem.openWithDefault(entry.path).catch((reason) => setMediaError(String(reason)))}
+            />
+            <IconButton icon="close" label={labels.close} onClick={onClose} />
+          </div>
         </div>
         <div className="preview-pane__media">
+          {mediaError && <p role="alert">{mediaError}</p>}
           {type === 'video' && (
             <video src={source} controls autoPlay>
               <track kind="captions" src={EMPTY_CAPTIONS} />
             </video>
           )}
           {type === 'image' && <img src={source} alt={entry.name} />}
+          {type === 'audio' && (
+            <audio src={source} controls aria-label={entry.name}>
+              <track kind="captions" src={EMPTY_CAPTIONS} />
+            </audio>
+          )}
+          {type === 'pdf' && (
+            <Suspense fallback={<p role="status">{labels.loading}</p>}>
+              <PdfPreview source={source} language={language} />
+            </Suspense>
+          )}
           {type === 'text' && (
             <div className="preview-pane__text">
-              {text === null && !failed && <p className="preview-pane__note">{labels.loading}</p>}
-              {failed && <p className="preview-pane__note">{labels.binary}</p>}
-              {text !== null && !isText && <p className="preview-pane__note">{labels.binary}</p>}
-              {text !== null && isText && (
+              {state.status === 'loading' && <p className="preview-pane__note">{labels.loading}</p>}
+              {state.status === 'error' && (
+                <p role="alert" className="preview-pane__note">
+                  {state.error}
+                </p>
+              )}
+              {state.status === 'ready' && !state.preview.isText && <p className="preview-pane__note">{labels.binary}</p>}
+              {state.status === 'ready' && state.preview.isText && (
                 <>
-                  <pre>{text}</pre>
-                  {truncated && <p className="preview-pane__note">{labels.truncated}</p>}
+                  <pre>{state.preview.text}</pre>
+                  {state.preview.truncated && <p className="preview-pane__note">{labels.truncated}</p>}
                 </>
               )}
             </div>

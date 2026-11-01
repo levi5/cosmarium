@@ -1,4 +1,5 @@
 .file-browser {
+  min-width: 0;
   min-height: 100%;
   padding: 10px 14px;
   background: transparent;
@@ -66,6 +67,7 @@
   background: transparent;
 }
 .view-switch {
+  --icon-button-size: calc(var(--ctl-h) - 4px);
   height: var(--ctl-h);
   display: flex;
   gap: 2px;
@@ -82,6 +84,8 @@
   background: transparent;
   border-radius: 4px;
   cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
 }
 .view-switch button:not(.is-active):hover {
   color: var(--text);
@@ -92,15 +96,16 @@
   background: var(--active-strong);
 }
 .explorer-toolbar {
-  height: 40px;
+  min-height: 40px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 3px;
   margin: -10px -14px 10px;
   padding: 4px 10px;
   border-bottom: 1px solid var(--line);
 }
-.explorer-toolbar .button {
+.explorer-toolbar .button:not(.icon-button) {
   min-height: 28px;
   padding: 0 8px;
   font-size: 12px;
@@ -118,6 +123,7 @@
   background: var(--line);
 }
 .explorer-toolbar__icon {
+  flex: 0 0 28px;
   width: 28px;
   height: 28px;
   display: grid;
@@ -126,6 +132,11 @@
   background: transparent;
   border-radius: 6px;
   cursor: pointer;
+}
+.explorer-toolbar__icon[aria-pressed='true'],
+.explorer-toolbar__icon[aria-expanded='true'] {
+  color: var(--text);
+  background: var(--selected);
 }
 .explorer-toolbar__icon:hover {
   color: var(--text);
@@ -140,6 +151,7 @@
   background: transparent;
 }
 .explorer-toolbar .view-switch {
+  --icon-button-size: 24px;
   height: 28px;
 }
 .explorer-toolbar .view-switch button {
@@ -150,6 +162,9 @@
   flex: 1;
 }
 .explorer-toolbar__danger {
+  color: var(--danger);
+}
+.button.icon-button.explorer-toolbar__danger {
   color: var(--danger);
 }
 .explorer-toolbar__danger:hover {
@@ -174,6 +189,7 @@
 }
 .browser-message small {
   max-width: 400px;
+  overflow-wrap: anywhere;
   color: var(--subtle);
 }
 .browser-message--error {
@@ -496,10 +512,15 @@
 }
 
 .browser-body {
+  min-width: 0;
   min-height: 0;
   flex: 1;
   display: flex;
   align-items: stretch;
+}
+.browser-body > .browser-message {
+  flex: 1;
+  min-width: 0;
 }
 .browser-body > .file-table {
   min-width: 0;

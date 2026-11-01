@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 const UNDO_LIMIT: usize = 50;
+type RemoveEntries = dyn Fn(&[String]) -> Result<(), String> + Send + Sync;
 
 #[derive(Serialize, Clone)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -30,60 +31,51 @@ pub enum UndoStep {
 }
 
 impl UndoStep {
-    fn apply(self) -> Result<(), String> {
+    fn apply(self, remove: &RemoveEntries) -> Result<(), String> {
         match self {
             UndoStep::Clear => Ok(()),
             UndoStep::RestoreTrash { ids, .. } => {
                 crate::platform::trash::restore_items(&ids).map(|_| ())
             }
-            UndoStep::RemoveCopies { paths, .. } => remove_paths(&paths),
-            UndoStep::RemoveCreated { paths, .. } => remove_paths(&paths),
-            UndoStep::Rename { from, to } => {
-                std::fs::rename(&to, &from).map_err(|error| error.to_string())
+            UndoStep::RemoveCopies { paths, .. } | UndoStep::RemoveCreated { paths, .. } => {
+                remove(&paths)
             }
-            UndoStep::MoveBack { from, to, .. } => {
-                let mut moved = 0;
-                for (source, target) in to.iter().zip(from.iter()) {
-                    if std::fs::rename(source, target).is_ok() {
-                        moved += 1;
-                    }
-                }
-                if moved == 0 {
-                    return Err("Could not move the items back.".into());
-                }
-                Ok(())
-            }
+            UndoStep::Rename { from, to } => super::move_back::execute(&[from], &[to]),
+            UndoStep::MoveBack { from, to, .. } => super::move_back::execute(&from, &to),
         }
     }
 }
 
-fn remove_paths(paths: &[String]) -> Result<(), String> {
-    let mut removed = 0;
-    for path in paths {
-        let target = std::path::Path::new(path);
-        let removal = if target.is_dir() {
-            std::fs::remove_dir_all(target)
-        } else {
-            std::fs::remove_file(target)
-        };
-        if removal.is_ok() {
-            removed += 1;
-        }
-    }
-    if removed == 0 {
-        return Err("Could not remove the created items.".into());
-    }
-    Ok(())
-}
-
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct UndoStack {
     steps: std::sync::Arc<std::sync::Mutex<Vec<UndoStep>>>,
+    remove: std::sync::Arc<RemoveEntries>,
+}
+
+impl Default for UndoStack {
+    fn default() -> Self {
+        Self {
+            steps: Default::default(),
+            remove: std::sync::Arc::new(|paths| {
+                trash::delete_all(paths).map_err(|error| error.to_string())
+            }),
+        }
+    }
 }
 
 impl UndoStack {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    #[cfg(test)]
+    pub fn with_remover(
+        remove: impl Fn(&[String]) -> Result<(), String> + Send + Sync + 'static,
+    ) -> Self {
+        Self {
+            steps: Default::default(),
+            remove: std::sync::Arc::new(remove),
+        }
     }
 
     pub fn push(&self, step: UndoStep) {
@@ -109,7 +101,7 @@ impl UndoStack {
             .lock()
             .map_err(|_| "Internal error.".to_string())?;
         let step = steps.pop().ok_or_else(|| "Nothing to undo.".to_string())?;
-        match step.clone().apply() {
+        match step.clone().apply(self.remove.as_ref()) {
             Ok(()) => Ok(step),
             Err(error) => {
                 steps.push(step);

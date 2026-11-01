@@ -11,11 +11,24 @@ type Props = {
   confirmLabel: string
   cancelLabel: string
   externalError?: string | null
+  busy?: boolean
+  allowEmpty?: boolean
   onSubmit: (value: string) => void
   onClose: () => void
 }
 
-export function PromptDialog({ title, placeholder, initialValue = '', confirmLabel, cancelLabel, externalError, onSubmit, onClose }: Props) {
+export function PromptDialog({
+  title,
+  placeholder,
+  initialValue = '',
+  confirmLabel,
+  cancelLabel,
+  externalError,
+  busy = false,
+  allowEmpty = false,
+  onSubmit,
+  onClose
+}: Props) {
   const [value, setValue] = useState(initialValue)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -24,37 +37,43 @@ export function PromptDialog({ title, placeholder, initialValue = '', confirmLab
     inputRef.current?.select()
   }, [])
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
-
   const save = (event: FormEvent) => {
     event.preventDefault()
     const name = value.trim()
-    if (!name) return
+    if ((!name && !allowEmpty) || busy) return
     onSubmit(name)
   }
 
   return (
-    <Dialog backdropClass="prompt-backdrop" dismissLabel={cancelLabel} onClose={onClose}>
+    <Dialog
+      backdropClass="prompt-backdrop"
+      dismissLabel={title}
+      onClose={() => {
+        if (!busy) onClose()
+      }}
+    >
       <form className="prompt-dialog" onSubmit={save} onMouseDown={(event) => event.stopPropagation()}>
         <div className="prompt-dialog__top">
           <strong>{title}</strong>
-          <button type="button" onClick={onClose} aria-label={cancelLabel}>
+          <button type="button" disabled={busy} onClick={onClose} aria-label={cancelLabel}>
             <Icon name="close" size={14} />
           </button>
         </div>
-        <input ref={inputRef} value={value} onChange={(event) => setValue(event.target.value)} placeholder={placeholder} maxLength={128} />
+        <input
+          ref={inputRef}
+          aria-label={title}
+          disabled={busy}
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder={placeholder}
+          maxLength={128}
+        />
         {externalError && <p className="prompt-dialog__error">{externalError}</p>}
         <div className="prompt-dialog__actions">
-          <Button type="button" variant="ghost" onClick={onClose}>
+          <Button type="button" variant="ghost" disabled={busy} onClick={onClose}>
             {cancelLabel}
           </Button>
-          <Button type="submit" variant="primary" disabled={!value.trim()}>
+          <Button type="submit" variant="primary" disabled={busy || (!allowEmpty && !value.trim())}>
             {confirmLabel}
           </Button>
         </div>

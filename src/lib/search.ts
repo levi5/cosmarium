@@ -53,6 +53,24 @@ function parseHiddenFlag(value: string): boolean {
 }
 
 function applyFilterToken(result: ParsedQuery, key: string, value: string): boolean {
+  if (key === 'content') {
+    result.content = value
+    return Boolean(value)
+  }
+  if (key === 'before' || key === 'after') {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+    const timestamp = Date.parse(`${value}T00:00:00Z`) / 1000
+    if (!Number.isFinite(timestamp) || new Date(timestamp * 1000).toISOString().slice(0, 10) !== value) return false
+    if (key === 'before') result.modifiedBefore = timestamp + 86400 - 1
+    else result.modifiedAfter = timestamp
+    return true
+  }
+  if (key === 'maxsize') {
+    const size = parseSize(value)
+    if (size === null) return false
+    result.maxSize = size
+    return true
+  }
   if (key === 'type' || key === 'kind') {
     const kind = resolveKind(value)
     if (!kind) return false
@@ -117,6 +135,10 @@ function buildPredicates(query: ParsedQuery): EntryPredicate[] {
     predicates.push((entry) => allowed.includes(lowercaseExtension(entry.name)))
   }
   if (query.minSize > 0) predicates.push((entry) => entry.kind !== KIND_FILE || entry.size >= query.minSize)
+  const { maxSize, modifiedAfter, modifiedBefore } = query
+  if (maxSize !== undefined) predicates.push((entry) => entry.kind !== KIND_FILE || entry.size <= maxSize)
+  if (modifiedAfter !== undefined) predicates.push((entry) => (entry.modified ?? 0) >= modifiedAfter)
+  if (modifiedBefore !== undefined) predicates.push((entry) => (entry.modified ?? 0) <= modifiedBefore)
   if (needle) predicates.push((entry) => entry.name.toLowerCase().includes(needle))
 
   return predicates

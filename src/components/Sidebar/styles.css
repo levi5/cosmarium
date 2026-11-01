@@ -96,6 +96,13 @@
   color: var(--danger);
   background: var(--hover);
 }
+.nav-item-action--alias.button {
+  min-height: 22px;
+  padding: 0;
+}
+.nav-item-action--alias:hover:not(:disabled) {
+  color: var(--text);
+}
 .nav-item-row:has(.nav-item-action:disabled) .nav-item-action,
 .nav-item-action:disabled {
   opacity: 0;

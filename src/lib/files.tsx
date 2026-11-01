@@ -1,5 +1,5 @@
-import { listen } from '@tauri-apps/api/event'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useDirectoryWatch } from '../hooks/useDirectoryWatch'
 import { filesystem } from '../services/tauri/filesystem'
 import { useExplorerStore } from '../stores/explorerStore'
 import type { ExplorerTab, FileEntry, Locations, Volume } from '../types/explorer'
@@ -14,6 +14,7 @@ type FileWorkspace = {
   volumes: Volume[]
   loading: boolean
   error: string | null
+  watchError: string | null
   tabs: ExplorerTab[]
   activeTabId: string | null
   navigateTo: (path: string) => void
@@ -42,8 +43,7 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
   const [error, setError] = useState<string | null>(null)
   const { showHidden } = usePreferences()
 
-  const requestPath = useRef('')
-  const watchedPath = useRef('')
+  const requestId = useRef(0)
 
   const entries = useMemo(() => (showHidden ? allEntries : allEntries.filter((entry) => !entry.hidden)), [allEntries, showHidden])
 
@@ -54,9 +54,9 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
         setLocations(result)
         initialize(result.home)
       })
-      .catch(() => {
+      .catch((reason) => {
         setLoading(false)
-        setError(null)
+        setError(typeof reason === 'string' ? reason : 'Could not load your home folder. Check your system permissions.')
       })
   }, [initialize])
 
@@ -68,18 +68,18 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
   }, [])
 
   const loadDirectory = useCallback(async (path: string) => {
-    requestPath.current = path
+    const id = ++requestId.current
     setLoading(true)
     setError(null)
     try {
       const result = await filesystem.listDirectory(path)
-      if (requestPath.current === path) setEntries(result)
+      if (requestId.current === id) setEntries(result)
     } catch (reason) {
-      if (requestPath.current !== path) return
+      if (requestId.current !== id) return
       setEntries([])
       setError(typeof reason === 'string' ? reason : reason instanceof Error ? reason.message : 'Could not open this location.')
     } finally {
-      if (requestPath.current === path) setLoading(false)
+      if (requestId.current === id) setLoading(false)
     }
   }, [])
 
@@ -87,36 +87,7 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
     if (currentPath) void loadDirectory(currentPath)
   }, [currentPath, loadDirectory])
 
-  useEffect(() => {
-    if (!currentPath) return
-    let cancelled = false
-    let unlisten: (() => void) | undefined
-    const onChanged = (event: { payload: string }) => {
-      if (cancelled) return
-      if (event.payload !== currentPath) return
-      void loadDirectory(currentPath)
-    }
-    listen<string>('cosmarium://fs-changed', onChanged)
-      .then((off) => {
-        if (cancelled) off()
-        else unlisten = off
-      })
-      .catch(() => {})
-    filesystem
-      .watchDirectory(currentPath)
-      .then(() => {
-        watchedPath.current = currentPath
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-      unlisten?.()
-      if (watchedPath.current === currentPath) {
-        watchedPath.current = ''
-        void filesystem.unwatchDirectory(currentPath).catch(() => {})
-      }
-    }
-  }, [currentPath, loadDirectory])
+  const watchError = useDirectoryWatch(currentPath, () => void loadDirectory(currentPath))
 
   const navigateTo = useCallback(
     (path: string) => {
@@ -181,6 +152,7 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
       volumes,
       loading,
       error,
+      watchError,
       tabs,
       activeTabId,
       navigateTo,
@@ -201,6 +173,7 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
       volumes,
       loading,
       error,
+      watchError,
       tabs,
       activeTabId,
       navigateTo,

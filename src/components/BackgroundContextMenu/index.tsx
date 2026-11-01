@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import type { ViewMode } from '../../constants/view'
+import { useContextMenu } from '../../hooks/useContextMenu'
 import { useMenuPosition } from '../../hooks/useMenuPosition'
 import { Icon } from '../base/Icon'
 import './styles.css'
@@ -67,25 +67,7 @@ export function BackgroundContextMenu({
 }: Props) {
   const { ref, position } = useMenuPosition(anchorX, anchorY)
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    const onPointerDown = (event: MouseEvent) => {
-      if (!(event.target as Element).closest('.background-context-menu')) onClose()
-    }
-    const onScroll = () => onClose()
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('mousedown', onPointerDown, true)
-    window.addEventListener('scroll', onScroll, true)
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('mousedown', onPointerDown, true)
-      window.removeEventListener('scroll', onScroll, true)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [onClose])
+  useContextMenu(ref, onClose)
 
   const run = (fn: () => void) => (event: React.MouseEvent) => {
     event.stopPropagation()

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { type FileIconSize, ICON_PX } from '../../constants/view'
-import { ROW_ANIMATION_MAX_INDEX, ROW_ANIMATION_STEP_MS, type ViewMode } from '../../constants/view'
+import { type FileIconSize, ICON_PX, ROW_ANIMATION_MAX_INDEX, ROW_ANIMATION_STEP_MS, type ViewMode } from '../../constants/view'
 import { useRowNavigation } from '../../hooks/useRowNavigation'
 import { useVirtualList } from '../../hooks/useVirtualList'
-import { getDragPayload, markDropTarget, setDragPayload } from '../../lib/dnd'
+import { clearDragPayload, getDragPayload, isInternalDrag, markDropTarget, setDragPayload } from '../../lib/dnd'
 import { entryType, formatDate, sizeLabel } from '../../lib/format'
 import type { Tag } from '../../lib/organizer'
 import type { FileEntry } from '../../types/explorer'
@@ -128,7 +127,7 @@ export function FileTable({
         if (event.target === event.currentTarget) onBackgroundMenu(event)
       }}
       onDragOver={(event) => {
-        if (!canDropInto) return
+        if (!canDropInto || !isInternalDrag(event)) return
         event.preventDefault()
         markDropTarget(event, true)
       }}
@@ -143,7 +142,6 @@ export function FileTable({
       {!isGrid && (
         <div className="file-table__header">
           <span>{labels.name}</span>
-          {}
           {!isCompact && <span>{labels.modified}</span>}
           {isDetails && <span className="file-col-accessed">{labels.accessed}</span>}
           {!isCompact && <span>{labels.type}</span>}
@@ -184,9 +182,12 @@ export function FileTable({
               setDragPayload(event, dragged)
               setDraggingPath(row.entry.path)
             }}
-            onDragEnd={() => setDraggingPath(null)}
+            onDragEnd={() => {
+              setDraggingPath(null)
+              clearDragPayload()
+            }}
             onDragOver={(event) => {
-              if (row.entry.kind !== 'directory' || !canDropInto) return
+              if (row.entry.kind !== 'directory' || !canDropInto || !isInternalDrag(event)) return
               if (draggingPath === row.entry.path) return
               event.preventDefault()
               event.stopPropagation()
