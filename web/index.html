@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cosmarium — gerenciador de arquivos para desktop</title>
+    <meta
+      name="description"
+      content="Cosmarium é um gerenciador de arquivos nativo para Windows e Linux. Abas, painéis duplos, busca com filtros, pré-visualização e transferências sob controle."
+    />
+    <meta name="theme-color" content="#17181d" />
+    <link rel="canonical" href="https://levi5.github.io/cosmarium/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://levi5.github.io/cosmarium/" />
+    <meta property="og:site_name" content="Cosmarium" />
+    <meta property="og:title" content="Cosmarium — gerenciador de arquivos para desktop" />
+    <meta
+      property="og:description"
+      content="Nativo, rápido e focado. Navegue, transfira e organize seus arquivos sem sair do fluxo."
+    />
+    <meta property="og:image" content="https://levi5.github.io/cosmarium/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Interface do Cosmarium com lista de arquivos, abas e painel de detalhes" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cosmarium — gerenciador de arquivos para desktop" />
+    <meta
+      name="twitter:description"
+      content="Nativo, rápido e focado. Navegue, transfira e organize seus arquivos sem sair do fluxo."
+    />
+    <meta name="twitter:image" content="https://levi5.github.io/cosmarium/og.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script>
+      ;(() => {
+        try {
+          const stored = localStorage.getItem('cosmarium-site-theme')
+          const system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+          document.documentElement.dataset.theme = stored === 'light' || stored === 'dark' ? stored : system
+        } catch {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

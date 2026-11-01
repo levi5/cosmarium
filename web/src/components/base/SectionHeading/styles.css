@@ -1,0 +1,13 @@
+.section-heading--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-heading--center .eyebrow {
+  justify-content: center;
+}
+
+.section-heading--center .section-title,
+.section-heading--center .section-copy {
+  margin-inline: auto;
+}

@@ -1,0 +1,12 @@
+.preview-file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.preview-file-icon svg {
+  display: block;
+}

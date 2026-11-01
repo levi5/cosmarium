@@ -1,0 +1,29 @@
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  padding: 10px 14px;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform 0.16s ease;
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+main {
+  display: block;
+}
+
+#recursos,
+#atalhos,
+#stack,
+#download {
+  scroll-margin-top: calc(var(--header-h) + 18px);
+}

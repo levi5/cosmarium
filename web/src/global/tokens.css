@@ -1,0 +1,88 @@
+:root {
+  color-scheme: dark;
+  --text: #f2f2f2;
+  --muted: #aaaeb8;
+  --subtle: #7e828d;
+  --surface: #202020;
+  --surface-2: #272727;
+  --surface-3: #323232;
+  --surface-4: #3b3b3b;
+  --surface-hover: #3a3a3a;
+  --line: #ffffff14;
+  --line-strong: #4a4a4a;
+  --accent-fg: #b9a6ff;
+  --accent: #9b7cff;
+  --accent-soft: #9b7cff24;
+  --accent-line: var(--accent);
+  --selected: #193e5a;
+  --selected-2: #26475e;
+  --status: #2b262e;
+  --status-line: #3d3540;
+  --track: #5a5a5a;
+  --danger: #ed7373;
+  --win-hover: #ffffff14;
+  --win-close-hover: #c42b1c;
+  --hover: #2f2f2f;
+  --press: #ffffff0f;
+  --active: #3a3a3a;
+  --win-hover-text: #ffffff;
+  --focus-ring: var(--accent);
+  --field-bg: var(--surface-2);
+  --thumb-bg: #1a1a1a;
+
+  --page: #15161b;
+  --page-2: #1a1b21;
+  --header-bg: #17181ddd;
+  --glow-a: #9b7cff24;
+  --glow-b: #3b9eff14;
+  --glow-c: #e5a93c10;
+  --shadow-lg: 0 32px 80px -24px #000000b8, 0 2px 12px #00000060;
+  --shadow-md: 0 18px 48px -20px #00000099;
+  --hero-grid: #ffffff08;
+  --container: 1180px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 18px;
+  --header-h: 66px;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --text: #20242d;
+  --muted: #5f6674;
+  --subtle: #69707c;
+  --surface: #f8f9fb;
+  --surface-2: #ffffff;
+  --surface-3: #f1f2f5;
+  --surface-4: #e9ebef;
+  --surface-hover: #e9ebef;
+  --line: #e4e6ea;
+  --line-strong: #cfd4dc;
+  --accent-fg: #6d4fd4;
+  --accent: #7c5cf0;
+  --accent-soft: #7c5cf01f;
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #101319);
+  --selected: #d3e7f7;
+  --selected-2: #dcecfb;
+  --status: #eef0f4;
+  --status-line: #dfe2e8;
+  --track: #dfe2e8;
+  --danger: #c0392b;
+  --win-hover: #00000014;
+  --win-hover-text: #101319;
+  --hover: #eef0f4;
+  --press: #0000000f;
+  --active: #e1e5eb;
+  --field-bg: #ffffff;
+  --thumb-bg: #e9ebef;
+
+  --page: #f3f4f8;
+  --page-2: #eef0f6;
+  --header-bg: #f8f9fbdd;
+  --glow-a: #7c5cf01c;
+  --glow-b: #3b9eff12;
+  --glow-c: #e5a93c14;
+  --shadow-lg: 0 32px 70px -28px #1d213066, 0 2px 10px #1d213014;
+  --shadow-md: 0 18px 44px -24px #1d21304d;
+  --hero-grid: #20242d08;
+}
