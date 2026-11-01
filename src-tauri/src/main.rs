@@ -5,6 +5,8 @@ mod events;
 mod filesystem;
 mod operations;
 mod platform;
+#[cfg(test)]
+mod tests;
 mod watcher;
 
 use std::fs;
@@ -97,9 +99,15 @@ fn main() {
             commands::ops_transfer::scan_transfer,
             commands::ops_transfer::transfer_entries,
             commands::ops_transfer::cancel_transfer,
+            commands::ops_transfer::pause_transfer,
             commands::system::open_with_default,
             commands::system::watch_directory,
             commands::system::unwatch_directory,
+            commands::tools::find_duplicates,
+            commands::tools::batch_rename,
+            commands::tools::compress_zip,
+            commands::tools::extract_zip,
+            commands::tools::open_terminal,
         ])
         .setup(|app| {
             let window = app

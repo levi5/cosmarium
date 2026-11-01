@@ -12,6 +12,9 @@
   scrollbar-width: thin;
 }
 .app-tab {
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
   width: 220px;
   min-width: 120px;
   height: var(--tab-h);
@@ -26,6 +29,8 @@
   cursor: pointer;
   font-size: 13px;
   text-align: left;
+  user-select: none;
+  touch-action: pan-y;
 }
 .app-tab:hover {
   color: var(--text);
@@ -95,11 +100,30 @@
 }
 
 .app-tab.is-dragging {
-  opacity: 0.4;
+  z-index: 2;
+  cursor: grabbing;
+  background: var(--active-strong);
+  box-shadow:
+    0 0 0 1px var(--line-strong),
+    0 3px 10px #0003;
 }
 
-.app-tab.is-drop-target {
-  box-shadow: inset 2px 0 0 var(--accent);
+.tab-strip__tabs.is-reordering {
+  cursor: grabbing;
+}
+
+.is-reordering .app-tab {
+  transition: transform 160ms ease;
+}
+
+.is-reordering .app-tab.is-dragging {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-reordering .app-tab {
+    transition: none;
+  }
 }
 
 .app-tab.is-file-drop {

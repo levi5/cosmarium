@@ -1,6 +1,5 @@
 import { useRef } from 'react'
-import type { FileIconSize } from '../../constants/view'
-import type { ViewMode } from '../../constants/view'
+import type { FileIconSize, ViewMode } from '../../constants/view'
 import { useRowNavigation } from '../../hooks/useRowNavigation'
 import { formatDate } from '../../lib/format'
 import { recencyOf } from '../../lib/search'

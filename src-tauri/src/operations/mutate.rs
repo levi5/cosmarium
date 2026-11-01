@@ -93,7 +93,7 @@ pub fn trash_entries(
         }
     }
 
-    if let Ok(mut set) = cancels.0.lock() {
+    if let Ok(mut set) = cancels.cancelled.lock() {
         set.remove(id);
     }
     progress.finished = true;

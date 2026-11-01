@@ -1,13 +1,14 @@
-import type { RefObject } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import type { ViewMode } from '../../constants/view'
 import type { IconSize } from '../../lib/preferences'
 import type { SortDirection, SortKey } from '../../types/explorer'
-import { Icon } from '../base/Icon'
+import { IconButton } from '../base/IconButton'
 import { SearchBox } from '../SearchBox'
 import { SortMenu } from '../SortMenu'
 import { ViewMenu } from '../ViewMenu'
 
 type Props = {
+  tools?: ReactNode
   view: ViewMode
   iconSize: IconSize
   showSize: boolean
@@ -36,6 +37,7 @@ type Props = {
 }
 
 export function ExplorerToolbar({
+  tools,
   view,
   iconSize,
   showSize,
@@ -95,35 +97,14 @@ export function ExplorerToolbar({
         onDirection={onSortDirection}
       />
       <span className="explorer-toolbar__divider" />
-      <button type="button" className="explorer-toolbar__icon" aria-label={labels.newFolder} title={labels.newFolder} onClick={onNewFolder}>
-        <Icon name="plus" size={16} />
-      </button>
-      <button type="button" className="explorer-toolbar__icon" aria-label={labels.cut} title={labels.cut} disabled={!canModify} onClick={onCut}>
-        <Icon name="cut" size={16} />
-      </button>
-      <button type="button" className="explorer-toolbar__icon" aria-label={labels.copy} title={labels.copy} disabled={!canModify} onClick={onCopy}>
-        <Icon name="copy" size={16} />
-      </button>
-      <button type="button" className="explorer-toolbar__icon" aria-label={labels.paste} title={labels.paste} disabled={!canPaste} onClick={onPaste}>
-        <Icon name="paste" size={16} />
-      </button>
-      <button type="button" className="explorer-toolbar__icon" aria-label={labels.delete_} title={labels.delete_} disabled={!canModify} onClick={onDelete}>
-        <Icon name="trash" size={16} />
-      </button>
-      {canEmptyTrash && (
-        <button
-          type="button"
-          className="explorer-toolbar__icon explorer-toolbar__danger"
-          aria-label={labels.emptyTrash}
-          title={labels.emptyTrash}
-          onClick={onEmptyTrash}
-        >
-          <Icon name="broom" size={16} />
-        </button>
-      )}
-      <button type="button" className="explorer-toolbar__icon" onClick={onRefresh} aria-label={labels.refresh} title={labels.refresh}>
-        <Icon name="refresh" size={16} />
-      </button>
+      <IconButton icon="plus" label={labels.newFolder} onClick={onNewFolder} />
+      <IconButton icon="cut" label={labels.cut} disabled={!canModify} onClick={onCut} />
+      <IconButton icon="copy" label={labels.copy} disabled={!canModify} onClick={onCopy} />
+      <IconButton icon="paste" label={labels.paste} disabled={!canPaste} onClick={onPaste} />
+      <IconButton icon="trash" label={labels.delete_} disabled={!canModify} onClick={onDelete} />
+      {canEmptyTrash && <IconButton icon="broom" label={labels.emptyTrash} className="explorer-toolbar__danger" onClick={onEmptyTrash} />}
+      <IconButton icon="refresh" label={labels.refresh} onClick={onRefresh} />
+      {tools}
       <span className="explorer-toolbar__spacer" />
       <SearchBox
         value={query}
@@ -143,17 +124,14 @@ export function ExplorerToolbar({
             ['compact', 'compact']
           ] as const
         ).map(([mode, label]) => (
-          <button
+          <IconButton
             key={mode}
-            type="button"
             className={`view-switch__option ${view === mode ? 'is-active' : ''}`}
             onClick={() => onToggleView(mode)}
-            aria-label={labels[label] ?? label}
-            title={labels[label] ?? label}
+            label={labels[label] ?? label}
+            icon={mode === 'grid' ? 'grid' : mode === 'compact' ? 'menu' : mode === 'details' ? 'details' : 'list'}
             aria-pressed={view === mode}
-          >
-            <Icon name={mode === 'grid' ? 'grid' : mode === 'compact' ? 'menu' : mode === 'details' ? 'details' : 'list'} size={16} />
-          </button>
+          />
         ))}
       </div>
     </div>

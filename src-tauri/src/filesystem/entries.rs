@@ -134,13 +134,16 @@ pub struct SearchQuery {
     pub limit: u32,
     #[serde(default)]
     pub include_hidden: bool,
-}
-
-fn lowercase_extension(name: &str) -> String {
-    match name.rsplit_once('.') {
-        Some((stem, extension)) if !stem.is_empty() => extension.to_lowercase(),
-        _ => String::new(),
-    }
+    #[serde(default)]
+    pub max_size: Option<u64>,
+    #[serde(default)]
+    pub modified_after: Option<u64>,
+    #[serde(default)]
+    pub modified_before: Option<u64>,
+    #[serde(default)]
+    pub content: Option<String>,
+    #[serde(default)]
+    pub kind: String,
 }
 
 pub fn search_entries(query: &SearchQuery) -> Result<Vec<FileEntry>, String> {
@@ -149,13 +152,6 @@ pub fn search_entries(query: &SearchQuery) -> Result<Vec<FileEntry>, String> {
         return Err("This location is not a directory.".into());
     }
 
-    let needle = query.text.trim().to_lowercase();
-    let extensions: Vec<String> = query
-        .extensions
-        .iter()
-        .map(|ext| ext.trim().trim_start_matches('.').to_lowercase())
-        .filter(|ext| !ext.is_empty())
-        .collect();
     let max_depth = query.max_depth.min(32);
     let limit = query.limit.clamp(1, 50_000) as usize;
 
@@ -168,25 +164,19 @@ pub fn search_entries(query: &SearchQuery) -> Result<Vec<FileEntry>, String> {
             continue;
         };
         for entry in reader.filter_map(Result::ok) {
+            if entry.file_type().is_ok_and(|kind| kind.is_symlink()) {
+                continue;
+            }
             let Some(meta) = entry_from_dir_entry(&entry) else {
                 continue;
             };
             if meta.hidden && !query.include_hidden {
                 continue;
             }
-            if meta.is_directory() {
-                if depth < max_depth {
-                    queue.push_back((PathBuf::from(&meta.path), depth + 1));
-                }
-                continue;
+            if meta.is_directory() && depth < max_depth {
+                queue.push_back((PathBuf::from(&meta.path), depth + 1));
             }
-            if !needle.is_empty() && !meta.name.to_lowercase().contains(&needle) {
-                continue;
-            }
-            if !extensions.is_empty() && !extensions.contains(&lowercase_extension(&meta.name)) {
-                continue;
-            }
-            if meta.size < query.min_size {
+            if !super::search_match::matches(&meta, query) {
                 continue;
             }
             results.push(meta);

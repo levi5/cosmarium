@@ -1,0 +1,33 @@
+.saved-searches__list {
+  max-height: min(320px, 50dvh);
+  overflow-y: auto;
+}
+.saved-searches__row {
+  display: flex;
+  width: min(280px, calc(100vw - 40px));
+  align-items: center;
+}
+.saved-searches__open {
+  flex: 1;
+  min-width: 0;
+}
+.saved-searches__text {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+.saved-searches__text > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.saved-searches__text small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.saved-searches__remove.dropdown__item {
+  flex: 0 0 28px;
+  width: 28px;
+  justify-content: center;
+  padding: 6px;
+}

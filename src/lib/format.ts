@@ -1,7 +1,7 @@
 import { fileExtension, PREVIEWABLE_EXTENSIONS, SIZE_BASE, SIZE_UNITS, TEXT_PREVIEWABLE_EXTENSIONS } from '../constants/files'
 import type { FileEntry } from '../types/explorer'
 
-export type PreviewType = 'image' | 'video' | 'text'
+export type PreviewType = 'image' | 'video' | 'text' | 'audio' | 'pdf'
 
 export const TEXT_PREVIEW_MAX_SIZE = 2 * 1024 * 1024
 
@@ -34,6 +34,8 @@ export function errorMessage(reason: unknown): string {
 export function previewType(entry: FileEntry): PreviewType | null {
   if (entry.kind === 'directory') return null
   const extension = fileExtension(entry.name)
+  if (extension === 'pdf') return 'pdf'
+  if (['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'opus'].includes(extension)) return 'audio'
   if ((PREVIEWABLE_EXTENSIONS as readonly string[]).includes(extension)) {
     return (['m4v', 'mov', 'mp4', 'ogv', 'webm'] as readonly string[]).includes(extension) ? 'video' : 'image'
   }

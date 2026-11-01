@@ -16,10 +16,19 @@
 }
 .drive-overview__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr));
   gap: 8px;
 }
-.drive-overview__grid button {
+.drive-overview__card {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  background: var(--surface-3);
+  border-radius: 5px;
+}
+.drive-overview__open {
+  flex: 1;
+  min-width: 0;
   min-height: 68px;
   display: flex;
   align-items: center;
@@ -32,13 +41,17 @@
   cursor: pointer;
   text-align: left;
 }
-.drive-overview__grid button:hover {
+.drive-overview__open:hover {
   background: var(--hover);
   border-color: var(--line-strong);
 }
-.drive-overview__grid > button > svg {
+.drive-overview__open > svg {
   flex: 0 0 auto;
   color: var(--muted);
+}
+.drive-overview__alias {
+  flex: 0 0 auto;
+  margin-right: 6px;
 }
 .drive-overview__body {
   min-width: 0;

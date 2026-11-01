@@ -1,0 +1,32 @@
+.button.icon-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 var(--icon-button-size, 28px);
+  width: var(--icon-button-size, 28px);
+  height: var(--icon-button-size, 28px);
+  min-height: var(--icon-button-size, 28px);
+  padding: 0;
+  gap: 0;
+  border: 0;
+  border-radius: 5px;
+  line-height: 0;
+  color: var(--muted);
+  background: transparent;
+}
+.button.icon-button svg {
+  display: block;
+  flex-shrink: 0;
+}
+.button.icon-button:not(:disabled):hover {
+  color: var(--text);
+  background: var(--hover);
+}
+.button.icon-button[aria-pressed='true'],
+.button.icon-button[aria-expanded='true'] {
+  color: var(--text);
+  background: var(--selected);
+}
+.button.icon-button:disabled:hover {
+  background: transparent;
+}
