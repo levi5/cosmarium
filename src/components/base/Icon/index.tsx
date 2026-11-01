@@ -6,6 +6,7 @@ import {
   ArrowRight16Regular,
   ArrowSort16Regular,
   ArrowSync16Regular,
+  ArrowUp16Regular,
   ArrowUpload16Regular,
   Broom16Regular,
   Checkmark16Regular,
@@ -33,6 +34,7 @@ import {
   Rename16Regular,
   Search16Regular,
   Settings16Regular,
+  SplitVertical16Regular,
   Square16Regular,
   Star16Regular,
   Subtract16Regular,
@@ -45,7 +47,7 @@ import {
 } from '@fluentui/react-icons'
 import type { ElementType } from 'react'
 
-type IconName =
+export type IconName =
   | 'search'
   | 'plus'
   | 'upload'
@@ -89,6 +91,8 @@ type IconName =
   | 'sort'
   | 'menu'
   | 'details'
+  | 'split'
+  | 'up'
 
 const icons: Record<IconName, ElementType> = {
   search: Search16Regular,
@@ -133,7 +137,9 @@ const icons: Record<IconName, ElementType> = {
   rename: Rename16Regular,
   sort: ArrowSort16Regular,
   menu: TextBulletListLtr16Regular,
-  details: Table16Regular
+  details: Table16Regular,
+  split: SplitVertical16Regular,
+  up: ArrowUp16Regular
 }
 
 export function Icon({ name, size = 14 }: { name: IconName; size?: number }) {

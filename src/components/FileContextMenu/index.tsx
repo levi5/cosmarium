@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useContextMenu } from '../../hooks/useContextMenu'
 import { useMenuPosition } from '../../hooks/useMenuPosition'
 import type { FileEntry } from '../../lib/files'
 import { Icon } from '../base/Icon'
@@ -66,25 +66,7 @@ export function FileContextMenu({
   const { ref, position } = useMenuPosition(anchorX, anchorY)
   const isDirectory = entry.kind === 'directory'
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    const onPointerDown = (event: MouseEvent) => {
-      if (!(event.target as Element).closest('.file-context-menu')) onClose()
-    }
-    const onScroll = () => onClose()
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('mousedown', onPointerDown, true)
-    window.addEventListener('scroll', onScroll, true)
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('mousedown', onPointerDown, true)
-      window.removeEventListener('scroll', onScroll, true)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [onClose])
+  useContextMenu(ref, onClose)
 
   const run = (fn: () => void) => (event: React.MouseEvent) => {
     event.stopPropagation()

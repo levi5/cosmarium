@@ -47,7 +47,7 @@ cargo fmt --manifest-path src-tauri/Cargo.toml
 
 ## Project layout
 
-```
+```txt
 src/
   components/   UI components
   constants/    Shared constants
@@ -81,6 +81,45 @@ src-tauri/
 - Colored tags on files and folders
 - Filesystem watching for live refresh
 - Live folder size and item counts
+- Dual-pane browsing with independent navigation and transfers between panes
+- ZIP creation and extraction without silently overwriting existing files
+- Batch rename with replacement, prefixes, numbering and a preview
+- Content-based duplicate detection with SHA-256 (read-only)
+- PDF preview rendered with PDF.js and audio playback
+- Open a terminal in the current folder
+- Serialized transfers with in-session pause/resume, cancellation, speed and remaining time
+- Saved searches and recursive filters for size, modification date and text content
+- Keyboard-accessible dialogs and context menus
+
+## Search filters
+
+Searches include subfolders by default, up to eight levels. Combine a file name with filters:
+
+```text
+report ext:pdf size:1mb maxsize:10mb after:2026-01-01 before:2026-12-31
+content:invoice ext:txt depth:4
+type:folder hidden:true
+```
+
+Dates use UTC day boundaries. Content search scans UTF-8 text files up to 2 MiB. Results are limited to 5,000 entries. Saved searches retain both the query and its root folder.
+
+## Operation safety
+
+- ZIP extraction rejects path traversal and symbolic links, and is limited to 100,000 entries and 20 GiB of extracted content. Existing output folders are never replaced.
+- Batch renames validate the full plan first, reject existing targets and attempt rollback on failure. Cyclic renames are not supported.
+- Transfers do not follow symbolic links. Replacement copies are staged before recycling an existing destination. A failed directory copy never triggers deletion of its source tree.
+- Move cleanup verifies copied contents and preserves new source files. Undo sends copied or created items to the recycle bin instead of permanently deleting them.
+- Pause/resume applies to the running application session; transfers do not survive an application restart. Same-volume moves may complete atomically before they can be paused.
+- Duplicate scans are limited to 100,000 visited entries and never delete files automatically.
+
+## Tests
+
+```bash
+pnpm test
+cargo test --manifest-path src-tauri/Cargo.toml
+```
+
+Tests cover search filters, rename previews, modal focus, binary previews, transfer state, ZIP safety, duplicate detection, copy/move undo, cancellation and pause/resume. Native terminal launch and platform-specific integration still require desktop smoke testing.
 
 ## Continuous integration
 

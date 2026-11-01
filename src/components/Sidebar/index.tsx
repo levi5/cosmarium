@@ -12,7 +12,9 @@ import { createTranslator, type TranslationKey } from '../../lib/i18n'
 import { useOrganizer } from '../../lib/organizer'
 import { usePreferences } from '../../lib/preferences'
 import { filesystem } from '../../services/tauri/filesystem'
+import { driveLabel, useDriveAliasStore } from '../../stores/driveAliasStore'
 import { usePendingDropStore } from '../../stores/pendingDropStore'
+import { DriveAliasButton } from '../DriveAliasButton'
 import './styles.css'
 
 const locations = [
@@ -26,6 +28,7 @@ const locations = [
 
 export function Sidebar() {
   const { language } = usePreferences()
+  const aliases = useDriveAliasStore((state) => state.aliases)
   const { locations: systemLocations, volumes, currentPath, navigateTo, refresh } = useFileWorkspace()
   const { quickAccess: pinnedItems } = useOrganizer()
   const navigate = useNavigate()
@@ -160,18 +163,21 @@ export function Sidebar() {
           'drives',
           'drives',
           volumes.map((volume) => (
-            <button
-              type="button"
-              className={classFor(volume.mount_point)}
-              key={volume.mount_point}
-              onClick={() => openPath(volume.mount_point)}
-              {...dropProps(volume.mount_point)}
-            >
-              <span className="nav-icon">
-                <Icon name="drive" size={16} />
-              </span>
-              <span className="nav-item__label">{volume.name || volume.mount_point}</span>
-            </button>
+            <div className="nav-item-row" key={volume.mount_point}>
+              <button
+                type="button"
+                className={classFor(volume.mount_point)}
+                title={volume.mount_point}
+                onClick={() => openPath(volume.mount_point)}
+                {...dropProps(volume.mount_point)}
+              >
+                <span className="nav-icon">
+                  <Icon name="drive" size={16} />
+                </span>
+                <span className="nav-item__label">{driveLabel(volume, aliases)}</span>
+              </button>
+              <DriveAliasButton volume={volume} className="nav-item-action nav-item-action--alias" />
+            </div>
           ))
         )}
 

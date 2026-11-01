@@ -2,6 +2,10 @@
   position: fixed;
   z-index: 30;
   width: 210px;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 5px;
   background: var(--menu);
   border: 1px solid var(--menu-line);

@@ -37,6 +37,7 @@ export const filesystem = {
   transferEntries: (id: string, sources: string[], dest: string, cut: boolean, resolutions: ConflictResolution[]) =>
     invoke<TransferSummary>('transfer_entries', { request: { id, sources, dest, cut, resolutions } }),
   cancelTransfer: (id: string) => invoke('cancel_transfer', { id }),
+  pauseTransfer: (id: string, paused: boolean) => invoke('pause_transfer', { id, paused }),
   openWithDefault: (path: string) => invoke('open_with_default', { path }),
   getFolderStats: (path: string) => invoke<FolderStats>('get_folder_stats', { path }),
   getFolderSizes: (paths: string[]) => invoke<Record<string, FolderStats>>('get_folder_sizes', { paths }),

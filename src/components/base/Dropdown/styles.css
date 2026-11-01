@@ -1,7 +1,11 @@
 .dropdown {
   position: fixed;
   z-index: 60;
-  min-width: 200px;
+  min-width: min(200px, calc(100vw - 16px));
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 5px;
   color: var(--text);
   background: var(--menu);
@@ -28,9 +32,18 @@
   cursor: pointer;
   font-size: 12px;
   text-align: left;
+  overflow-wrap: anywhere;
 }
 .dropdown__item:hover {
   background: var(--hover);
+}
+.dropdown__item:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: transparent;
+}
+.dropdown__item > svg {
+  flex: 0 0 auto;
 }
 .dropdown__item[aria-checked='true'] {
   background: var(--menu-hover);
