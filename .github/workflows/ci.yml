@@ -39,6 +39,9 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Test frontend
+        run: pnpm test
+
   backend:
     name: Backend (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -80,3 +83,6 @@ jobs:
 
       - name: Check
         run: cargo check --manifest-path src-tauri/Cargo.toml
+
+      - name: Test backend
+        run: cargo test --manifest-path src-tauri/Cargo.toml

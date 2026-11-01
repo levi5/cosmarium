@@ -1,8 +1,12 @@
 import { listen } from '@tauri-apps/api/event'
 import { useEffect, useState } from 'react'
+import { errorMessage, formatSize } from '../../lib/format'
+import type { Language } from '../../lib/preferences'
 import { filesystem } from '../../services/tauri/filesystem'
+import { useTransferStore } from '../../stores/transferStore'
 import type { TransferProgress as Progress } from '../../types/explorer'
 import { Icon } from '../base/Icon'
+import { toolMessages } from '../FileTools/messages'
 import './styles.css'
 
 type Labels = {
@@ -15,41 +19,38 @@ type Labels = {
   failed: string
 }
 
-function formatBytes(value: number, language: string) {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  const index = value ? Math.min(Math.floor(Math.log(value) / Math.log(1024)), units.length - 1) : 0
-  return `${new Intl.NumberFormat(language, { maximumFractionDigits: 1 }).format(value / 1024 ** index)} ${units[index]}`
-}
-
-export function TransferProgress({ labels, language }: { labels: Labels; language: string }) {
-  const [transfers, setTransfers] = useState<Record<string, Progress>>({})
+export function TransferProgress({ labels, language }: { labels: Labels; language: Language }) {
+  const { items: transfers, receive, dismiss, pause } = useTransferStore()
+  const [failure, setFailure] = useState<string | null>(null)
+  const tools = toolMessages(language)
 
   useEffect(() => {
     let unlisten: (() => void) | undefined
+    let alive = true
     listen<Progress>('cosmarium://transfer-progress', (event) => {
-      setTransfers((current) => ({ ...current, [event.payload.id]: event.payload }))
+      if (alive) receive(event.payload)
     })
       .then((off) => {
-        unlisten = off
+        if (alive) unlisten = off
+        else off()
       })
       .catch(() => {})
-    return () => unlisten?.()
-  }, [])
+    return () => {
+      alive = false
+      unlisten?.()
+    }
+  }, [receive])
 
   const items = Object.values(transfers)
   if (items.length === 0) return null
 
-  const dismiss = (id: string) =>
-    setTransfers((current) => {
-      const next = { ...current }
-      delete next[id]
-      return next
-    })
-
   return (
     <div className="transfer-panel">
+      {failure && <p role="alert">{failure}</p>}
       {items.map((item) => {
-        const percent = item.total_files > 0 ? Math.round((item.done_files / item.total_files) * 100) : 0
+        const ratio = item.total_bytes > 0 ? item.done_bytes / item.total_bytes : item.total_files > 0 ? item.done_files / item.total_files : 0
+        const percent = Math.min(100, Math.round(ratio * 100))
+        const remaining = item.speed > 0 ? Math.ceil(Math.max(0, item.total_bytes - item.done_bytes) / item.speed) : null
         const title = item.kind === 'trash' ? labels.trashing : item.cut ? labels.moving : labels.copying
         return (
           <section className="transfer-card" key={item.id}>
@@ -60,20 +61,44 @@ export function TransferProgress({ labels, language }: { labels: Labels; languag
                   <Icon name="close" size={12} />
                 </button>
               ) : (
-                <button type="button" onClick={() => void filesystem.cancelTransfer(item.id)} aria-label={labels.cancel} title={labels.cancel}>
+                <button
+                  type="button"
+                  onClick={() => void filesystem.cancelTransfer(item.id).catch((reason) => setFailure(errorMessage(reason)))}
+                  aria-label={labels.cancel}
+                  title={labels.cancel}
+                >
                   <Icon name="close" size={12} />
                 </button>
               )}
             </div>
+            {!item.finished && item.kind !== 'trash' && (
+              <button
+                type="button"
+                onClick={() =>
+                  void filesystem
+                    .pauseTransfer(item.id, !item.paused)
+                    .then(() => pause(item.id, !item.paused))
+                    .catch((reason) => setFailure(errorMessage(reason)))
+                }
+              >
+                {item.paused ? tools.resume : tools.pause}
+              </button>
+            )}
             <div className="transfer-card__bar">
-              <i style={{ width: `${item.finished && !item.error ? 100 : percent}%` }} />
+              <i style={{ width: `${item.finished && !item.error && !item.cancelled ? 100 : percent}%` }} />
             </div>
             <small>
               {item.error
                 ? `${labels.failed}: ${item.error.split('\n')[0]}`
                 : item.finished
-                  ? labels.done
-                  : `${percent}% — ${item.done_files}/${item.total_files} · ${formatBytes(item.done_bytes, language)} / ${formatBytes(item.total_bytes, language)}`}
+                  ? item.cancelled
+                    ? tools.cancelled
+                    : labels.done
+                  : item.queued
+                    ? tools.queued
+                    : item.paused
+                      ? tools.pause
+                      : `${percent}% — ${item.done_files}/${item.total_files} · ${formatSize(item.done_bytes, language)} / ${formatSize(item.total_bytes, language)} · ${formatSize(item.speed, language)}/s${remaining === null ? '' : ` · ${remaining}s ${tools.remaining}`}`}
             </small>
           </section>
         )

@@ -1,0 +1,85 @@
+.tool-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #0008;
+  padding: 24px;
+  isolation: isolate;
+}
+.tool-dialog {
+  box-sizing: border-box;
+  width: min(760px, 100%);
+  min-width: 0;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  display: grid;
+  gap: 16px;
+}
+.tool-dialog header,
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tool-dialog header {
+  justify-content: space-between;
+}
+.tool-dialog h2 {
+  margin: 0;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.tool-dialog label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.tool-dialog form,
+.tool-dialog fieldset {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.tool-dialog fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.tool-dialog p,
+.tool-dialog li {
+  overflow-wrap: anywhere;
+}
+.tool-dialog input {
+  padding: 8px;
+  background: var(--field-bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--text);
+  min-width: 0;
+}
+.tool-dialog table {
+  width: 100%;
+  table-layout: fixed;
+}
+.tool-dialog td,
+.tool-dialog th {
+  text-align: left;
+  padding: 6px;
+  overflow-wrap: anywhere;
+}
+.tool-dialog [role='alert'] {
+  color: var(--danger);
+  overflow-wrap: anywhere;
+}
+.tool-dialog button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

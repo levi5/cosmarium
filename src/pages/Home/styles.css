@@ -2,6 +2,16 @@
   min-height: 100%;
   padding: 16px 12px 12px;
 }
+.home-page:has(> .file-browser:not(.file-browser--compact)) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.home-page > .file-browser:not(.file-browser--compact) {
+  flex: 1;
+  min-height: 0;
+}
 .home-actions {
   display: flex;
   align-items: center;

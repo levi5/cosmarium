@@ -2,6 +2,7 @@ pub mod fs_read;
 pub mod fs_write;
 pub mod ops_transfer;
 pub mod system;
+pub mod tools;
 pub mod trash;
 
 pub async fn off_thread<T, F>(work: F) -> Result<T, String>

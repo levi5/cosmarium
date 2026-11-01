@@ -26,6 +26,7 @@ export function useShortcuts({ enabled, hasTargets = false, handlers }: Options)
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (document.querySelector('[role="dialog"]')) return
       const combo = comboFromEvent(event)
       if (!combo) return
       const id = byCombo.get(combo)

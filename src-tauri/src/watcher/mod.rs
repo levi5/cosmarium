@@ -10,9 +10,14 @@ const DEBOUNCE: Duration = Duration::from_millis(250);
 
 type BoxDebouncer = Debouncer<RecommendedWatcher, FileIdMap>;
 
+struct WatchedDirectory {
+    _debouncer: BoxDebouncer,
+    subscribers: usize,
+}
+
 #[derive(Default)]
 pub struct WatcherState {
-    active: Mutex<HashMap<String, BoxDebouncer>>,
+    active: Mutex<HashMap<String, WatchedDirectory>>,
 }
 
 impl WatcherState {
@@ -31,6 +36,14 @@ pub fn watch_directory(
     let directory = PathBuf::from(&path);
     if !directory.is_dir() {
         return Err("This location is not a directory.".into());
+    }
+    let mut active = state
+        .active
+        .lock()
+        .map_err(|_| "Internal error.".to_string())?;
+    if let Some(watched) = active.get_mut(&path) {
+        watched.subscribers += 1;
+        return Ok(());
     }
 
     let watch_path = path.clone();
@@ -52,11 +65,13 @@ pub fn watch_directory(
         .watch(&directory, RecursiveMode::NonRecursive)
         .map_err(|error| error.to_string())?;
 
-    let mut active = state
-        .active
-        .lock()
-        .map_err(|_| "Internal error.".to_string())?;
-    active.insert(path, debouncer);
+    active.insert(
+        path,
+        WatchedDirectory {
+            _debouncer: debouncer,
+            subscribers: 1,
+        },
+    );
     Ok(())
 }
 
@@ -65,7 +80,7 @@ fn is_relevant(event: &DebouncedEvent) -> bool {
     !matches!(event.kind, EventKind::Access(_))
 }
 
-fn clear_map(map: &Mutex<HashMap<String, BoxDebouncer>>) {
+fn clear_map(map: &Mutex<HashMap<String, WatchedDirectory>>) {
     if let Ok(mut active) = map.lock() {
         active.clear();
     }
@@ -73,6 +88,12 @@ fn clear_map(map: &Mutex<HashMap<String, BoxDebouncer>>) {
 
 pub fn unwatch_directory(state: &WatcherState, path: &str) {
     if let Ok(mut active) = state.active.lock() {
+        if let Some(watched) = active.get_mut(path) {
+            if watched.subscribers > 1 {
+                watched.subscribers -= 1;
+                return;
+            }
+        }
         active.remove(path);
     }
 }

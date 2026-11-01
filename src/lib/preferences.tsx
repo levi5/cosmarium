@@ -1,5 +1,5 @@
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useContext, useEffect, useState } from 'react'
-import { readStorage, type StorageKey, STORAGE, writeStorage } from '../constants/storage'
+import { readStorage, STORAGE, type StorageKey, writeStorage } from '../constants/storage'
 
 export type Theme = 'dark' | 'light'
 export type Accent = 'violet' | 'blue' | 'coral' | 'lime' | 'custom'
