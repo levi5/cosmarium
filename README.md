@@ -131,6 +131,32 @@ GitHub Actions runs on every push and pull request against `master`:
 
 Dependabot watches npm, Cargo and GitHub Actions dependencies on a weekly schedule.
 
+## Builds
+
+Build bundles for the current operating system with the Tauri CLI:
+
+```bash
+pnpm install
+pnpm tauri build                       # default bundles for this OS
+pnpm tauri build --bundles deb,appimage  # Linux: .deb and .AppImage
+pnpm tauri build --bundles nsis          # Windows: setup .exe
+```
+
+Installers are written to `src-tauri/target/release/bundle/`:
+
+| Platform | Bundle | Path |
+| --- | --- | --- |
+| Linux | Debian package | `bundle/deb/*.deb` |
+| Linux | AppImage | `bundle/appimage/*.AppImage` |
+| Windows | NSIS installer | `bundle/nsis/*-setup.exe` |
+
+Tauri does not cross-compile Windows bundles from Linux, so the **Release**
+workflow builds both platforms natively. Run it from **Actions → Release → Run
+workflow**, or push a tag such as `v0.1.0`. Each run uploads the installers as
+workflow artifacts and, for tags, attaches them to a draft GitHub release.
+Linux builds target Ubuntu 22.04 for a wider glibc range; Windows builds are
+unsigned unless a code-signing certificate is configured.
+
 ## Website
 
 The marketing site lives in [`web/`](web) and is published to GitHub Pages at
