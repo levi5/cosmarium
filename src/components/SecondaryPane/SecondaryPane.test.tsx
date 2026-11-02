@@ -5,6 +5,7 @@ import { OrganizerProvider } from '../../lib/organizer'
 import { PreferencesProvider } from '../../lib/preferences'
 import { filesystem } from '../../services/tauri/filesystem'
 import { useClipboardStore } from '../../stores/clipboardStore'
+import { useShortcutStore } from '../../stores/shortcutStore'
 import type { FileEntry } from '../../types/explorer'
 import type { FileTable } from '../FileBrowser/FileTable'
 import { SecondaryPane } from '.'
@@ -66,6 +67,8 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
+  useShortcutStore.getState().resetAll()
+  vi.unstubAllGlobals()
   useClipboardStore.getState().clear()
   localStorage.clear()
 })
@@ -174,4 +177,75 @@ it('pastes into the secondary path and displays transfer failures', async () => 
   await screen.findByRole('alert')
   expect(screen.getByRole('alert').textContent).toBe('Transfer failed')
   expect(onTransfer).toHaveBeenCalledWith(['/source.txt'], '/secondary', true)
+})
+
+it('honors customized rename, copy, and delete bindings instead of fixed keys', async () => {
+  useShortcutStore.getState().setBinding('rename', 'ctrl+r')
+  useShortcutStore.getState().setBinding('copy', 'ctrl+shift+c')
+  useShortcutStore.getState().setBinding('delete', 'ctrl+shift+d')
+  const { region } = await setup()
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.keyDown(region, { key: 'F2' })
+  fireEvent.keyDown(region, { key: 'Delete' })
+  fireEvent.keyDown(region, { key: 'c', ctrlKey: true })
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(useClipboardStore.getState().paths).toEqual([])
+  fireEvent.keyDown(region, { key: 'c', ctrlKey: true, shiftKey: true })
+  expect(useClipboardStore.getState().paths).toEqual([file.path])
+  fireEvent.keyDown(region, { key: 'r', ctrlKey: true })
+  expect(within(screen.getByRole('dialog')).getByRole('textbox').getAttribute('aria-label')).toBe('Renomear')
+  fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button', { name: 'Cancelar' })[0])
+  fireEvent.keyDown(region, { key: 'd', ctrlKey: true, shiftKey: true })
+  expect(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir' })).toBeTruthy()
+  expect(filesystem.trashEntries).not.toHaveBeenCalled()
+})
+
+it('preserves text editing when file shortcuts are pressed in an input', async () => {
+  await setup()
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  const input = screen.getByRole('textbox', { name: 'Caminho da pasta' })
+  fireEvent.keyDown(input, { key: 'F2' })
+  fireEvent.keyDown(input, { key: 'Delete' })
+  fireEvent.keyDown(input, { key: 'c', ctrlKey: true })
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(useClipboardStore.getState().paths).toEqual([])
+})
+
+it('reports undo failure without reopening a rename prompt for the old path', async () => {
+  vi.mocked(filesystem.renameEntry).mockResolvedValue({ ...file, name: 'renamed.txt', path: '/secondary/renamed.txt' })
+  vi.mocked(filesystem.recordRename).mockRejectedValueOnce('Undo storage unavailable')
+  const { region } = await setup()
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.keyDown(region, { key: 'F2' })
+  fireEvent.change(within(screen.getByRole('dialog')).getByRole('textbox'), { target: { value: 'renamed.txt' } })
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Renomear' }))
+  await screen.findByText(/O item foi renomeado, mas não foi possível registrar/)
+  expect(screen.getByRole('button', { name: 'renamed.txt' })).toBeTruthy()
+  expect(screen.queryByRole('button', { name: 'note.txt' })).toBeNull()
+  expect(within(screen.getByRole('dialog')).queryByRole('textbox')).toBeNull()
+  expect(filesystem.renameEntry).toHaveBeenCalledTimes(1)
+})
+
+it('updates transfer labels and toolbar orientation when panels become stacked', async () => {
+  const listeners = new Set<() => void>()
+  const media = {
+    matches: false,
+    addEventListener: (_event: string, listener: () => void) => listeners.add(listener),
+    removeEventListener: (_event: string, listener: () => void) => listeners.delete(listener)
+  }
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => media)
+  )
+  await setup()
+  const toolbar = screen.getByRole('toolbar', { name: 'Painel duplo' })
+  expect(toolbar.getAttribute('aria-orientation')).toBe('vertical')
+  expect(screen.getByRole('button', { name: 'Copiar do painel esquerdo para o direito' })).toBeTruthy()
+  act(() => {
+    media.matches = true
+    for (const listener of listeners) listener()
+  })
+  expect(toolbar.getAttribute('aria-orientation')).toBe('horizontal')
+  expect(screen.getByRole('button', { name: 'Copiar do painel superior para o inferior' })).toBeTruthy()
+  expect(screen.queryByRole('button', { name: 'Copiar do painel esquerdo para o direito' })).toBeNull()
 })

@@ -1,8 +1,49 @@
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 pub const PREVIEW_MAX_BYTES: usize = 512 * 1024;
 const MAX_SNIFF_BYTES: usize = 4096;
+
+pub fn media_preview_path(path: &str) -> Result<PathBuf, String> {
+    let canonical = fs::canonicalize(path).map_err(|error| error.to_string())?;
+    if !canonical.is_file() {
+        return Err("Choose a regular media file.".into());
+    }
+    let extension = canonical
+        .extension()
+        .and_then(|value| value.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    if !matches!(
+        extension.as_str(),
+        "webp"
+            | "bmp"
+            | "ico"
+            | "avif"
+            | "gif"
+            | "jpeg"
+            | "jpg"
+            | "png"
+            | "svg"
+            | "webm"
+            | "mp4"
+            | "mov"
+            | "m4v"
+            | "ogv"
+            | "mp3"
+            | "wav"
+            | "ogg"
+            | "flac"
+            | "m4a"
+            | "aac"
+            | "opus"
+            | "pdf"
+    ) {
+        return Err("This file type is not supported for media preview.".into());
+    }
+    fs::File::open(&canonical).map_err(|error| error.to_string())?;
+    Ok(canonical)
+}
 
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -89,5 +130,49 @@ pub fn read_text_preview(path: &str) -> Result<TextPreview, String> {
                 size,
             })
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn media_preview_requires_a_supported_readable_regular_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let image = directory.path().join("photo.PNG");
+        fs::write(&image, b"preview").unwrap();
+        assert_eq!(
+            media_preview_path(image.to_str().unwrap()).unwrap(),
+            fs::canonicalize(&image).unwrap()
+        );
+        let secret = directory.path().join("secret.txt");
+        fs::write(&secret, b"private").unwrap();
+        assert!(media_preview_path(secret.to_str().unwrap()).is_err());
+        assert!(media_preview_path(directory.path().to_str().unwrap()).is_err());
+        assert!(
+            media_preview_path(directory.path().join("missing.png").to_str().unwrap()).is_err()
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn media_preview_validates_the_symlink_target() {
+        let directory = tempfile::tempdir().unwrap();
+        let secret = directory.path().join("secret.txt");
+        fs::write(&secret, b"private").unwrap();
+        let alias = directory.path().join("image.png");
+        std::os::unix::fs::symlink(&secret, &alias).unwrap();
+        assert!(media_preview_path(alias.to_str().unwrap()).is_err());
+    }
+
+    #[test]
+    fn asset_protocol_starts_with_an_empty_scope() {
+        let config: serde_json::Value =
+            serde_json::from_str(include_str!("../../tauri.conf.json")).unwrap();
+        assert_eq!(
+            config["app"]["security"]["assetProtocol"]["scope"],
+            serde_json::json!([])
+        );
     }
 }

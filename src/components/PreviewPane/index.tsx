@@ -1,5 +1,5 @@
-import { convertFileSrc } from '@tauri-apps/api/core'
 import { lazy, Suspense, useState } from 'react'
+import { useMediaPreview } from '../../hooks/useMediaPreview'
 import { useTextPreview } from '../../hooks/useTextPreview'
 import type { FileEntry } from '../../lib/files'
 import type { PreviewType } from '../../lib/format'
@@ -34,7 +34,7 @@ type Props = {
 }
 
 export function PreviewPane({ entry, type, language, title, labels, onClose }: Props) {
-  const source = convertFileSrc(entry.path)
+  const { source, error: sourceError } = useMediaPreview(entry.path, type !== 'text')
   const state = useTextPreview(entry.path, type === 'text')
   const [mediaError, setMediaError] = useState<string | null>(null)
   const openLabel = language === 'pt-BR' ? 'Abrir no aplicativo padrão' : 'Open in default application'
@@ -59,18 +59,20 @@ export function PreviewPane({ entry, type, language, title, labels, onClose }: P
         </div>
         <div className="preview-pane__media">
           {mediaError && <p role="alert">{mediaError}</p>}
-          {type === 'video' && (
+          {sourceError && <p role="alert">{sourceError}</p>}
+          {type !== 'text' && !source && !sourceError && <p role="status">{labels.loading}</p>}
+          {source && type === 'video' && (
             <video src={source} controls autoPlay>
               <track kind="captions" src={EMPTY_CAPTIONS} />
             </video>
           )}
-          {type === 'image' && <img src={source} alt={entry.name} />}
-          {type === 'audio' && (
+          {source && type === 'image' && <img src={source} alt={entry.name} />}
+          {source && type === 'audio' && (
             <audio src={source} controls aria-label={entry.name}>
               <track kind="captions" src={EMPTY_CAPTIONS} />
             </audio>
           )}
-          {type === 'pdf' && (
+          {source && type === 'pdf' && (
             <Suspense fallback={<p role="status">{labels.loading}</p>}>
               <PdfPreview source={source} language={language} />
             </Suspense>

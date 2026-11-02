@@ -6,6 +6,20 @@ use crate::platform::locations;
 use crate::platform::paths::parent_of;
 use crate::platform::volumes::{self, Volume};
 use std::collections::HashMap;
+use tauri::Manager;
+
+#[tauri::command]
+pub async fn prepare_media_preview<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    path: String,
+) -> Result<String, String> {
+    let canonical =
+        off_thread(move || crate::filesystem::preview::media_preview_path(&path)).await?;
+    app.asset_protocol_scope()
+        .allow_file(&canonical)
+        .map_err(|error| error.to_string())?;
+    Ok(canonical.to_string_lossy().into_owned())
+}
 
 #[tauri::command]
 pub async fn get_locations(app: tauri::AppHandle) -> Result<locations::Locations, String> {
@@ -81,4 +95,44 @@ pub async fn get_folder_sizes(
         Ok(out)
     })
     .await
+}
+
+#[cfg(test)]
+mod preview_tests {
+    use super::*;
+
+    #[test]
+    fn preview_authorization_does_not_allow_siblings_or_glob_matches() {
+        let app = tauri::test::mock_builder()
+            .build(tauri::test::mock_context(tauri::test::noop_assets()))
+            .unwrap();
+        let scope = app.asset_protocol_scope();
+        let directory = tempfile::tempdir().unwrap();
+        let image = directory.path().join("photo[1].png");
+        let sibling = directory.path().join("photo1.png");
+        let secret = directory.path().join("secret.txt");
+        for path in [&image, &sibling, &secret] {
+            std::fs::write(path, b"fixture").unwrap();
+            assert!(!scope.is_allowed(path));
+        }
+        let result = tauri::async_runtime::block_on(prepare_media_preview(
+            app.handle().clone(),
+            image.to_string_lossy().into_owned(),
+        ))
+        .unwrap();
+        assert_eq!(
+            std::path::PathBuf::from(result),
+            std::fs::canonicalize(&image).unwrap()
+        );
+        assert!(scope.is_allowed(&image));
+        assert!(!scope.is_allowed(&sibling));
+        assert!(!scope.is_allowed(&secret));
+        assert!(!scope.is_allowed(directory.path()));
+        assert!(tauri::async_runtime::block_on(prepare_media_preview(
+            app.handle().clone(),
+            secret.to_string_lossy().into_owned()
+        ))
+        .is_err());
+        assert!(!scope.is_allowed(&secret));
+    }
 }

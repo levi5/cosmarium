@@ -23,6 +23,7 @@ export const filesystem = {
   searchEntries: (query: SearchFilters) => invoke<FileEntry[]>('search_entries', { query }),
   recentEntries: (query: RecentFilters) => invoke<FileEntry[]>('recent_entries', { query }),
   readTextPreview: (path: string) => invoke<TextPreview>('read_text_preview', { path }),
+  prepareMediaPreview: (path: string) => invoke<string>('prepare_media_preview', { path }),
   createDirectory: (path: string, name: string) => invoke<FileEntry>('create_directory', { path, name }),
   createFile: (path: string, name: string) => invoke<FileEntry>('create_file', { path, name }),
   renameEntry: (path: string, newName: string) => invoke<FileEntry>('rename_entry', { path, newName }),

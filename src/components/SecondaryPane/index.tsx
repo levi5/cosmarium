@@ -3,13 +3,17 @@ import { _try } from 'funcio'
 import { useEffect, useMemo, useState } from 'react'
 import type { ViewMode } from '../../constants/view'
 import { useFolderSizes } from '../../hooks/useFolderSizes'
-import { errorMessage } from '../../lib/format'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { dispatchShortcut } from '../../hooks/useShortcuts'
+import { errorMessage, previewType } from '../../lib/format'
 import { createTranslator } from '../../lib/i18n'
 import { useOrganizer } from '../../lib/organizer'
 import { usePreferences } from '../../lib/preferences'
 import { sortEntries } from '../../lib/search'
+import { isActivatableTarget } from '../../lib/shortcuts'
 import { filesystem } from '../../services/tauri/filesystem'
 import { useClipboardStore } from '../../stores/clipboardStore'
+import { useShortcutStore } from '../../stores/shortcutStore'
 import type { FileEntry, SortDirection, SortKey, TransferProgress } from '../../types/explorer'
 import { Icon } from '../base/Icon'
 import { IconButton } from '../base/IconButton'
@@ -66,6 +70,8 @@ export function SecondaryPane({
   )
   const t = createTranslator(language)
   const labels = toolMessages(language)
+  const stacked = useMediaQuery('(max-width: 900px)')
+  const overrides = useShortcutStore((state) => state.overrides)
   const { selected, setSelected, active, setActive } = usePaneSelection(visibleEntries)
   const actions = useEntryActions(directory, setSelected)
   const inspection = useInspection()
@@ -132,10 +138,10 @@ export function SecondaryPane({
   }
   const hasOverlay = actions.hasDialog || inspection.hasDialog || menu || backgroundMenu
   const transferActions = [
-    { icon: 'copy', direction: 'arrow', label: labels.copyRight, sources: primarySources, dest: path, cut: false },
-    { icon: 'cut', direction: 'arrow', label: labels.moveRight, sources: primarySources, dest: path, cut: true },
-    { icon: 'copy', direction: 'back', label: labels.copyLeft, sources: selected, dest: primaryPath, cut: false },
-    { icon: 'cut', direction: 'back', label: labels.moveLeft, sources: selected, dest: primaryPath, cut: true }
+    { icon: 'copy', direction: 'arrow', label: stacked ? labels.copyDown : labels.copyRight, sources: primarySources, dest: path, cut: false },
+    { icon: 'cut', direction: 'arrow', label: stacked ? labels.moveDown : labels.moveRight, sources: primarySources, dest: path, cut: true },
+    { icon: 'copy', direction: 'back', label: stacked ? labels.copyUp : labels.copyLeft, sources: selected, dest: primaryPath, cut: false },
+    { icon: 'cut', direction: 'back', label: stacked ? labels.moveUp : labels.moveLeft, sources: selected, dest: primaryPath, cut: true }
   ] as const
   return (
     <section
@@ -144,32 +150,49 @@ export function SecondaryPane({
       onKeyDown={(event) => {
         if ((menu || backgroundMenu) && ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape', 'Tab'].includes(event.key)) return
         event.stopPropagation()
-        if (hasOverlay || (event.target as HTMLElement).closest('input, textarea, select, [contenteditable="true"]')) return
-        if (event.key === 'F2' && activeEntry) {
-          event.preventDefault()
-          actions.doRename(activeEntry)
-        }
-        if (event.key === 'Delete' && targets().length) {
-          event.preventDefault()
-          actions.setDeleteTargets(targets())
-        }
-        if (!(event.ctrlKey || event.metaKey)) return
-        const key = event.key.toLowerCase()
-        if (key === 'c' || key === 'x') {
-          event.preventDefault()
-          copy(key === 'c' ? 'copy' : 'cut')
-        }
-        if (key === 'v') {
-          event.preventDefault()
-          void transfer(clipboard.paths, path, clipboard.mode === 'cut')
-        }
-        if (key === 'a') {
-          event.preventDefault()
-          setSelected(visibleEntries.map((entry) => entry.path))
-        }
+        dispatchShortcut(
+          event.nativeEvent,
+          {
+            enabled: !hasOverlay,
+            hasTargets: targets().length > 0,
+            handlers: {
+              copy: () => copy('copy'),
+              cut: () => copy('cut'),
+              paste: () => void transfer(clipboard.paths, path, clipboard.mode === 'cut'),
+              selectAll: () => setSelected(visibleEntries.map((entry) => entry.path)),
+              rename: () => {
+                const entry = targets()[0]
+                if (entry) actions.doRename(entry)
+              },
+              delete: () => actions.setDeleteTargets(targets()),
+              newFolder: () => actions.setFolderDialog({ open: true, error: null }),
+              newFile: () => actions.setFileDialog({ open: true, error: null }),
+              refresh: () => void refresh(),
+              goUp: () =>
+                void filesystem
+                  .getParent(path)
+                  .then(go)
+                  .catch((reason) => setFailure(errorMessage(reason))),
+              toggleHidden: () => setShowHidden(!showHidden),
+              toggleDetailsPane: () => setDetailsPane(!detailsPane),
+              cycleView: () => setView(view === 'grid' ? 'list' : 'grid'),
+              properties: () => {
+                const entry = targets()[0]
+                if (entry) inspection.setPropertiesTarget(entry)
+              },
+              open: (keyEvent) => {
+                if (activeEntry && !(keyEvent.target as HTMLElement | null)?.closest('[role="option"]')) open(activeEntry)
+              },
+              preview: (keyEvent) => {
+                if (activeEntry && !isActivatableTarget(keyEvent.target) && previewType(activeEntry)) inspection.setPreview(activeEntry)
+              }
+            }
+          },
+          overrides
+        )
       }}
     >
-      <div className="pane-transfer-rail" role="toolbar" aria-label={labels.split} aria-orientation="vertical">
+      <div className="pane-transfer-rail" role="toolbar" aria-label={labels.split} aria-orientation={stacked ? 'horizontal' : 'vertical'}>
         {transferActions.map((action, index) => (
           <div key={action.label}>
             {index === 2 && <span className="pane-transfer-rail__divider" />}

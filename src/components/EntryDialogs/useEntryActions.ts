@@ -45,17 +45,19 @@ export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: st
     run(async () => {
       if (!renameTarget) return
       const previousPath = renameTarget.path
-      const result = await _try.async(async () => {
-        const entry = await filesystem.renameEntry(previousPath, name)
-        moveTag(previousPath, entry.path)
-        replaceEntry(previousPath, entry)
-        await filesystem.recordRename(previousPath, entry.path)
-      })
+      const result = await _try.async(() => filesystem.renameEntry(previousPath, name))
       await result.match({
-        right: async () => {
+        right: async (entry) => {
+          moveTag(previousPath, entry.path)
+          replaceEntry(previousPath, entry)
           setRenameTarget(null)
           setSelected([])
           setRenameError(null)
+          const undo = await _try.async(() => filesystem.recordRename(previousPath, entry.path))
+          undo.match({
+            right: () => {},
+            left: (reason) => setNotice({ title: t('undoTitle'), message: `${t('renameUndoFailed')}\n${errorMessage(reason)}` })
+          })
         },
         left: async (reason) => {
           setRenameError(errorMessage(reason))
