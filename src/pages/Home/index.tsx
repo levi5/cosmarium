@@ -42,10 +42,11 @@ export function Home() {
         <>
           <section className="home-panel">
             <QuickAccess />
-            <DriveOverview />
             {showRecent && <FileBrowser compact />}
+            {showRecent && <DriveOverview />}
           </section>
           {!showRecent && <FileBrowser />}
+          {!showRecent && <DriveOverview />}
         </>
       ) : (
         <FileBrowser />

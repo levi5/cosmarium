@@ -1,10 +1,5 @@
 import { useEffect } from 'react'
 
-/**
- * Adds the reveal animation to every [data-reveal] element once it enters the
- * viewport. Elements are observed only once, and reduced-motion users get the
- * final state through CSS.
- */
 export function useReveal() {
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'))

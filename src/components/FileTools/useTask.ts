@@ -10,14 +10,12 @@ export function useTask() {
     running.current = true
     setBusy(true)
     setError(null)
-    try {
-      await task()
-    } catch (reason) {
-      setError(errorMessage(reason))
-    } finally {
-      running.current = false
-      setBusy(false)
-    }
+    const result = await _try.async(task)
+    result.match({ right: () => {}, left: (reason) => setError(errorMessage(reason)) })
+    running.current = false
+    setBusy(false)
   }, [])
   return { busy, error, run }
 }
+
+import { _try } from 'funcio'

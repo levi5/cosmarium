@@ -14,17 +14,16 @@ export function useDirectoryPane(initialPath: string) {
     const token = ++request.current
     setLoading(true)
     setError(null)
-    try {
-      const next = await filesystem.listDirectory(path)
-      if (token === request.current) setEntries(next)
-    } catch (reason) {
-      if (token === request.current) {
+    const result = await _try.async(() => filesystem.listDirectory(path))
+    if (token !== request.current) return
+    result.match({
+      right: setEntries,
+      left: (reason) => {
         setError(errorMessage(reason))
         setEntries([])
       }
-    } finally {
-      if (token === request.current) setLoading(false)
-    }
+    })
+    setLoading(false)
   }, [path])
   useEffect(() => {
     void refresh()
@@ -33,5 +32,17 @@ export function useDirectoryPane(initialPath: string) {
     }
   }, [refresh])
   const watchError = useDirectoryWatch(path, () => void refresh())
-  return { path, navigate: setPath, entries, loading, error, watchError, refresh }
+  const insertEntry = (entry: FileEntry) => setEntries((current) => [...current.filter((item) => item.path !== entry.path), entry])
+  const createFolder = async (name: string) => insertEntry(await filesystem.createDirectory(path, name))
+  const createFile = async (name: string) => {
+    const entry = await filesystem.createFile(path, name)
+    insertEntry(entry)
+    return entry
+  }
+  const removeEntries = (paths: string[]) => setEntries((current) => current.filter((entry) => !paths.includes(entry.path)))
+  const replaceEntry = (oldPath: string, entry: FileEntry) =>
+    setEntries((current) => [...current.filter((item) => item.path !== oldPath && item.path !== entry.path), entry])
+  return { path, currentPath: path, navigate: setPath, entries, loading, error, watchError, refresh, createFolder, createFile, removeEntries, replaceEntry }
 }
+
+import { _try } from 'funcio'

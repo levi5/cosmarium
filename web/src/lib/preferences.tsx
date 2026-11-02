@@ -20,9 +20,7 @@ function initialTheme(): Theme {
   try {
     const stored = window.localStorage.getItem(STORAGE.theme)
     if (stored === 'light' || stored === 'dark') return stored
-  } catch {
-    // Storage can be unavailable in private browsing modes.
-  }
+  } catch {}
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }
 
@@ -31,9 +29,7 @@ function initialLanguage(): Language {
   try {
     const stored = window.localStorage.getItem(STORAGE.language)
     if (stored === 'pt-BR' || stored === 'en') return stored
-  } catch {
-    // Ignore storage failures and fall back to the default language.
-  }
+  } catch {}
   return 'pt-BR'
 }
 
@@ -45,18 +41,14 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.theme = theme
     try {
       window.localStorage.setItem(STORAGE.theme, theme)
-    } catch {
-      // Persisting preferences is best effort.
-    }
+    } catch {}
   }, [theme])
 
   useEffect(() => {
     document.documentElement.lang = language
     try {
       window.localStorage.setItem(STORAGE.language, language)
-    } catch {
-      // Persisting preferences is best effort.
-    }
+    } catch {}
   }, [language])
 
   const setTheme = useCallback((next: Theme) => setThemeState(next), [])

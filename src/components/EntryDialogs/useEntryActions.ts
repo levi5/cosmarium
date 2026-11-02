@@ -1,3 +1,4 @@
+import { _try } from 'funcio'
 import { useState } from 'react'
 import { useFileWorkspace } from '../../lib/files'
 import { errorMessage, joinPath } from '../../lib/format'
@@ -14,12 +15,19 @@ import { useTask } from '../FileTools/useTask'
 export type FormState = { open: boolean; error: string | null }
 export const closedForm: FormState = { open: false, error: null }
 
-export function useEntryActions() {
-  const { currentPath, entries, refresh, createFolder, createFile, removeEntries, replaceEntry } = useFileWorkspace()
+type ActionWorkspace = Pick<
+  ReturnType<typeof useFileWorkspace>,
+  'currentPath' | 'entries' | 'refresh' | 'createFolder' | 'createFile' | 'removeEntries' | 'replaceEntry'
+>
+
+export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: string[]) => void) {
+  const primaryWorkspace = useFileWorkspace()
+  const { currentPath, entries, refresh, createFolder, createFile, removeEntries, replaceEntry } = workspace ?? primaryWorkspace
   const { moveTag } = useOrganizer()
   const { language } = usePreferences()
   const t = createTranslator(language)
-  const setSelected = useSelectionStore((state) => state.setSelected)
+  const selectPrimary = useSelectionStore((state) => state.setSelected)
+  const setSelected = select ?? selectPrimary
   const clearClipboard = useClipboardStore((state) => state.clear)
   const [folderDialog, setFolderDialog] = useState<FormState>(closedForm)
   const [fileDialog, setFileDialog] = useState<FormState>(closedForm)
@@ -37,58 +45,68 @@ export function useEntryActions() {
     run(async () => {
       if (!renameTarget) return
       const previousPath = renameTarget.path
-      try {
+      const result = await _try.async(async () => {
         const entry = await filesystem.renameEntry(previousPath, name)
-        await filesystem.recordRename(previousPath, entry.path)
         moveTag(previousPath, entry.path)
         replaceEntry(previousPath, entry)
-        setRenameTarget(null)
-        setSelected([])
-        setRenameError(null)
-      } catch (reason) {
-        setRenameError(errorMessage(reason))
-        await refresh()
-      }
+        await filesystem.recordRename(previousPath, entry.path)
+      })
+      await result.match({
+        right: async () => {
+          setRenameTarget(null)
+          setSelected([])
+          setRenameError(null)
+        },
+        left: async (reason) => {
+          setRenameError(errorMessage(reason))
+          await refresh()
+        }
+      })
     })
   const handleDelete = () =>
     run(async () => {
       if (!deleteTargets) return
       const paths = deleteTargets.map((entry) => entry.path)
       setDeleteTargets(null)
-      try {
+      const result = await _try.async(async () => {
         await filesystem.trashEntries(paths, newOperationId())
         removeEntries(paths)
-      } catch (reason) {
-        setNotice({ title: t('deleteTitle'), message: errorMessage(reason) })
-        await refresh()
-      } finally {
-        setSelected([])
-        clearClipboard()
-      }
+      })
+      await result.match({
+        right: async () => {},
+        left: async (reason) => {
+          setNotice({ title: t('deleteTitle'), message: errorMessage(reason) })
+          await refresh()
+        }
+      })
+      setSelected([])
+      clearClipboard()
     })
   const handleEmptyTrash = () =>
     run(async () => {
       setEmptyTrashOpen(false)
-      try {
+      const result = await _try.async(async () => {
         await filesystem.emptyTrash()
         setSelected([])
-      } catch (reason) {
-        setNotice({ title: t('emptyTrashTitle'), message: errorMessage(reason) })
-      } finally {
-        await refresh()
-      }
+      })
+      result.match({
+        right: () => {},
+        left: (reason) => setNotice({ title: t('emptyTrashTitle'), message: errorMessage(reason) })
+      })
+      await refresh()
     })
   const create = (kind: 'folder' | 'file', name: string) =>
     run(async () => {
       const setDialog = kind === 'folder' ? setFolderDialog : setFileDialog
-      try {
+      const result = await _try.async(async () => {
         if (kind === 'folder') await createFolder(name)
         else await createFile(name)
         await filesystem.recordCreated([joinPath(currentPath, name)])
-        setDialog(closedForm)
-      } catch (reason) {
-        setDialog({ open: true, error: errorMessage(reason) })
-      }
+      })
+      result.match({
+        right: () => setDialog(closedForm),
+        left: (reason) => setDialog({ open: true, error: errorMessage(reason) })
+      })
     })
   return {
     folderDialog,

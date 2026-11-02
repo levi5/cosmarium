@@ -7,6 +7,7 @@ export type QuickAccessItem = { path: string; name: string }
 type Organizer = {
   tags: Tag[]
   quickAccess: QuickAccessItem[]
+  hiddenQuickAccess: string[]
   taggedPaths: Record<string, string[]>
   createTag: (tag: Omit<Tag, 'id'>) => Tag
   assignTag: (path: string, tagId: string) => void
@@ -39,6 +40,7 @@ function newTagId(name: string): string {
 export function OrganizerProvider({ children }: { children: React.ReactNode }) {
   const [tags, setTags] = useState<Tag[]>(() => read('cosmarium-tags', []))
   const [quickAccess, setQuickAccess] = useState<QuickAccessItem[]>(() => read('cosmarium-quick-access', []))
+  const [hiddenQuickAccess, setHiddenQuickAccess] = useState<string[]>(() => read(STORAGE.hiddenQuickAccess, []))
   const [taggedPaths, setTaggedPaths] = useState<Record<string, string[]>>(() => read('cosmarium-tagged-paths', {}))
 
   useEffect(() => {
@@ -47,6 +49,9 @@ export function OrganizerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     writeStorage(STORAGE.quickAccess, JSON.stringify(quickAccess))
   }, [quickAccess])
+  useEffect(() => {
+    writeStorage(STORAGE.hiddenQuickAccess, JSON.stringify(hiddenQuickAccess))
+  }, [hiddenQuickAccess])
   useEffect(() => {
     writeStorage(STORAGE.taggedPaths, JSON.stringify(taggedPaths))
   }, [taggedPaths])
@@ -85,13 +90,18 @@ export function OrganizerProvider({ children }: { children: React.ReactNode }) {
       return next
     })
   }
-  const addQuickAccess = (item: QuickAccessItem) =>
+  const addQuickAccess = (item: QuickAccessItem) => {
+    setHiddenQuickAccess((current) => current.filter((path) => path !== item.path))
     setQuickAccess((current) => (current.some((entry) => entry.path === item.path) ? current : [...current, item]))
-  const removeQuickAccess = (path: string) => setQuickAccess((current) => current.filter((entry) => entry.path !== path))
+  }
+  const removeQuickAccess = (path: string) => {
+    setQuickAccess((current) => current.filter((entry) => entry.path !== path))
+    setHiddenQuickAccess((current) => (current.includes(path) ? current : [...current, path]))
+  }
 
   return (
     <OrganizerContext.Provider
-      value={{ tags, quickAccess, taggedPaths, createTag, assignTag, unassignTag, moveTag, removeTag, addQuickAccess, removeQuickAccess }}
+      value={{ tags, quickAccess, hiddenQuickAccess, taggedPaths, createTag, assignTag, unassignTag, moveTag, removeTag, addQuickAccess, removeQuickAccess }}
     >
       {children}
     </OrganizerContext.Provider>

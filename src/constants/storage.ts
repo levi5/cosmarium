@@ -15,6 +15,7 @@ export const STORAGE = {
   detailsPane: 'cosmarium-details-pane',
   recentList: 'cosmarium-recent-list',
   quickAccess: 'cosmarium-quick-access',
+  hiddenQuickAccess: 'cosmarium-hidden-quick-access',
   quickAccessExpanded: 'cosmarium-quick-access-expanded',
   tags: 'cosmarium-tags',
   taggedPaths: 'cosmarium-tagged-paths'

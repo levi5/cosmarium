@@ -97,8 +97,11 @@
   background: var(--hover);
 }
 .nav-item-action--alias.button {
+  width: 22px;
+  height: 22px;
   min-height: 22px;
   padding: 0;
+  border-radius: 5px;
 }
 .nav-item-action--alias:hover:not(:disabled) {
   color: var(--text);
