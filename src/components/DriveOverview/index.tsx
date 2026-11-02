@@ -26,7 +26,7 @@ export function DriveOverview() {
       </p>
       <div className="drive-overview__grid">
         {volumes.map((volume) => {
-          const used = volume.total_space ? Math.round((1 - volume.available_space / volume.total_space) * 100) : 0
+          const used = volume.total_space > 0 ? _Number.clamp(0, 100, Math.round((1 - volume.available_space / volume.total_space) * 100)) : 0
           return (
             <div className="drive-overview__card" key={volume.mount_point}>
               <button type="button" className="drive-overview__open" title={volume.mount_point} onClick={() => navigateTo(volume.mount_point)}>
@@ -49,3 +49,5 @@ export function DriveOverview() {
     </section>
   )
 }
+
+import { _Number } from 'funcio'

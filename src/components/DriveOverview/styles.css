@@ -20,6 +20,7 @@
   gap: 8px;
 }
 .drive-overview__card {
+  position: relative;
   display: flex;
   align-items: center;
   min-width: 0;
@@ -33,7 +34,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 10px 42px 10px 12px;
   color: var(--text);
   background: var(--surface-3);
   border: 1px solid transparent;
@@ -49,9 +50,23 @@
   flex: 0 0 auto;
   color: var(--muted);
 }
-.drive-overview__alias {
-  flex: 0 0 auto;
-  margin-right: 6px;
+.drive-overview__alias.button {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 5px;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+}
+.drive-overview__alias.button:hover {
+  color: var(--text);
 }
 .drive-overview__body {
   min-width: 0;
@@ -67,8 +82,11 @@
   white-space: nowrap;
 }
 .drive-overview__body small {
+  overflow: hidden;
   color: var(--muted);
   font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .drive-overview__bar {
   display: block;

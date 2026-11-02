@@ -1,7 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// GitHub Pages serves project sites from https://<user>.github.io/cosmarium/.
 export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/cosmarium/' : '/',
   plugins: [react()],

@@ -106,6 +106,7 @@ Dates use UTC day boundaries. Content search scans UTF-8 text files up to 2 MiB.
 
 ## Operation safety
 
+- Media previews start with an empty asset-protocol scope. Only supported, readable regular files requested for preview or thumbnails are authorized, by canonical path, for the current application session.
 - ZIP extraction rejects path traversal and symbolic links, and is limited to 100,000 entries and 20 GiB of extracted content. Existing output folders are never replaced.
 - Batch renames validate the full plan first, reject existing targets and attempt rollback on failure. Cyclic renames are not supported.
 - Transfers do not follow symbolic links. Replacement copies are staged before recycling an existing destination. A failed directory copy never triggers deletion of its source tree.

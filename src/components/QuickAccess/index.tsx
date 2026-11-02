@@ -19,7 +19,7 @@ const locations = [
 
 export function QuickAccess() {
   const { locations: systemLocations, navigateTo } = useFileWorkspace()
-  const { quickAccess } = useOrganizer()
+  const { quickAccess, hiddenQuickAccess, removeQuickAccess } = useOrganizer()
   const { language, iconSize } = usePreferences()
   const [expanded, setExpanded] = useState(() => readStorage(STORAGE.quickAccessExpanded) !== 'false')
   const translateText = createTranslator(language)
@@ -27,6 +27,10 @@ export function QuickAccess() {
     writeStorage(STORAGE.quickAccessExpanded, String(expanded))
   }, [expanded])
   if (!systemLocations) return null
+  const defaultItems = locations
+    .map(([location, label]) => ({ path: systemLocations[location], name: translateText(label) }))
+    .filter((item) => !hiddenQuickAccess.includes(item.path))
+  const items = [...defaultItems, ...quickAccess.filter((item) => !defaultItems.some((entry) => entry.path === item.path))]
   return (
     <section className="quick-access">
       <button type="button" className="quick-access__heading" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded}>
@@ -35,27 +39,24 @@ export function QuickAccess() {
       </button>
       {expanded && (
         <div className="quick-access__grid">
-          {locations.map(([location, label]) => (
-            <button type="button" key={location} onClick={() => navigateTo(systemLocations[location])}>
-              <span className="quick-access__icon">
-                <FileIcon entry={{ name: label, kind: 'directory' }} size={iconSize} />
-              </span>
-              <span>{translateText(label)}</span>
-              <span className="quick-access__pin">
+          {items.map((item) => (
+            <div className="quick-access__item" key={item.path}>
+              <button type="button" className="quick-access__open" onClick={() => navigateTo(item.path)}>
+                <span className="quick-access__icon">
+                  <FileIcon entry={{ name: item.name, kind: 'directory' }} size={iconSize} />
+                </span>
+                <span>{item.name}</span>
+              </button>
+              <button
+                type="button"
+                className="quick-access__pin"
+                title={translateText('unpinQuickAccess')}
+                aria-label={`${translateText('unpinQuickAccess')}: ${item.name}`}
+                onClick={() => removeQuickAccess(item.path)}
+              >
                 <Icon name="pin" size={12} />
-              </span>
-            </button>
-          ))}
-          {quickAccess.map((item) => (
-            <button type="button" key={item.path} onClick={() => navigateTo(item.path)}>
-              <span className="quick-access__icon">
-                <FileIcon entry={{ name: item.name, kind: 'directory' }} size={iconSize} />
-              </span>
-              <span>{item.name}</span>
-              <span className="quick-access__pin">
-                <Icon name="pin" size={12} />
-              </span>
-            </button>
+              </button>
+            </div>
           ))}
         </div>
       )}

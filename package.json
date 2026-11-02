@@ -24,6 +24,7 @@
     "@fluentui/react-icons": "^2.0.344",
     "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/cli": "^2.12.4",
+    "funcio": "^0.1.0",
     "pdfjs-dist": "^6.4.299",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

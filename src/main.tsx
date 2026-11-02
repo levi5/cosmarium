@@ -16,6 +16,8 @@ const container = document.getElementById('root')
 
 if (!container) throw new Error('Elemento #root nao encontrado no index.html')
 
+document.addEventListener('contextmenu', (event) => event.preventDefault())
+
 function AppRoutes() {
   return (
     <AppShell>

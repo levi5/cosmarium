@@ -34,8 +34,12 @@
   gap: 8px;
   animation: quick-access-in 0.2s ease-out;
 }
-.quick-access__grid button {
+.quick-access__item {
   position: relative;
+  min-width: 0;
+}
+.quick-access__open {
+  width: 100%;
   min-width: 0;
   min-height: 78px;
   display: flex;
@@ -56,11 +60,11 @@
     background 0.15s,
     border-color 0.15s;
 }
-.quick-access__grid button:hover {
+.quick-access__open:hover {
   background: var(--hover);
   border-color: var(--line-strong);
 }
-.quick-access__grid button > span:nth-child(2) {
+.quick-access__open > span:nth-child(2) {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -70,13 +74,24 @@
   position: absolute;
   right: 6px;
   top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
   color: var(--muted);
   opacity: 0.8;
   transition:
     color 0.15s,
     opacity 0.15s;
 }
-.quick-access__grid button:hover .quick-access__pin {
+.quick-access__pin:hover,
+.quick-access__pin:focus-visible {
   color: var(--accent);
   opacity: 1;
 }
@@ -100,7 +115,7 @@
   .quick-access__grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .quick-access__grid button {
+  .quick-access__open {
     min-height: 78px;
   }
 }

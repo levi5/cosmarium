@@ -12,6 +12,9 @@
   flex: 1;
   min-height: 0;
 }
+.home-page > .file-browser:not(.file-browser--compact):has(.workspace-split) {
+  min-height: 360px;
+}
 .home-actions {
   display: flex;
   align-items: center;
@@ -34,6 +37,16 @@
   background: var(--surface-3);
   border: 1px solid var(--line-strong);
   border-radius: 8px;
+}
+.home-page > .home-actions,
+.home-page > .home-panel,
+.home-page > .drive-overview {
+  flex-shrink: 0;
+}
+@media (max-width: 900px) {
+  .home-page > .file-browser:not(.file-browser--compact):has(.workspace-split) {
+    min-height: 520px;
+  }
 }
 @media (max-width: 500px) {
   .home-actions {

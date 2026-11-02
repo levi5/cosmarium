@@ -9,10 +9,10 @@ import { DocumentWordFilled } from '@fluentui/react-icons/svg/document-word'
 import { FolderFilled } from '@fluentui/react-icons/svg/folder'
 import { MusicNote2Filled } from '@fluentui/react-icons/svg/music-note'
 import { VideoClipFilled } from '@fluentui/react-icons/svg/video-clip'
-import { convertFileSrc } from '@tauri-apps/api/core'
 import { type ElementType, useState } from 'react'
 import { ARCHIVE_EXTENSIONS, AUDIO_EXTENSIONS, fileExtension, hasExtension, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from '../../constants/files'
 import { type FileIconSize, ICON_PX } from '../../constants/view'
+import { useMediaPreview } from '../../hooks/useMediaPreview'
 import type { FileEntry } from '../../types/explorer'
 import './styles.css'
 
@@ -49,6 +49,7 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
   const isImage = hasExtension(entry.name, IMAGE_EXTENSIONS)
 
   const thumbError = path !== undefined && failedPath === path
+  const { source } = useMediaPreview(path ?? '', entry.kind === 'file' && isImage && Boolean(path) && !thumbError)
 
   if (entry.kind === 'directory') {
     return (
@@ -58,20 +59,12 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
     )
   }
 
-  if (isImage && path && !thumbError) {
-    let src = ''
-    try {
-      src = convertFileSrc(path)
-    } catch {
-      src = ''
-    }
-    if (src) {
-      return (
-        <span className={`files-icon files-icon--thumb files-icon--${size}`}>
-          <img src={src} alt="" loading="lazy" decoding="async" onError={() => setFailedPath(path)} />
-        </span>
-      )
-    }
+  if (isImage && path && !thumbError && source) {
+    return (
+      <span className={`files-icon files-icon--thumb files-icon--${size}`}>
+        <img src={source} alt="" loading="lazy" decoding="async" onError={() => setFailedPath(path)} />
+      </span>
+    )
   }
 
   const { icon: GlyphIcon, color } = glyphFor(entry.name)

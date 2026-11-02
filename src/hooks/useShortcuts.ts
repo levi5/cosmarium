@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { SHORTCUTS, type ShortcutId } from '../constants/shortcuts'
 import { comboFromEvent, isEditableTarget } from '../lib/shortcuts'
-import { resolveBindings, useShortcutStore } from '../stores/shortcutStore'
+import { resolveBindings, type ShortcutOverrides, useShortcutStore } from '../stores/shortcutStore'
 
 export type ShortcutHandlers = Partial<Record<ShortcutId, (event: KeyboardEvent) => void>>
 
@@ -11,6 +11,20 @@ type Options = {
   handlers: ShortcutHandlers
 }
 
+export function dispatchShortcut(event: KeyboardEvent, { enabled, hasTargets = false, handlers }: Options, overrides: ShortcutOverrides): boolean {
+  if (!enabled || document.querySelector('[role="dialog"]')) return false
+  const combo = comboFromEvent(event)
+  if (!combo) return false
+  const resolved = resolveBindings(overrides)
+  const definition = [...SHORTCUTS].reverse().find((item) => resolved[item.id] === combo)
+  if (!definition || (definition.needsTarget && !hasTargets) || (!definition.allowInInput && isEditableTarget(event.target))) return false
+  const handler = handlers[definition.id]
+  if (!handler) return false
+  event.preventDefault()
+  handler(event)
+  return true
+}
+
 export function useShortcuts({ enabled, hasTargets = false, handlers }: Options): void {
   const overrides = useShortcutStore((state) => state.overrides)
   const latest = useRef(handlers)
@@ -18,26 +32,8 @@ export function useShortcuts({ enabled, hasTargets = false, handlers }: Options)
 
   useEffect(() => {
     if (!enabled) return
-    const resolved = resolveBindings(overrides)
-    const defs = new Map(SHORTCUTS.map((def) => [def.id, def]))
-    const byCombo = new Map<string, ShortcutId>()
-    for (const def of SHORTCUTS) {
-      if (resolved[def.id]) byCombo.set(resolved[def.id], def.id)
-    }
-
     const onKeyDown = (event: KeyboardEvent) => {
-      if (document.querySelector('[role="dialog"]')) return
-      const combo = comboFromEvent(event)
-      if (!combo) return
-      const id = byCombo.get(combo)
-      if (!id) return
-      const def = defs.get(id)
-      if (def?.needsTarget && !hasTargets) return
-      if (!def?.allowInInput && isEditableTarget(event.target)) return
-      const handler = latest.current[id]
-      if (!handler) return
-      event.preventDefault()
-      handler(event)
+      dispatchShortcut(event, { enabled, hasTargets, handlers: latest.current }, overrides)
     }
 
     window.addEventListener('keydown', onKeyDown)

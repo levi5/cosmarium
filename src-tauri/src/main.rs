@@ -83,6 +83,7 @@ fn main() {
             commands::fs_read::search_entries,
             commands::fs_read::recent_entries,
             commands::fs_read::read_text_preview,
+            commands::fs_read::prepare_media_preview,
             commands::fs_read::get_folder_stats,
             commands::fs_read::get_folder_sizes,
             commands::fs_write::create_directory,
