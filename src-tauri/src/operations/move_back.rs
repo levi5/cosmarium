@@ -9,11 +9,12 @@ pub fn execute(from: &[String], to: &[String]) -> Result<(), String> {
         .iter()
         .zip(from)
         .filter(|(source, target)| source != target)
+        .filter(|(source, _)| Path::new(source).exists())
         .collect();
-    for (source, target) in &changes {
-        if !Path::new(source).exists() {
-            return Err(format!("Not found: {source}"));
-        }
+    if changes.is_empty() {
+        return Ok(());
+    }
+    for (_, target) in &changes {
         if Path::new(target).symlink_metadata().is_ok() {
             return Err(format!(
                 "Already exists: {target}. Move it before retrying undo."

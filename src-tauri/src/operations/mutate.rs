@@ -60,11 +60,24 @@ pub fn trash_entries<R: tauri::Runtime>(
     if paths.is_empty() {
         return Err("Nothing selected.".into());
     }
-    let targets: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
-    for target in &targets {
-        if !target.exists() {
-            return Err(format!("Not found: {}", target.to_string_lossy()));
+    let mut targets: Vec<PathBuf> = Vec::with_capacity(paths.len());
+    let mut removed = Vec::new();
+    for path in paths {
+        let target = PathBuf::from(path);
+        if target.exists() {
+            targets.push(target);
+        } else {
+            // The item vanished between listing and deleting (common for temp files).
+            // Treat it as already removed instead of failing the whole operation.
+            removed.push(path.clone());
         }
+    }
+    if targets.is_empty() {
+        return Ok(TrashSummary {
+            removed,
+            cancelled: false,
+            errors: Vec::new(),
+        });
     }
 
     let measured = crate::operations::transfer::measure_all(&targets);
@@ -83,7 +96,6 @@ pub fn trash_entries<R: tauri::Runtime>(
     let _ = app.emit(crate::events::TRANSFER_PROGRESS, &progress);
 
     let mut errors: Vec<String> = Vec::new();
-    let mut removed = Vec::new();
     for target in &targets {
         if crate::operations::transfer::is_cancelled(id, cancels) {
             progress.cancelled = true;

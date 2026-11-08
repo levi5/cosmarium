@@ -81,6 +81,26 @@ fn path(root: &TempDir, name: &str) -> String {
 }
 
 #[test]
+fn trash_ignores_items_that_vanished_before_deletion() {
+    let app = tauri::test::mock_builder()
+        .build(tauri::test::mock_context(tauri::test::noop_assets()))
+        .unwrap();
+    let root = TempDir::new().unwrap();
+    let controls = crate::operations::transfer::TransferCancels::default();
+    let missing = path(&root, "gone.txt");
+    let summary = crate::operations::mutate::trash_entries(
+        app.handle(),
+        &[missing.clone()],
+        &controls,
+        "vanished",
+    )
+    .unwrap();
+    assert_eq!(summary.removed, vec![missing]);
+    assert!(summary.errors.is_empty());
+    assert!(!summary.cancelled);
+}
+
+#[test]
 fn zip_round_trip_preserves_contents_and_empty_directories() {
     let root = TempDir::new().unwrap();
     std::fs::create_dir_all(root.path().join("input/empty")).unwrap();
@@ -184,6 +204,25 @@ fn undo_does_not_overwrite_a_new_file() {
     assert_eq!(
         std::fs::read(root.path().join("a.txt")).unwrap(),
         b"new data"
+    );
+}
+
+#[test]
+fn undo_skips_sources_that_no_longer_exist() {
+    let root = TempDir::new().unwrap();
+    move_back::execute(&[path(&root, "a.txt")], &[path(&root, "gone.txt")]).unwrap();
+    assert!(!root.path().join("a.txt").exists());
+
+    std::fs::write(root.path().join("moved.txt"), b"data").unwrap();
+    move_back::execute(
+        &[path(&root, "a.txt"), path(&root, "moved-back.txt")],
+        &[path(&root, "gone.txt"), path(&root, "moved.txt")],
+    )
+    .unwrap();
+    assert!(!root.path().join("a.txt").exists());
+    assert_eq!(
+        std::fs::read(root.path().join("moved-back.txt")).unwrap(),
+        b"data"
     );
 }
 
