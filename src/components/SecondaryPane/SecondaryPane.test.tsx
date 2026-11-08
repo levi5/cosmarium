@@ -99,6 +99,18 @@ it('renames a secondary entry without changing primary entries', async () => {
   expect(primary.replaceEntry).not.toHaveBeenCalled()
 })
 
+it('selects a range with shift+click in the secondary pane', async () => {
+  const other: FileEntry = { ...file, name: 'other.txt', path: '/secondary/other.txt' }
+  const third: FileEntry = { ...file, name: 'third.txt', path: '/secondary/third.txt' }
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([file, other, third])
+  await setup()
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.click(screen.getByRole('button', { name: 'third.txt' }), { shiftKey: true })
+  expect(screen.getByRole('button', { name: 'note.txt' }).getAttribute('aria-pressed')).toBe('true')
+  expect(screen.getByRole('button', { name: 'other.txt' }).getAttribute('aria-pressed')).toBe('true')
+  expect(screen.getByRole('button', { name: 'third.txt' }).getAttribute('aria-pressed')).toBe('true')
+})
+
 it('creates files in the secondary folder from its background menu', async () => {
   vi.mocked(filesystem.createFile).mockResolvedValue({ ...file, name: 'new.txt', path: '/secondary/new.txt' })
   const { region } = await setup()
