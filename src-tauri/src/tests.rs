@@ -90,7 +90,7 @@ fn trash_ignores_items_that_vanished_before_deletion() {
     let missing = path(&root, "gone.txt");
     let summary = crate::operations::mutate::trash_entries(
         app.handle(),
-        &[missing.clone()],
+        std::slice::from_ref(&missing),
         &controls,
         "vanished",
     )
