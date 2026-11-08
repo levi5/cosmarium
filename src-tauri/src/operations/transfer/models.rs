@@ -47,6 +47,7 @@ pub struct TransferProgress {
     pub done_bytes: u64,
     pub total_bytes: u64,
     pub finished: bool,
+    pub cancelled: bool,
     pub error: Option<String>,
 }
 

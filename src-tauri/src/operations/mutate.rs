@@ -24,7 +24,11 @@ pub fn create_file(dir: &str, name: &str) -> Result<FileEntry, String> {
     if target.exists() {
         return Err("An item with this name already exists.".into());
     }
-    std::fs::File::create(&target).map_err(|error| error.to_string())?;
+    std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&target)
+        .map_err(|error| error.to_string())?;
     entry_from_path(&target)
 }
 
@@ -43,16 +47,16 @@ pub fn rename_entry(path: &str, new_name: &str) -> Result<FileEntry, String> {
     if target.exists() {
         return Err("An item with this name already exists.".into());
     }
-    std::fs::rename(&source, &target).map_err(|error| error.to_string())?;
+    crate::platform::rename::without_replacement(&source, &target)?;
     entry_from_path(&target)
 }
 
-pub fn trash_entries(
-    app: &tauri::AppHandle,
+pub fn trash_entries<R: tauri::Runtime>(
+    app: &tauri::AppHandle<R>,
     paths: &[String],
     cancels: &crate::operations::transfer::TransferCancels,
     id: &str,
-) -> Result<(), String> {
+) -> Result<TrashSummary, String> {
     if paths.is_empty() {
         return Err("Nothing selected.".into());
     }
@@ -74,17 +78,21 @@ pub fn trash_entries(
         done_bytes: 0,
         finished: false,
         error: None,
+        cancelled: false,
     };
     let _ = app.emit(crate::events::TRANSFER_PROGRESS, &progress);
 
     let mut errors: Vec<String> = Vec::new();
+    let mut removed = Vec::new();
     for target in &targets {
         if crate::operations::transfer::is_cancelled(id, cancels) {
+            progress.cancelled = true;
             break;
         }
         let measured = crate::operations::transfer::scan_source(target);
         match trash::delete(target) {
             Ok(()) => {
+                removed.push(target.to_string_lossy().into_owned());
                 progress.done_files = progress.done_files.saturating_add(measured.files.max(1));
                 progress.done_bytes = progress.done_bytes.saturating_add(measured.bytes);
                 let _ = app.emit(crate::events::TRANSFER_PROGRESS, &progress);
@@ -100,10 +108,25 @@ pub fn trash_entries(
     if !errors.is_empty() {
         progress.error = Some(errors.join("\n"));
         let _ = app.emit(crate::events::TRANSFER_PROGRESS, &progress);
-        return Err(errors.join("\n"));
+        return Ok(TrashSummary {
+            removed,
+            cancelled: progress.cancelled,
+            errors,
+        });
     }
     let _ = app.emit(crate::events::TRANSFER_PROGRESS, &progress);
-    Ok(())
+    Ok(TrashSummary {
+        removed,
+        cancelled: progress.cancelled,
+        errors,
+    })
+}
+
+#[derive(serde::Serialize)]
+pub struct TrashSummary {
+    pub removed: Vec<String>,
+    pub cancelled: bool,
+    pub errors: Vec<String>,
 }
 
 pub fn restore_trash(ids: &[String]) -> Result<usize, String> {

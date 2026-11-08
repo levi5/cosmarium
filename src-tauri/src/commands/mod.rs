@@ -1,3 +1,4 @@
+pub mod drag;
 pub mod fs_read;
 pub mod fs_write;
 pub mod ops_transfer;

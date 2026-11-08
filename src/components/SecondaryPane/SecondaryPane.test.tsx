@@ -149,6 +149,8 @@ it('shows rejected rename errors without closing the prompt', async () => {
 
 it('deletes secondary entries only after confirmation', async () => {
   const { region } = await setup()
+  vi.mocked(filesystem.trashEntries).mockResolvedValue({ removed: [file.path], cancelled: false, errors: [] })
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([])
   fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
   fireEvent.keyDown(region, { key: 'Delete' })
   expect(filesystem.trashEntries).not.toHaveBeenCalled()

@@ -182,6 +182,7 @@ pub fn execute(
             total_files: measured.files,
             total_bytes: measured.bytes,
             finished: false,
+            cancelled: false,
             error: None,
         };
         let mut context = TransferContext {
@@ -204,6 +205,7 @@ pub fn execute(
         }
         record_undo(request, &context.summary, undo);
         context.progress.finished = true;
+        context.progress.cancelled = context.summary.cancelled;
         let error = errors.join("\n");
         if !error.is_empty() {
             context.progress.error = Some(error.clone());

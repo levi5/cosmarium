@@ -136,6 +136,7 @@ fn failed_cross_volume_copy_keeps_the_source_tree() {
         emit: &emit,
         summary: TransferSummary::default(),
         progress: TransferProgress {
+            cancelled: false,
             id: "test".into(),
             cut: true,
             kind: "move".into(),

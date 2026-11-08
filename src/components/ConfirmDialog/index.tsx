@@ -17,7 +17,7 @@ type Props = {
 export function ConfirmDialog({ title, message, confirmLabel, cancelLabel, danger, hideCancel, onConfirm, onClose }: Props) {
   return (
     <Dialog backdropClass="confirm-backdrop" dismissLabel={cancelLabel} onClose={onClose}>
-      <section className="confirm-dialog">
+      <section className="notification-surface confirm-dialog">
         <div className={`confirm-dialog__icon${danger ? ' confirm-dialog__icon--danger' : ''}`}>
           <Icon name={danger ? 'trash' : 'info'} size={20} />
         </div>

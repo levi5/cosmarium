@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { type FileIconSize, ICON_PX, ROW_ANIMATION_MAX_INDEX, ROW_ANIMATION_STEP_MS, type ViewMode } from '../../constants/view'
 import { useRowNavigation } from '../../hooks/useRowNavigation'
 import { useVirtualList } from '../../hooks/useVirtualList'
-import { clearDragPayload, getDragPayload, isInternalDrag, markDropTarget, setDragPayload } from '../../lib/dnd'
+import { endHtmlDrag, getDragPayload, isInternalDrag, markDropTarget, setDragPayload, startNativeDrag } from '../../lib/dnd'
 import { entryType, formatDate, sizeLabel } from '../../lib/format'
 import type { Tag } from '../../lib/organizer'
 import type { FileEntry } from '../../types/explorer'
@@ -116,6 +116,7 @@ export function FileTable({
   return (
     <div
       ref={scrollRef}
+      data-native-drop-path={currentPath}
       className={`file-table file-table--${view} ${showSize ? '' : 'file-table--no-size'} ${useWindowing ? 'file-table--windowed' : ''}`}
       style={isCompact ? ({ '--row-h': `${rowHeight}px` } as React.CSSProperties) : undefined}
       role="listbox"
@@ -160,6 +161,7 @@ export function FileTable({
             aria-setsize={rows.length}
             aria-posinset={rowIndex + 1}
             key={row.entry.path}
+            data-native-drop-path={row.entry.kind === 'directory' ? row.entry.path : undefined}
             draggable
             className={`file-row ${row.isSelected ? 'is-selected' : ''} ${row.isActive ? 'is-active' : ''} ${dragOver === row.entry.path ? 'is-drop-target' : ''}`}
             style={{ animationDelay: `${Math.min(index, ROW_ANIMATION_MAX_INDEX) * ROW_ANIMATION_STEP_MS}ms` }}
@@ -177,14 +179,14 @@ export function FileTable({
             }}
             onContextMenu={(event) => onContextMenu(event, row.entry)}
             onDragStart={(event) => {
-              const dragged =
-                event.shiftKey || event.ctrlKey || event.metaKey ? (selectedPaths.length > 0 ? selectedPaths : [row.entry.path]) : [row.entry.path]
+              const dragged = selectedPaths.includes(row.entry.path) ? selectedPaths : [row.entry.path]
               setDragPayload(event, dragged)
               setDraggingPath(row.entry.path)
+              startNativeDrag(event, dragged)
             }}
             onDragEnd={() => {
               setDraggingPath(null)
-              clearDragPayload()
+              endHtmlDrag()
             }}
             onDragOver={(event) => {
               if (row.entry.kind !== 'directory' || !canDropInto || !isInternalDrag(event)) return

@@ -146,6 +146,7 @@ export function SecondaryPane({
   return (
     <section
       className="secondary-pane"
+      data-native-drop-path={path}
       aria-label={labels.split}
       onKeyDown={(event) => {
         if ((menu || backgroundMenu) && ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape', 'Tab'].includes(event.key)) return
