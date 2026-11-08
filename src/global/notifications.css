@@ -1,0 +1,21 @@
+.notification-surface {
+  background: var(--notification-background, var(--surface-3));
+  border: 1px solid var(--notification-border, var(--line));
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .notification-surface {
+  background: var(--mat-veil);
+  background-image: linear-gradient(var(--mat-tint), var(--mat-tint)), var(--mat-background);
+  background-attachment: fixed;
+  border-color: var(--notification-border, var(--mat-border));
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root:is([data-material='mica'], [data-material='acrylic']) .notification-surface {
+    background: var(--mat-veil-hex);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

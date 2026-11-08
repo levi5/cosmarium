@@ -4,6 +4,7 @@ import { filesystem } from '../../services/tauri/filesystem'
 import { FileIcon } from '.'
 
 vi.mock('@tauri-apps/api/core', () => ({ convertFileSrc: (path: string) => `asset://${path}` }))
+vi.mock('../../lib/preferences', () => ({ usePreferences: () => ({ language: 'pt-BR' }) }))
 vi.mock('../../services/tauri/filesystem', () => ({ filesystem: { prepareMediaPreview: vi.fn() } }))
 
 beforeEach(() => vi.mocked(filesystem.prepareMediaPreview).mockReset())
@@ -45,4 +46,15 @@ it('does not authorize directories or ordinary document icons', () => {
     </>
   )
   expect(filesystem.prepareMediaPreview).not.toHaveBeenCalled()
+})
+
+it('marks protected folders and files without marking writable entries', () => {
+  const { getAllByRole } = render(
+    <>
+      <FileIcon entry={{ name: 'private', kind: 'directory', protected: true }} />
+      <FileIcon entry={{ ...image, name: 'private.txt', protected: true }} />
+      <FileIcon entry={{ name: 'public', kind: 'directory' }} />
+    </>
+  )
+  expect(getAllByRole('img', { name: 'Acesso restrito ou somente leitura' })).toHaveLength(2)
 })

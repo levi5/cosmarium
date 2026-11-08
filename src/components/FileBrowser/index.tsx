@@ -34,7 +34,7 @@ export function FileBrowser({ compact = false }: { compact?: boolean }) {
       </section>
     )
   return (
-    <section className={`file-browser ${compact ? 'file-browser--compact' : ''}`}>
+    <section className={`file-browser ${compact ? 'file-browser--compact' : ''}`} data-native-drop-path={browser.workspace.currentPath}>
       {browser.workspace.watchError && (
         <p role="status">
           {browser.workspace.watchError} — {t('refresh')}

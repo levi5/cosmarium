@@ -11,10 +11,9 @@
   animation: fade-in 0.15s ease-out;
 }
 .confirm-dialog {
+  --notification-background: var(--surface);
   width: min(380px, 100%);
   padding: 22px;
-  background: var(--surface);
-  border: 1px solid var(--line);
   border-radius: 13px;
   box-shadow: 0 22px 60px #00000055;
   text-align: center;
@@ -52,25 +51,6 @@
 .button--danger {
   background: #c42b1c;
   box-shadow: 0 6px 18px #c42b1c44;
-}
-:root[data-material='acrylic'] .confirm-dialog,
-:root[data-material='mica'] .confirm-dialog {
-  background: #202020e6;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-:root[data-material='mica'] .confirm-dialog {
-  background: #202020d9;
-  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-}
-:root[data-theme='light'][data-material='acrylic'] .confirm-dialog,
-:root[data-theme='light'][data-material='mica'] .confirm-dialog {
-  background: #ffffffeb;
-}
-:root[data-theme='light'][data-material='mica'] .confirm-dialog {
-  background: #ffffffe0;
 }
 @keyframes dialog-in {
   from {

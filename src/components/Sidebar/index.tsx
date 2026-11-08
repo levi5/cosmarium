@@ -91,6 +91,7 @@ export function Sidebar() {
   const dropProps = (path: string | undefined) =>
     path
       ? {
+          'data-native-drop-path': path,
           onDragOver: (event: React.DragEvent) => {
             if (!isInternalDrag(event) || path === currentPath) return
             event.preventDefault()

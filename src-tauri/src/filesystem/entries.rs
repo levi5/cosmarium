@@ -12,6 +12,7 @@ pub struct FileEntry {
     pub accessed: Option<u64>,
     pub created: Option<u64>,
     pub hidden: bool,
+    pub protected: bool,
 }
 
 const KIND_DIRECTORY: &str = "directory";
@@ -63,6 +64,7 @@ pub fn is_hidden_entry(path: &Path, name: &str) -> bool {
 
 fn build_entry(path: &Path, name: String, metadata: &std::fs::Metadata) -> FileEntry {
     FileEntry {
+        protected: is_protected(path, metadata),
         hidden: is_hidden_entry(path, &name),
         path: path.to_string_lossy().into_owned(),
         kind: kind_of(metadata),
@@ -71,6 +73,36 @@ fn build_entry(path: &Path, name: String, metadata: &std::fs::Metadata) -> FileE
         modified: unix_seconds(metadata.modified().ok()),
         accessed: unix_seconds(metadata.accessed().ok()),
         created: unix_seconds(metadata.created().ok()),
+    }
+}
+
+fn is_protected(path: &Path, metadata: &std::fs::Metadata) -> bool {
+    #[cfg(unix)]
+    {
+        use rustix::fs::{access, Access};
+        let mut required = Access::READ_OK | Access::WRITE_OK;
+        if metadata.is_dir() {
+            required |= Access::EXEC_OK;
+        }
+        access(path, required).is_err()
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        if metadata.is_file() && metadata.permissions().readonly() {
+            return true;
+        }
+        std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x02000000)
+            .open(path)
+            .is_err()
+    }
+    #[cfg(not(any(unix, windows)))]
+    {
+        let _ = path;
+        metadata.permissions().readonly()
     }
 }
 

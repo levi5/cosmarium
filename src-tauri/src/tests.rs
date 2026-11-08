@@ -10,6 +10,72 @@ use crate::operations::{
 use std::io::Write;
 use tempfile::TempDir;
 
+#[test]
+fn create_and_rename_do_not_overwrite_existing_files() {
+    let root = TempDir::new().unwrap();
+    std::fs::write(root.path().join("existing.txt"), b"preserve").unwrap();
+    std::fs::write(root.path().join("source.txt"), b"source").unwrap();
+    assert!(
+        crate::operations::mutate::create_file(root.path().to_str().unwrap(), "existing.txt")
+            .is_err()
+    );
+    assert!(
+        crate::operations::mutate::rename_entry(&path(&root, "source.txt"), "existing.txt")
+            .is_err()
+    );
+    assert_eq!(
+        std::fs::read(root.path().join("existing.txt")).unwrap(),
+        b"preserve"
+    );
+    assert_eq!(
+        std::fs::read(root.path().join("source.txt")).unwrap(),
+        b"source"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn create_and_rename_reject_dangling_destination_symlinks() {
+    let root = TempDir::new().unwrap();
+    std::fs::write(root.path().join("source.txt"), b"source").unwrap();
+    std::os::unix::fs::symlink(
+        root.path().join("missing.txt"),
+        root.path().join("link.txt"),
+    )
+    .unwrap();
+    assert!(
+        crate::operations::mutate::create_file(root.path().to_str().unwrap(), "link.txt").is_err()
+    );
+    assert!(
+        crate::operations::mutate::rename_entry(&path(&root, "source.txt"), "link.txt").is_err()
+    );
+    assert!(root.path().join("link.txt").is_symlink());
+    assert!(!root.path().join("missing.txt").exists());
+    assert!(root.path().join("source.txt").exists());
+}
+
+#[test]
+fn cancelled_trash_preserves_pending_files_and_reports_cancellation() {
+    let app = tauri::test::mock_builder()
+        .build(tauri::test::mock_context(tauri::test::noop_assets()))
+        .unwrap();
+    let root = TempDir::new().unwrap();
+    std::fs::write(root.path().join("keep.txt"), b"keep").unwrap();
+    let controls = crate::operations::transfer::TransferCancels::default();
+    crate::operations::transfer::cancel_transfer("cancelled".into(), &controls).unwrap();
+    let summary = crate::operations::mutate::trash_entries(
+        app.handle(),
+        &[path(&root, "keep.txt")],
+        &controls,
+        "cancelled",
+    )
+    .unwrap();
+    assert!(summary.cancelled);
+    assert!(summary.removed.is_empty());
+    assert!(summary.errors.is_empty());
+    assert!(root.path().join("keep.txt").exists());
+}
+
 fn path(root: &TempDir, name: &str) -> String {
     root.path().join(name).to_string_lossy().into_owned()
 }

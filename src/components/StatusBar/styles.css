@@ -15,3 +15,26 @@
   height: 13px;
   background: var(--status-divider);
 }
+.status-bar__notifications {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.status-bar__notifications:hover,
+.status-bar__notifications[aria-expanded='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.status-bar__notifications.is-active {
+  color: var(--accent);
+}
+.status-bar__notifications.has-error {
+  color: var(--danger);
+}

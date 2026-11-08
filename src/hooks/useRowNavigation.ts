@@ -20,12 +20,12 @@ type CursorContext = {
 }
 
 const CURSOR_MOVES: Record<string, (context: CursorContext) => number> = {
-  ArrowDown: ({ current, columns }) => (current < 0 ? 0 : current) + columns,
-  ArrowUp: ({ current, columns }) => (current < 0 ? 0 : current) - columns,
-  ArrowRight: ({ current }) => (current < 0 ? 0 : current) + 1,
-  ArrowLeft: ({ current }) => (current < 0 ? 0 : current) - 1,
-  PageDown: ({ current, page }) => (current < 0 ? 0 : current) + page,
-  PageUp: ({ current, page }) => (current < 0 ? 0 : current) - page,
+  ArrowDown: ({ current, columns }) => Math.max(current, 0) + columns,
+  ArrowUp: ({ current, columns }) => Math.max(current, 0) - columns,
+  ArrowRight: ({ current }) => Math.max(current, 0) + 1,
+  ArrowLeft: ({ current }) => Math.max(current, 0) - 1,
+  PageDown: ({ current, page }) => Math.max(current, 0) + page,
+  PageUp: ({ current, page }) => Math.max(current, 0) - page,
   Home: () => 0,
   End: ({ total }) => total - 1
 }

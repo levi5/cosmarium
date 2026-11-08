@@ -7,6 +7,7 @@ export type FileEntry = {
   accessed: number | null
   created?: number | null
   hidden: boolean
+  protected?: boolean
 }
 
 export type Locations = {
@@ -88,6 +89,13 @@ export type TransferProgress = {
   total_bytes: number
   finished: boolean
   error: string | null
+  cancelled?: boolean
+}
+
+export type TrashSummary = {
+  removed: string[]
+  cancelled: boolean
+  errors: string[]
 }
 
 export type TransferSummary = {

@@ -32,35 +32,82 @@ pub async fn trash_entries(
     id: String,
     undo: State<'_, UndoStack>,
     cancels: State<'_, TransferCancels>,
-) -> Result<(), String> {
+) -> Result<mutate::TrashSummary, String> {
     let undo = undo.inner().clone();
     let cancels = cancels.inner().clone();
     off_thread(move || {
-        mutate::trash_entries(&app, &paths, &cancels, &id)?;
-        let fresh = crate::platform::trash::list_items().unwrap_or_default();
-        let known: std::collections::HashSet<String> = fresh
-            .iter()
-            .map(|item| item.original_path.clone())
-            .collect();
-        let restored: Vec<String> = paths
-            .iter()
-            .filter(|path| known.contains(*path))
-            .cloned()
-            .collect();
-        let ids: Vec<String> = fresh
-            .into_iter()
-            .filter(|item| restored.contains(&item.original_path))
-            .map(|item| item.id)
-            .collect();
+        let _queue = cancels.queue.lock().map_err(|_| "Internal error.")?;
+        let before = crate::platform::trash::list_items()?;
+        let mut summary = mutate::trash_entries(&app, &paths, &cancels, &id)?;
+        let fresh = match crate::platform::trash::list_items() {
+            Ok(items) => items,
+            Err(error) => {
+                summary
+                    .errors
+                    .push(format!("Could not record trash undo: {error}"));
+                return Ok(summary);
+            }
+        };
+        let ids = new_trash_ids(&before, fresh, &summary.removed);
         if !ids.is_empty() {
             undo.push(UndoStep::RestoreTrash {
+                count: ids.len(),
                 ids,
-                count: restored.len(),
             });
         }
-        Ok(())
+        Ok(summary)
     })
     .await
+}
+
+fn new_trash_ids(
+    before: &[crate::platform::trash::TrashEntry],
+    after: Vec<crate::platform::trash::TrashEntry>,
+    removed: &[String],
+) -> Vec<String> {
+    let known: std::collections::HashSet<_> = before.iter().map(|item| &item.id).collect();
+    let removed: std::collections::HashSet<_> = removed.iter().collect();
+    after
+        .into_iter()
+        .filter(|item| !known.contains(&item.id) && removed.contains(&item.original_path))
+        .map(|item| item.id)
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn item(id: &str, path: &str) -> crate::platform::trash::TrashEntry {
+        crate::platform::trash::TrashEntry {
+            id: id.into(),
+            name: "file.txt".into(),
+            original_path: path.into(),
+            deleted_at: 0,
+            size: 1,
+            entries: 1,
+            is_dir: false,
+        }
+    }
+
+    #[test]
+    fn trash_undo_excludes_old_items_and_unrelated_deletions() {
+        let before = vec![item("old", "/file.txt")];
+        let after = vec![
+            item("old", "/file.txt"),
+            item("new", "/file.txt"),
+            item("other", "/other.txt"),
+        ];
+        assert_eq!(
+            new_trash_ids(&before, after, &["/file.txt".into()]),
+            vec!["new"]
+        );
+    }
+
+    #[test]
+    fn cancelled_deletions_do_not_record_undo_for_old_items() {
+        assert!(new_trash_ids(&[], vec![item("old", "/file.txt")], &[]).is_empty());
+    }
 }
 
 #[tauri::command]

@@ -71,8 +71,10 @@ export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: st
       const paths = deleteTargets.map((entry) => entry.path)
       setDeleteTargets(null)
       const result = await _try.async(async () => {
-        await filesystem.trashEntries(paths, newOperationId())
-        removeEntries(paths)
+        const summary = await filesystem.trashEntries(paths, newOperationId())
+        removeEntries(summary.removed)
+        if (summary.errors.length) setNotice({ title: t('deleteTitle'), message: summary.errors.join('\n') })
+        await refresh()
       })
       await result.match({
         right: async () => {},

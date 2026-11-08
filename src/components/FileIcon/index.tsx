@@ -7,12 +7,14 @@ import { DocumentTableFilled } from '@fluentui/react-icons/svg/document-table'
 import { DocumentTextFilled } from '@fluentui/react-icons/svg/document-text'
 import { DocumentWordFilled } from '@fluentui/react-icons/svg/document-word'
 import { FolderFilled } from '@fluentui/react-icons/svg/folder'
+import { LockClosedFilled } from '@fluentui/react-icons/svg/lock-closed'
 import { MusicNote2Filled } from '@fluentui/react-icons/svg/music-note'
 import { VideoClipFilled } from '@fluentui/react-icons/svg/video-clip'
 import { type ElementType, useState } from 'react'
 import { ARCHIVE_EXTENSIONS, AUDIO_EXTENSIONS, fileExtension, hasExtension, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from '../../constants/files'
 import { type FileIconSize, ICON_PX } from '../../constants/view'
 import { useMediaPreview } from '../../hooks/useMediaPreview'
+import { usePreferences } from '../../lib/preferences'
 import type { FileEntry } from '../../types/explorer'
 import './styles.css'
 
@@ -41,10 +43,21 @@ function glyphFor(name: string): Glyph {
   return byExt[fileExtension(name)] ?? { icon: DocumentFilled, color: '#9AA4B2' }
 }
 
-type FileIconEntry = FileEntry | { name: string; kind: 'directory' | 'file' }
+type FileIconEntry = FileEntry | { name: string; kind: 'directory' | 'file'; protected?: boolean }
 
 export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size?: FileIconSize }) {
   const [failedPath, setFailedPath] = useState<string | null>(null)
+  const { language } = usePreferences()
+  const protection = entry.protected ? (
+    <span
+      className="files-icon__protection"
+      role="img"
+      aria-label={language === 'pt-BR' ? 'Acesso restrito ou somente leitura' : 'Restricted access or read-only'}
+      title={language === 'pt-BR' ? 'Acesso restrito ou somente leitura' : 'Restricted access or read-only'}
+    >
+      <LockClosedFilled fontSize={10} aria-hidden="true" />
+    </span>
+  ) : null
   const path = (entry as FileEntry).path
   const isImage = hasExtension(entry.name, IMAGE_EXTENSIONS)
 
@@ -55,6 +68,7 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
     return (
       <span className={`files-icon files-icon--${size}`}>
         <FolderFilled fontSize={ICON_PX[size]} style={{ color: '#E5A93C' }} aria-hidden="true" />
+        {protection}
       </span>
     )
   }
@@ -63,6 +77,7 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
     return (
       <span className={`files-icon files-icon--thumb files-icon--${size}`}>
         <img src={source} alt="" loading="lazy" decoding="async" onError={() => setFailedPath(path)} />
+        {protection}
       </span>
     )
   }
@@ -71,6 +86,7 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
   return (
     <span className={`files-icon files-icon--${size}`}>
       <GlyphIcon fontSize={ICON_PX[size]} style={{ color }} aria-hidden="true" />
+      {protection}
     </span>
   )
 }

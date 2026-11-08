@@ -1,3 +1,4 @@
+import { _Number } from 'funcio'
 import { useFileWorkspace } from '../../lib/files'
 import { createTranslator } from '../../lib/i18n'
 import { usePreferences } from '../../lib/preferences'
@@ -49,5 +50,3 @@ export function DriveOverview() {
     </section>
   )
 }
-
-import { _Number } from 'funcio'

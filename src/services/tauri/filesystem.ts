@@ -10,6 +10,7 @@ import type {
   TransferScan,
   TransferSummary,
   TrashEntry,
+  TrashSummary,
   UndoStep,
   Volume
 } from '../../types/explorer'
@@ -27,7 +28,7 @@ export const filesystem = {
   createDirectory: (path: string, name: string) => invoke<FileEntry>('create_directory', { path, name }),
   createFile: (path: string, name: string) => invoke<FileEntry>('create_file', { path, name }),
   renameEntry: (path: string, newName: string) => invoke<FileEntry>('rename_entry', { path, newName }),
-  trashEntries: (paths: string[], id: string) => invoke('trash_entries', { paths, id }),
+  trashEntries: (paths: string[], id: string) => invoke<TrashSummary>('trash_entries', { paths, id }),
   emptyTrash: () => invoke<number>('empty_trash'),
   trashList: () => invoke<TrashEntry[]>('trash_list'),
   restoreTrashItems: (ids: string[]) => invoke<number>('restore_trash_items', { ids }),

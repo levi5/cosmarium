@@ -1,5 +1,6 @@
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { type ReactNode, useEffect, useState } from 'react'
+import { useNativeFileDrop } from '../../hooks/useNativeFileDrop'
 import { createTranslator } from '../../lib/i18n'
 import { usePreferences } from '../../lib/preferences'
 import { Header } from '../Header'
@@ -10,6 +11,7 @@ import { UndoToast } from '../UndoToast'
 import './styles.css'
 
 export function AppShell({ children }: { children: ReactNode }) {
+  useNativeFileDrop()
   const { language } = usePreferences()
   const translateText = createTranslator(language)
   const [maximized, setMaximized] = useState(false)

@@ -1,3 +1,10 @@
+:root[data-material='mica'],
+:root[data-material='acrylic'] {
+  --mat-background:
+    radial-gradient(120% 90% at 12% 8%, #4b3f8f 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%),
+    radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%), linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
+}
+
 :root[data-material='mica'] {
   --mat-blur: 20px;
   --mat-sat: 130%;
@@ -241,33 +248,13 @@
   }
 }
 
-:root[data-material='acrylic'] .drive-overview__grid button {
-  background: #ffffff24;
-  backdrop-filter: blur(22px) saturate(155%);
-  -webkit-backdrop-filter: blur(22px) saturate(155%);
-}
-
 :root[data-material='acrylic'] .quick-access__grid button {
   background: #ffffff24;
   backdrop-filter: blur(22px) saturate(155%);
   -webkit-backdrop-filter: blur(22px) saturate(155%);
 }
 
-:root[data-material='mica'] .drive-overview__grid button {
-  background: #ffffff14;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
-
 :root[data-material='mica'] .quick-access__grid button {
-  background: #ffffff14;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
-
-:root[data-material='acrylic'] .drive-overview__grid button {
   background: #ffffff14;
   border-color: var(--mat-border);
   backdrop-filter: blur(16px) saturate(140%);
@@ -312,9 +299,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(120% 90% at 12% 8%, #4b3f8f 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%),
-    radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%), linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
+  background: var(--mat-background);
 }
 
 :root[data-material='acrylic'] .app-shell::before {
@@ -322,9 +307,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(120% 90% at 12% 8%, #4b3f8f 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%),
-    radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%), linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
+  background: var(--mat-background);
 }
 
 :root[data-material='mica'] .file-row:focus-visible {

@@ -46,6 +46,7 @@ export function TabStrip() {
             tabIndex={tab.id === activeTabId ? 0 : -1}
             className={`app-tab ${tab.id === activeTabId ? 'is-active' : ''} ${tabDrag.dragging === index ? 'is-dragging' : ''} ${fileDropPath === tab.path ? 'is-file-drop' : ''}`}
             style={tabDrag.styleFor(index)}
+            data-native-drop-path={locations?.trash !== locations?.home && tab.path === locations?.trash ? undefined : tab.path}
             onPointerDown={(event) => tabDrag.onPointerDown(event, index)}
             onClick={() => {
               if (tabDrag.consumeClick()) return

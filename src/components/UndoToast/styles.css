@@ -9,8 +9,6 @@
   max-width: 320px;
   padding: 9px 13px;
   color: var(--text);
-  background: var(--surface-3);
-  border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: 0 12px 32px #00000055;
   font-size: 12px;
@@ -32,34 +30,11 @@
 }
 
 .undo-toast--error {
-  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  --notification-border: color-mix(in srgb, var(--danger) 40%, transparent);
 }
 
 .undo-toast--error svg {
   color: var(--danger);
-}
-
-:root[data-material='acrylic'] .undo-toast,
-:root[data-material='mica'] .undo-toast {
-  background: #202020e6;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-
-:root[data-material='mica'] .undo-toast {
-  background: #202020d9;
-  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-}
-
-:root[data-theme='light'][data-material='acrylic'] .undo-toast,
-:root[data-theme='light'][data-material='mica'] .undo-toast {
-  background: #ffffffeb;
-}
-
-:root[data-theme='light'][data-material='mica'] .undo-toast {
-  background: #ffffffe0;
 }
 
 @keyframes undo-toast-in {

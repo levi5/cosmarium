@@ -1,4 +1,8 @@
-:root[data-theme='light'][data-material='mica'] {
+:root[data-theme='light'][data-material='mica'],
+:root[data-theme='light'][data-material='acrylic'] {
+  --mat-background:
+    radial-gradient(120% 90% at 12% 8%, #b9a8ff 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #9fd3f5 0%, transparent 52%),
+    radial-gradient(120% 100% at 50% 105%, #ffc2d6 0%, transparent 58%), linear-gradient(160deg, #eef1fb 0%, #f6ecf6 52%, #eaf3f8 100%);
   --mat-tint: #ffffff2e;
   --mat-veil: #eef0f7a6;
   --mat-veil-hex: #eef0f7;
@@ -79,14 +83,6 @@
 }
 
 :root[data-theme='light'][data-material='acrylic'] .view-switch {
-  background: #ffffff6b;
-}
-
-:root[data-theme='light'][data-material='mica'] .drive-overview__grid button {
-  background: #ffffff6b;
-}
-
-:root[data-theme='light'][data-material='acrylic'] .drive-overview__grid button {
   background: #ffffff6b;
 }
 
@@ -194,21 +190,7 @@
   --mat-border: #ffffff9c;
 }
 
-:root[data-material='mica'] .drive-overview__grid button:hover {
-  --mat-tint: #ffffff2e;
-  --mat-veil: #eef0f7a6;
-  --mat-veil-hex: #eef0f7;
-  --mat-border: #ffffff9c;
-}
-
 :root[data-material='mica'] .quick-access__grid button:hover {
-  --mat-tint: #ffffff2e;
-  --mat-veil: #eef0f7a6;
-  --mat-veil-hex: #eef0f7;
-  --mat-border: #ffffff9c;
-}
-
-:root[data-material='acrylic'] .drive-overview__grid button:hover {
   --mat-tint: #ffffff2e;
   --mat-veil: #eef0f7a6;
   --mat-veil-hex: #eef0f7;
@@ -272,15 +254,11 @@
 }
 
 :root[data-theme='light'][data-material='mica'] .app-shell::before {
-  background:
-    radial-gradient(120% 90% at 12% 8%, #b9a8ff 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #9fd3f5 0%, transparent 52%),
-    radial-gradient(120% 100% at 50% 105%, #ffc2d6 0%, transparent 58%), linear-gradient(160deg, #eef1fb 0%, #f6ecf6 52%, #eaf3f8 100%);
+  background: var(--mat-background);
 }
 
 :root[data-theme='light'][data-material='acrylic'] .app-shell::before {
-  background:
-    radial-gradient(120% 90% at 12% 8%, #b9a8ff 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #9fd3f5 0%, transparent 52%),
-    radial-gradient(120% 100% at 50% 105%, #ffc2d6 0%, transparent 58%), linear-gradient(160deg, #eef1fb 0%, #f6ecf6 52%, #eaf3f8 100%);
+  background: var(--mat-background);
 }
 :root[data-theme='light'][data-material='mica'] .file-row:focus-visible {
   background: #1018280f;
@@ -297,16 +275,6 @@
 :root[data-theme='light'][data-material='acrylic'] .recents-row:focus-visible {
   background: #1018280f;
 }
-:root[data-theme='light'][data-material='mica'] .drive-overview__grid button:hover {
-  background: #ffffffa3;
-  border-color: var(--line-strong);
-}
-
-:root[data-theme='light'][data-material='acrylic'] .drive-overview__grid button:hover {
-  background: #ffffffa3;
-  border-color: var(--line-strong);
-}
-
 :root[data-theme='light'][data-material='mica'] .quick-access__grid button:hover {
   background: #ffffffa3;
   border-color: var(--line-strong);

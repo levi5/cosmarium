@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import type { FileIconSize, ViewMode } from '../../constants/view'
 import { useRowNavigation } from '../../hooks/useRowNavigation'
+import { endHtmlDrag, setDragPayload, startNativeDrag } from '../../lib/dnd'
 import { formatDate } from '../../lib/format'
 import { recencyOf } from '../../lib/search'
 import type { FileEntry } from '../../types/explorer'
@@ -59,6 +60,15 @@ export function RecentsList({
   })
 
   const rowEvents = (entry: FileEntry, index: number) => ({
+    draggable: true,
+    'data-native-drop-path': entry.kind === 'directory' ? entry.path : undefined,
+    onDragStart: (event: React.DragEvent) => {
+      const selected = rows.filter((row) => row.isSelected).map((row) => row.entry.path)
+      const paths = selected.includes(entry.path) ? selected : [entry.path]
+      setDragPayload(event, paths)
+      startNativeDrag(event, paths)
+    },
+    onDragEnd: endHtmlDrag,
     onClick: (event: React.MouseEvent<HTMLElement>) => onSelect(event, entry),
     onDoubleClick: () => onOpen(entry),
     onKeyDown: (event: React.KeyboardEvent) => {

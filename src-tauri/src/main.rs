@@ -76,6 +76,8 @@ fn main() {
         .manage(UndoStack::new())
         .manage(WatcherState::new())
         .invoke_handler(tauri::generate_handler![
+            commands::drag::start_file_drag,
+            commands::drag::drag_copy_modifier,
             commands::fs_read::get_locations,
             commands::fs_read::get_volumes,
             commands::fs_read::list_directory,

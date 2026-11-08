@@ -1,17 +1,20 @@
 .transfer-panel {
   position: fixed;
-  right: 14px;
+  right: 30px;
   bottom: 46px;
-  z-index: 45;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: min(330px, calc(100vw - 28px));
+  width: min(330px, calc(100vw - 60px));
+  max-height: calc(100dvh - 110px);
+  overflow-y: auto;
+  padding: 4px;
 }
 .transfer-card {
+  color: var(--text);
+  flex-shrink: 0;
   padding: 12px 13px;
-  background: var(--surface);
-  border: 1px solid var(--line);
   border-radius: 10px;
   box-shadow: 0 14px 40px #00000055;
   animation: dialog-in 0.18s ease-out;
@@ -56,15 +59,6 @@
   font-size: 11px;
   line-height: 1.5;
   overflow-wrap: anywhere;
-}
-:root[data-material='acrylic'] .transfer-card {
-  background: #202020e6;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-:root[data-theme='light'][data-material='acrylic'] .transfer-card {
-  background: #ffffffeb;
 }
 @keyframes dialog-in {
   from {

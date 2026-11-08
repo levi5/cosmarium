@@ -23,5 +23,11 @@ tempfile = "3"
 [dev-dependencies]
 tauri = { version = "2", features = ["test"] }
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(unix)'.dependencies]
 rustix = { version = "1", features = ["fs"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+gtk = "0.18"
+
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+drag = "2.1.1"

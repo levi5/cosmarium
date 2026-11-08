@@ -25,6 +25,7 @@
   align-items: center;
   min-width: 0;
   background: var(--surface-3);
+  border: 1px solid transparent;
   border-radius: 5px;
 }
 .drive-overview__open {
@@ -36,14 +37,16 @@
   gap: 12px;
   padding: 10px 42px 10px 12px;
   color: var(--text);
-  background: var(--surface-3);
-  border: 1px solid transparent;
+  background: transparent;
+  border: 0;
   border-radius: 5px;
   cursor: pointer;
   text-align: left;
 }
 .drive-overview__open:hover {
   background: var(--hover);
+}
+.drive-overview__card:has(.drive-overview__open:hover) {
   border-color: var(--line-strong);
 }
 .drive-overview__open > svg {
@@ -100,4 +103,19 @@
   height: 100%;
   background: var(--accent-fg);
   border-radius: inherit;
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .drive-overview__card {
+  background: var(--mat-tint);
+  border-color: var(--mat-border);
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root:is([data-material='mica'], [data-material='acrylic']) .drive-overview__card {
+    background: var(--mat-veil-hex);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
