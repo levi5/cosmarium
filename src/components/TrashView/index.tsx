@@ -1,8 +1,9 @@
 import { listen } from '@tauri-apps/api/event'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { errorMessage } from '../../lib/format'
 import { createTranslator } from '../../lib/i18n'
 import { usePreferences } from '../../lib/preferences'
+import { applySelectionRange, selectionRange } from '../../lib/selection'
 import { filesystem } from '../../services/tauri/filesystem'
 import type { TrashEntry } from '../../types/explorer'
 import { Icon } from '../base/Icon'
@@ -36,6 +37,7 @@ export function TrashView({ labels, onChanged }: Props) {
   const [loading, setLoading] = useState(true)
   const [failure, setFailure] = useState<string | null>(null)
   const [selected, setSelected] = useState<string[]>([])
+  const selectionAnchor = useRef<string | null>(null)
   const [restoreOpen, setRestoreOpen] = useState(false)
   const [emptyOpen, setEmptyOpen] = useState(false)
   const [notice, setNotice] = useState<{ title: string; message: string } | null>(null)
@@ -158,7 +160,18 @@ export function TrashView({ labels, onChanged }: Props) {
               aria-selected={selected.includes(item.id)}
               className={`trash-row ${selected.includes(item.id) ? 'is-selected' : ''}`}
               onClick={(event) => {
-                if (event.ctrlKey || event.metaKey) {
+                const additive = event.ctrlKey || event.metaKey
+                if (event.shiftKey) {
+                  const range = selectionRange(
+                    items.map((item) => item.id),
+                    selectionAnchor.current,
+                    item.id
+                  )
+                  setSelected(applySelectionRange(selected, range, additive))
+                  return
+                }
+                selectionAnchor.current = item.id
+                if (additive) {
                   toggle(item.id)
                   return
                 }

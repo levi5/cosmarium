@@ -11,6 +11,7 @@ import { createTranslator } from '../../lib/i18n'
 import { type Tag, useOrganizer } from '../../lib/organizer'
 import { usePreferences } from '../../lib/preferences'
 import { filterEntries, sortByRecency, sortEntries } from '../../lib/search'
+import { applySelectionRange, selectionRange } from '../../lib/selection'
 import { isActivatableTarget } from '../../lib/shortcuts'
 import { filesystem } from '../../services/tauri/filesystem'
 import { useClipboardStore } from '../../stores/clipboardStore'
@@ -53,10 +54,12 @@ export function useFileBrowser(compact: boolean) {
   const [recentsToken, setRecentsToken] = useState(0)
   const [split, setSplit] = useState(false)
   const previousPath = useRef(currentPath)
+  const selectionAnchor = useRef<string | null>(null)
   useEffect(() => {
     if (previousPath.current !== currentPath) {
       setSelected([])
       setActiveEntry(null)
+      selectionAnchor.current = null
       previousPath.current = currentPath
     }
   }, [currentPath, setSelected])
@@ -98,9 +101,20 @@ export function useFileBrowser(compact: boolean) {
     else void filesystem.openWithDefault(entry.path).catch((reason) => actions.setNotice({ title: t('openSystem'), message: errorMessage(reason) }))
   }
   const select = (event: MouseEvent<HTMLElement>, entry: FileEntry) => {
+    const additive = event.ctrlKey || event.metaKey
     setActiveEntry(entry)
+    if (event.shiftKey) {
+      const range = selectionRange(
+        visibleEntries.map((item) => item.path),
+        selectionAnchor.current,
+        entry.path
+      )
+      setSelected(applySelectionRange(selected, range, additive))
+      return
+    }
+    selectionAnchor.current = entry.path
     const paths = selected.includes(entry.path) ? selected.filter((item) => item !== entry.path) : [...selected, entry.path]
-    setSelected(event.ctrlKey || event.metaKey ? paths : [entry.path])
+    setSelected(additive ? paths : [entry.path])
   }
   const openMenu = (event: MouseEvent<HTMLElement>, entry: FileEntry) => {
     event.preventDefault()

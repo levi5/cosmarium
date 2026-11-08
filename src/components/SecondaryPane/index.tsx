@@ -1,6 +1,6 @@
 import { listen } from '@tauri-apps/api/event'
 import { _try } from 'funcio'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewMode } from '../../constants/view'
 import { useFolderSizes } from '../../hooks/useFolderSizes'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
@@ -10,6 +10,7 @@ import { createTranslator } from '../../lib/i18n'
 import { useOrganizer } from '../../lib/organizer'
 import { usePreferences } from '../../lib/preferences'
 import { sortEntries } from '../../lib/search'
+import { applySelectionRange, selectionRange } from '../../lib/selection'
 import { isActivatableTarget } from '../../lib/shortcuts'
 import { filesystem } from '../../services/tauri/filesystem'
 import { useClipboardStore } from '../../stores/clipboardStore'
@@ -73,6 +74,11 @@ export function SecondaryPane({
   const stacked = useMediaQuery('(max-width: 900px)')
   const overrides = useShortcutStore((state) => state.overrides)
   const { selected, setSelected, active, setActive } = usePaneSelection(visibleEntries)
+  const selectionAnchor = useRef<string | null>(null)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset the shift anchor when the directory changes
+  useEffect(() => {
+    selectionAnchor.current = null
+  }, [path])
   const actions = useEntryActions(directory, setSelected)
   const inspection = useInspection()
   const [menu, setMenu] = useState<{ entry: FileEntry; anchorX: number; anchorY: number } | null>(null)
@@ -269,13 +275,20 @@ export function SecondaryPane({
               showSize={showSize}
               folderSizes={folderSizes}
               onSelect={(event, entry) => {
+                const additive = event.ctrlKey || event.metaKey
                 setActive(entry.path)
+                if (event.shiftKey) {
+                  const range = selectionRange(
+                    visibleEntries.map((item) => item.path),
+                    selectionAnchor.current,
+                    entry.path
+                  )
+                  setSelected(applySelectionRange(selected, range, additive))
+                  return
+                }
+                selectionAnchor.current = entry.path
                 setSelected(
-                  event.ctrlKey || event.metaKey
-                    ? selected.includes(entry.path)
-                      ? selected.filter((item) => item !== entry.path)
-                      : [...selected, entry.path]
-                    : [entry.path]
+                  additive ? (selected.includes(entry.path) ? selected.filter((item) => item !== entry.path) : [...selected, entry.path]) : [entry.path]
                 )
               }}
               onSelectPaths={setSelected}
