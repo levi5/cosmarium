@@ -30,6 +30,8 @@ pub fn media_preview_path(path: &str) -> Result<PathBuf, String> {
             | "mov"
             | "m4v"
             | "ogv"
+            | "mkv"
+            | "avi"
             | "mp3"
             | "wav"
             | "ogg"
@@ -146,6 +148,20 @@ mod tests {
             media_preview_path(image.to_str().unwrap()).unwrap(),
             fs::canonicalize(&image).unwrap()
         );
+        for name in [
+            "movie.mp4",
+            "movie.webm",
+            "movie.mkv",
+            "movie.avi",
+            "report.pdf",
+        ] {
+            let media = directory.path().join(name);
+            fs::write(&media, b"preview").unwrap();
+            assert_eq!(
+                media_preview_path(media.to_str().unwrap()).unwrap(),
+                fs::canonicalize(&media).unwrap()
+            );
+        }
         let secret = directory.path().join("secret.txt");
         fs::write(&secret, b"private").unwrap();
         assert!(media_preview_path(secret.to_str().unwrap()).is_err());

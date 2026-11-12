@@ -13,7 +13,7 @@ import { VideoClipFilled } from '@fluentui/react-icons/svg/video-clip'
 import { type ElementType, useState } from 'react'
 import { ARCHIVE_EXTENSIONS, AUDIO_EXTENSIONS, fileExtension, hasExtension, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from '../../constants/files'
 import { type FileIconSize, ICON_PX } from '../../constants/view'
-import { useMediaPreview } from '../../hooks/useMediaPreview'
+import { useThumbnail } from '../../hooks/useThumbnail'
 import { usePreferences } from '../../lib/preferences'
 import type { FileEntry } from '../../types/explorer'
 import './styles.css'
@@ -46,7 +46,7 @@ function glyphFor(name: string): Glyph {
 type FileIconEntry = FileEntry | { name: string; kind: 'directory' | 'file'; protected?: boolean }
 
 export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size?: FileIconSize }) {
-  const [failedPath, setFailedPath] = useState<string | null>(null)
+  const [failedKey, setFailedKey] = useState<string | null>(null)
   const { language } = usePreferences()
   const protection = entry.protected ? (
     <span
@@ -58,25 +58,22 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
       <LockClosedFilled fontSize={10} aria-hidden="true" />
     </span>
   ) : null
-  const path = (entry as FileEntry).path
-  const isImage = hasExtension(entry.name, IMAGE_EXTENSIONS)
-
-  const thumbError = path !== undefined && failedPath === path
-  const { source } = useMediaPreview(path ?? '', entry.kind === 'file' && isImage && Boolean(path) && !thumbError)
+  const { ref, key, source } = useThumbnail(entry as FileEntry)
+  const thumbError = failedKey === key
 
   if (entry.kind === 'directory') {
     return (
-      <span className={`files-icon files-icon--${size}`}>
+      <span ref={ref} className={`files-icon files-icon--${size}`}>
         <FolderFilled fontSize={ICON_PX[size]} style={{ color: '#E5A93C' }} aria-hidden="true" />
         {protection}
       </span>
     )
   }
 
-  if (isImage && path && !thumbError && source) {
+  if (!thumbError && source) {
     return (
-      <span className={`files-icon files-icon--thumb files-icon--${size}`}>
-        <img src={source} alt="" loading="lazy" decoding="async" onError={() => setFailedPath(path)} />
+      <span ref={ref} className={`files-icon files-icon--thumb files-icon--${size}`}>
+        <img src={source} alt="" loading="lazy" decoding="async" onError={() => setFailedKey(key)} />
         {protection}
       </span>
     )
@@ -84,7 +81,7 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
 
   const { icon: GlyphIcon, color } = glyphFor(entry.name)
   return (
-    <span className={`files-icon files-icon--${size}`}>
+    <span ref={ref} className={`files-icon files-icon--${size}`}>
       <GlyphIcon fontSize={ICON_PX[size]} style={{ color }} aria-hidden="true" />
       {protection}
     </span>
