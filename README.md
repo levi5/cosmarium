@@ -87,6 +87,7 @@ web/            GitHub Pages site built with React and Vite
 - Batch rename with replacement, prefixes, numbering and a preview
 - Content-based duplicate detection with SHA-256 (read-only)
 - PDF preview rendered with PDF.js and audio playback
+- Image, first-page PDF and video-frame thumbnails, generated for visible items with two concurrent jobs and a bounded in-memory cache. Video support depends on the native WebView codecs; unsupported files keep their icons. Generated thumbnails are discarded when the app closes.
 - Open a terminal in the current folder
 - Serialized transfers with in-session pause/resume, cancellation, speed and remaining time
 - Saved searches and recursive filters for size, modification date and text content

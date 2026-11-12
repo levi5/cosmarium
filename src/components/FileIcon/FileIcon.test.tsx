@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import * as thumbnails from '../../lib/thumbnails'
 import { filesystem } from '../../services/tauri/filesystem'
 import { FileIcon } from '.'
 
@@ -57,4 +58,72 @@ it('marks protected folders and files without marking writable entries', () => {
     </>
   )
   expect(getAllByRole('img', { name: 'Acesso restrito ou somente leitura' })).toHaveLength(2)
+})
+
+it('waits until an icon is visible before authorizing its thumbnail', async () => {
+  let notify!: IntersectionObserverCallback
+  const disconnect = vi.fn()
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      constructor(callback: IntersectionObserverCallback) {
+        notify = callback
+      }
+      observe = vi.fn()
+      disconnect = disconnect
+    }
+  )
+  try {
+    vi.mocked(filesystem.prepareMediaPreview).mockResolvedValue('/visible.webp')
+    const { container, unmount } = render(<FileIcon entry={{ ...image, path: '/visible.webp' }} />)
+    expect(filesystem.prepareMediaPreview).not.toHaveBeenCalled()
+    await act(async () => notify([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver))
+    await waitFor(() => expect(container.querySelector('img')).not.toBeNull())
+    unmount()
+    expect(disconnect).toHaveBeenCalled()
+  } finally {
+    vi.unstubAllGlobals()
+  }
+})
+
+it.each(['report.pdf', 'movie.mp4'])('displays the generated thumbnail for %s', async (name) => {
+  const request = vi.spyOn(thumbnails, 'requestThumbnail').mockResolvedValue('data:image/jpeg;base64,thumb')
+  try {
+    const { container } = render(<FileIcon entry={{ ...image, name, path: `/${name}` }} />)
+    await waitFor(() => expect(container.querySelector('img')?.getAttribute('src')).toBe('data:image/jpeg;base64,thumb'))
+  } finally {
+    request.mockRestore()
+  }
+})
+
+it('cancels offscreen work and retries when the icon becomes visible again', async () => {
+  let notify!: IntersectionObserverCallback
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      constructor(callback: IntersectionObserverCallback) {
+        notify = callback
+      }
+      observe = vi.fn()
+      disconnect = vi.fn()
+    }
+  )
+  const request = vi.spyOn(thumbnails, 'requestThumbnail').mockImplementation(() => new Promise(() => {}))
+  try {
+    const { unmount } = render(<FileIcon entry={{ ...image, name: 'cancel.pdf', path: '/cancel.pdf' }} />)
+    const visibility = (isIntersecting: boolean) => act(async () => notify([{ isIntersecting } as IntersectionObserverEntry], {} as IntersectionObserver))
+    await visibility(true)
+    const firstSignal = request.mock.calls[0][1]
+    await visibility(false)
+    expect(firstSignal.aborted).toBe(true)
+    await visibility(true)
+    expect(request).toHaveBeenCalledTimes(2)
+    const secondSignal = request.mock.calls[1][1]
+    expect(secondSignal.aborted).toBe(false)
+    unmount()
+    expect(secondSignal.aborted).toBe(true)
+  } finally {
+    request.mockRestore()
+    vi.unstubAllGlobals()
+  }
 })
