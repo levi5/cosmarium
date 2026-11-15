@@ -59,6 +59,10 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
     video.preload = 'auto'
     video.muted = true
     video.playsInline = true
+    const holder = document.createElement('div')
+    holder.style.display = 'none'
+    holder.appendChild(video)
+    document.body.appendChild(holder)
     const cleanup = () => {
       signal.removeEventListener('abort', fail)
       video.onloadeddata = null
@@ -66,6 +70,7 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
       video.onerror = null
       video.removeAttribute('src')
       video.load()
+      holder.remove()
     }
     const fail = () => {
       cleanup()
