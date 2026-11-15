@@ -8,6 +8,7 @@ export const STORAGE = {
   showSize: 'cosmarium-show-size',
   showHidden: 'cosmarium-show-hidden',
   showRecent: 'cosmarium-show-recent',
+  rememberLastLocation: 'cosmarium-remember-last-location',
   fileView: 'cosmarium-file-view',
   sortKey: 'cosmarium-sort-key',
   sortDirection: 'cosmarium-sort-direction',

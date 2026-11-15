@@ -25,8 +25,8 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost https://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost https://asset.localhost data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost asset: http://asset.localhost https://asset.localhost; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
-      "devCsp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost https://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost https://asset.localhost data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost asset: http://asset.localhost https://asset.localhost ws://localhost:1421 ws://127.0.0.1:1421; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
+      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost https://asset.localhost http://127.0.0.1:* data: blob:; media-src 'self' asset: http://asset.localhost https://asset.localhost http://127.0.0.1:* data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost asset: http://asset.localhost https://asset.localhost http://127.0.0.1:*; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
+      "devCsp": "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost https://asset.localhost http://127.0.0.1:* data: blob:; media-src 'self' asset: http://asset.localhost https://asset.localhost http://127.0.0.1:* data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost asset: http://asset.localhost https://asset.localhost http://127.0.0.1:* ws://localhost:1421 ws://127.0.0.1:1421; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
       "assetProtocol": { "enable": true, "scope": [] }
     }
   },
@@ -39,6 +39,31 @@
       "icons/128x128@2x.png",
       "icons/icon.ico",
       "icons/icon.png"
+    ],
+    "fileAssociations": [
+      { "ext": ["pdf"], "mimeType": "application/pdf" },
+      { "ext": ["png"], "mimeType": "image/png" },
+      { "ext": ["jpg", "jpeg"], "mimeType": "image/jpeg" },
+      { "ext": ["gif"], "mimeType": "image/gif" },
+      { "ext": ["webp"], "mimeType": "image/webp" },
+      { "ext": ["bmp"], "mimeType": "image/bmp" },
+      { "ext": ["svg"], "mimeType": "image/svg+xml" },
+      { "ext": ["avif"], "mimeType": "image/avif" },
+      { "ext": ["ico"], "mimeType": "image/vnd.microsoft.icon" },
+      { "ext": ["mp4"], "mimeType": "video/mp4" },
+      { "ext": ["m4v"], "mimeType": "video/x-m4v" },
+      { "ext": ["mov"], "mimeType": "video/quicktime" },
+      { "ext": ["webm"], "mimeType": "video/webm" },
+      { "ext": ["ogv"], "mimeType": "video/ogg" },
+      { "ext": ["mkv"], "mimeType": "video/x-matroska" },
+      { "ext": ["avi"], "mimeType": "video/x-msvideo" },
+      { "ext": ["mp3"], "mimeType": "audio/mpeg" },
+      { "ext": ["wav"], "mimeType": "audio/wav" },
+      { "ext": ["ogg"], "mimeType": "audio/ogg" },
+      { "ext": ["flac"], "mimeType": "audio/flac" },
+      { "ext": ["m4a"], "mimeType": "audio/mp4" },
+      { "ext": ["aac"], "mimeType": "audio/aac" },
+      { "ext": ["opus"], "mimeType": "audio/ogg" }
     ]
   }
 }

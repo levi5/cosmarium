@@ -1,4 +1,3 @@
-import { convertFileSrc } from '@tauri-apps/api/core'
 import { fileExtension, hasExtension, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from '../constants/files'
 import { filesystem } from '../services/tauri/filesystem'
 import type { FileEntry } from '../types/explorer'
@@ -121,7 +120,7 @@ export function requestThumbnail(entry: FileEntry, signal: AbortSignal): Promise
       signal.addEventListener('abort', abort, { once: true })
       const timer = setTimeout(abort, 15000)
       const generate = async () => {
-        const source = convertFileSrc(await filesystem.prepareMediaPreview(entry.path))
+        const source = await filesystem.prepareMediaPreview(entry.path)
         controller.signal.throwIfAborted()
         if (hasExtension(entry.name, IMAGE_EXTENSIONS)) return source
         const result = await (fileExtension(entry.name) === 'pdf' ? pdfThumbnail(source, controller.signal) : videoThumbnail(source, controller.signal))

@@ -191,4 +191,18 @@ mod tests {
             serde_json::json!([])
         );
     }
+
+    #[test]
+    fn media_file_associations_are_registered_for_supported_types() {
+        let config: serde_json::Value =
+            serde_json::from_str(include_str!("../../tauri.conf.json")).unwrap();
+        let associations = config["bundle"]["fileAssociations"]
+            .as_array()
+            .expect("file associations should be an array");
+        assert!(associations.len() > 10);
+        for association in associations {
+            assert!(association.get("ext").is_some());
+            assert!(association.get("mimeType").is_some());
+        }
+    }
 }

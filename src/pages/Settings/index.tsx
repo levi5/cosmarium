@@ -17,7 +17,9 @@ export function Settings() {
     material,
     showSize,
     iconSize,
+    showHidden,
     showRecent,
+    rememberLastLocation,
     setTheme,
     setAccent,
     setCustomAccent,
@@ -25,7 +27,9 @@ export function Settings() {
     setMaterial,
     setShowSize,
     setIconSize,
-    setShowRecent
+    setShowHidden,
+    setShowRecent,
+    setRememberLastLocation
   } = usePreferences()
   const translateText = createTranslator(language)
   return (
@@ -157,6 +161,22 @@ export function Settings() {
       </div>
       <div className="settings-card">
         <div className="setting-label">
+          <span>{translateText('showHidden')}</span>
+          <small>{translateText('showHiddenDesc')}</small>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={showHidden}
+          aria-label={translateText('showHidden')}
+          className={`switch ${showHidden ? 'is-on' : ''}`}
+          onClick={() => setShowHidden(!showHidden)}
+        >
+          <i />
+        </button>
+      </div>
+      <div className="settings-card">
+        <div className="setting-label">
           <span>{translateText('showRecent')}</span>
           <small>{translateText('showRecentDesc')}</small>
         </div>
@@ -167,6 +187,22 @@ export function Settings() {
           aria-label={translateText('showRecent')}
           className={`switch ${showRecent ? 'is-on' : ''}`}
           onClick={() => setShowRecent(!showRecent)}
+        >
+          <i />
+        </button>
+      </div>
+      <div className="settings-card">
+        <div className="setting-label">
+          <span>{translateText('rememberLastLocation')}</span>
+          <small>{translateText('rememberLastLocationDesc')}</small>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={rememberLastLocation}
+          aria-label={translateText('rememberLastLocation')}
+          className={`switch ${rememberLastLocation ? 'is-on' : ''}`}
+          onClick={() => setRememberLastLocation(!rememberLastLocation)}
         >
           <i />
         </button>

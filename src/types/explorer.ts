@@ -121,6 +121,11 @@ export type SearchFilters = {
   kind?: 'all' | 'file' | 'folder'
 }
 
+export type PendingStartupPath = {
+  path: string
+  isDirectory: boolean
+}
+
 export type RecentFilters = {
   roots: string[]
   limit: number
