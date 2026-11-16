@@ -19,6 +19,7 @@ export const STORAGE = {
   hiddenQuickAccess: 'cosmarium-hidden-quick-access',
   quickAccessExpanded: 'cosmarium-quick-access-expanded',
   tags: 'cosmarium-tags',
+  tagSections: 'cosmarium-tag-sections',
   taggedPaths: 'cosmarium-tagged-paths'
 } as const
 

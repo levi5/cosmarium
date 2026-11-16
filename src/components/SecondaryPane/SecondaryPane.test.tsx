@@ -8,6 +8,7 @@ import { useClipboardStore } from '../../stores/clipboardStore'
 import { useShortcutStore } from '../../stores/shortcutStore'
 import type { FileEntry } from '../../types/explorer'
 import type { FileTable } from '../FileBrowser/FileTable'
+import { toolsApi } from '../FileTools/api'
 import { SecondaryPane } from '.'
 
 const primary = vi.hoisted(() => ({
@@ -26,6 +27,7 @@ vi.mock('../../hooks/useFolderSizes', () => ({ useFolderSizes: () => ({}) }))
 vi.mock('@tauri-apps/api/event', () => ({ listen: vi.fn(async () => () => {}) }))
 vi.mock('../PreviewPane', () => ({ PreviewPane: () => null }))
 vi.mock('../PropertiesDialog', () => ({ PropertiesDialog: () => null }))
+vi.mock('../FileTools/api', () => ({ toolsApi: { openTerminal: vi.fn(async () => {}) } }))
 vi.mock('../../services/tauri/filesystem', () => ({
   filesystem: {
     listDirectory: vi.fn(),
@@ -121,6 +123,36 @@ it('creates files in the secondary folder from its background menu', async () =>
   await screen.findByRole('button', { name: 'new.txt' })
   expect(filesystem.createFile).toHaveBeenCalledWith('/secondary', 'new.txt')
   expect(primary.createFile).not.toHaveBeenCalled()
+})
+
+it.each([
+  ['Abrir terminal', undefined],
+  ['Abrir terminal como root', true]
+])('opens the current folder with %s', async (label, asRoot) => {
+  const { region } = await setup()
+  fireEvent.contextMenu(region)
+  fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: label }))
+  expect(toolsApi.openTerminal).toHaveBeenCalledWith('/secondary', ...(asRoot ? [true] : []))
+  expect(screen.queryByRole('menu')).toBeNull()
+})
+
+it.each([
+  ['Abrir terminal', undefined],
+  ['Abrir terminal como root', true]
+])('opens a selected folder with %s', async (label, asRoot) => {
+  const folder: FileEntry = { ...file, name: 'folder', path: '/secondary/folder', kind: 'directory' }
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([file, folder])
+  await setup()
+  fireEvent.contextMenu(screen.getByRole('button', { name: 'folder' }))
+  fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: label }))
+  expect(toolsApi.openTerminal).toHaveBeenCalledWith(folder.path, ...(asRoot ? [true] : []))
+  expect(screen.queryByRole('menu')).toBeNull()
+})
+
+it('does not offer terminal actions on files', async () => {
+  await setup()
+  fireEvent.contextMenu(screen.getByRole('button', { name: 'note.txt' }))
+  expect(within(screen.getByRole('menu')).queryByRole('menuitem', { name: /Abrir terminal/ })).toBeNull()
 })
 
 it('creates and displays tags for secondary entries', async () => {

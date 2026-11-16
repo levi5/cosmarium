@@ -8,6 +8,7 @@
   border-left: 1px solid var(--line);
   animation: details-pane-in 0.16s ease-out;
 }
+
 @keyframes details-pane-in {
   from {
     opacity: 0;

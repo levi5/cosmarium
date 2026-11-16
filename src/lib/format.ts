@@ -1,22 +1,12 @@
-import { fileExtension, PREVIEWABLE_EXTENSIONS, SIZE_BASE, SIZE_UNITS, TEXT_PREVIEWABLE_EXTENSIONS } from '../constants/files'
+import { fileExtension, PREVIEWABLE_EXTENSIONS, TEXT_PREVIEWABLE_EXTENSIONS } from '../constants/files'
 import type { FileEntry } from '../types/explorer'
+import { formatSize } from './formatters'
+
+export { formatDate, formatSize } from './formatters'
 
 export type PreviewType = 'image' | 'video' | 'text' | 'audio' | 'pdf'
 
 export const TEXT_PREVIEW_MAX_SIZE = 2 * 1024 * 1024
-
-export function formatSize(size: number, language: string): string {
-  if (!size) return `0 ${SIZE_UNITS[0]}`
-  const index = Math.min(Math.floor(Math.log(size) / Math.log(SIZE_BASE)), SIZE_UNITS.length - 1)
-  const value = new Intl.NumberFormat(language, { maximumFractionDigits: 1 }).format(size / SIZE_BASE ** index)
-  return `${value} ${SIZE_UNITS[index]}`
-}
-
-export function formatDate(timestamp: number | null, language: string, withTime = true): string {
-  if (!timestamp) return '-'
-  const options: Intl.DateTimeFormatOptions = withTime ? { dateStyle: 'short', timeStyle: 'medium' } : { dateStyle: 'short' }
-  return new Intl.DateTimeFormat(language, options).format(new Date(timestamp * 1000))
-}
 
 const VIEWPORT_MARGIN_PX = 8
 

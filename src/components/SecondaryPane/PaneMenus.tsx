@@ -9,6 +9,7 @@ import { BackgroundContextMenu } from '../BackgroundContextMenu'
 import type { EntryActions } from '../EntryDialogs/useEntryActions'
 import type { Inspection } from '../EntryDialogs/useInspection'
 import { FileContextMenu } from '../FileContextMenu'
+import { toolsApi } from '../FileTools/api'
 
 type Anchor = { anchorX: number; anchorY: number }
 type Props = {
@@ -52,6 +53,8 @@ export function PaneMenus(p: Props) {
           labels={{
             open: t('open'),
             openInNewTab: t('openInNewTab'),
+            openTerminal: t('openTerminal'),
+            openTerminalRoot: t('openTerminalRoot'),
             preview: t('preview'),
             cut: t('cut'),
             copy: t('copy'),
@@ -65,6 +68,12 @@ export function PaneMenus(p: Props) {
           }}
           onOpen={run(() => p.menu && p.onOpen(p.menu.entry))}
           onOpenInNewTab={run(() => p.menu && createTab(p.menu.entry.path))}
+          onOpenTerminal={run(() => {
+            if (p.menu) void toolsApi.openTerminal(p.menu.entry.path).catch(p.onError)
+          })}
+          onOpenTerminalRoot={run(() => {
+            if (p.menu) void toolsApi.openTerminal(p.menu.entry.path, true).catch(p.onError)
+          })}
           onPreview={run(() => p.menu && p.inspection.setPreview(p.menu.entry))}
           onCut={run(() => p.menu && p.onCopy('cut', p.menu.entry))}
           onCopy={run(() => p.menu && p.onCopy('copy', p.menu.entry))}
@@ -93,6 +102,8 @@ export function PaneMenus(p: Props) {
             paste: t('paste'),
             refresh: t('refresh'),
             copyCurrentPath: t('copyCurrentPath'),
+            openTerminal: t('openTerminal'),
+            openTerminalRoot: t('openTerminalRoot'),
             grid: t('gridView'),
             list: t('listView'),
             details: t('details'),
@@ -106,6 +117,12 @@ export function PaneMenus(p: Props) {
           onRefresh={run(p.onRefresh)}
           onCopyCurrentPath={run(() => {
             void copyText(p.path).catch(p.onError)
+          })}
+          onOpenTerminal={run(() => {
+            void toolsApi.openTerminal(p.path).catch(p.onError)
+          })}
+          onOpenTerminalRoot={run(() => {
+            void toolsApi.openTerminal(p.path, true).catch(p.onError)
           })}
           onGrid={run(() => p.setView('grid'))}
           onList={run(() => p.setView('list'))}

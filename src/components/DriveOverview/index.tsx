@@ -1,4 +1,5 @@
 import { _Number } from 'funcio'
+import { useId, useState } from 'react'
 import { useFileWorkspace } from '../../lib/files'
 import { createTranslator } from '../../lib/i18n'
 import { usePreferences } from '../../lib/preferences'
@@ -18,14 +19,22 @@ export function DriveOverview() {
   const { language } = usePreferences()
   const aliases = useDriveAliasStore((state) => state.aliases)
   const translateText = createTranslator(language)
+  const [collapsed, setCollapsed] = useState(false)
+  const gridId = useId()
   if (!volumes.length) return null
   return (
     <section className="drive-overview">
-      <p className="drive-overview__heading">
+      <button
+        type="button"
+        className="drive-overview__heading"
+        aria-expanded={!collapsed}
+        aria-controls={gridId}
+        onClick={() => setCollapsed((current) => !current)}
+      >
         <Icon name="chevron" size={13} />
         {translateText('drives')}
-      </p>
-      <div className="drive-overview__grid">
+      </button>
+      <div id={gridId} className="drive-overview__grid" hidden={collapsed}>
         {volumes.map((volume) => {
           const used = volume.total_space > 0 ? _Number.clamp(0, 100, Math.round((1 - volume.available_space / volume.total_space) * 100)) : 0
           return (

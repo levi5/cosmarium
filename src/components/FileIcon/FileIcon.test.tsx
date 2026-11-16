@@ -3,6 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import * as thumbnails from '../../lib/thumbnails'
 import { filesystem } from '../../services/tauri/filesystem'
 import { FileIcon } from '.'
+import { codeIconFor } from './codeIcons'
 
 vi.mock('@tauri-apps/api/core', () => ({ convertFileSrc: (path: string) => `asset://${path}` }))
 vi.mock('../../lib/preferences', () => ({ usePreferences: () => ({ language: 'pt-BR' }) }))
@@ -31,9 +32,100 @@ it('authorizes image thumbnails before assigning their source', async () => {
   expect(container.querySelector('svg')).toBeTruthy()
 })
 
+it.each([
+  ['README.md', 'markdown'],
+  ['readme.MD', 'markdown'],
+  ['guide.markdown', 'markdown'],
+  ['page.mdx', 'markdown'],
+  ['notes.txt', 'text'],
+  ['app.log', 'text'],
+  ['settings.ini', 'config'],
+  ['settings.cfg', 'config'],
+  ['settings.conf', 'config'],
+  ['Cargo.toml', 'config'],
+  ['app.properties', 'config'],
+  ['.editorconfig', 'config'],
+  ['.npmrc', 'config'],
+  ['.env', 'environment'],
+  ['.env.local', 'environment'],
+  ['production.env', 'environment'],
+  ['change.diff', 'diff'],
+  ['fix.patch', 'diff'],
+  ['Cargo.lock', 'lock'],
+  ['schema.graphql', 'graphql'],
+  ['query.gql', 'graphql'],
+  ['main.dart', 'dart'],
+  ['analysis.r', 'r'],
+  ['notebook.ipynb', 'jupyter'],
+  ['app.js', 'javascript'],
+  ['app.TS', 'typescript'],
+  ['view.tsx', 'react'],
+  ['view.jsx', 'react'],
+  ['main.py', 'python'],
+  ['main.rs', 'rust'],
+  ['style.css', 'css3'],
+  ['settings.json', 'json'],
+  ['Dockerfile', 'docker'],
+  ['.gitignore', 'git']
+])('uses a dedicated code icon for %s', (name, icon) => {
+  const { container } = render(<FileIcon entry={{ name, kind: 'file' }} />)
+  const image = container.querySelector<HTMLImageElement>('.files-icon__code')
+  const assets = import.meta.glob<string>('../../assets/code-icons/*.svg', { eager: true, import: 'default', query: '?url' })
+  expect(image?.getAttribute('src')).toBe(assets[`../../assets/code-icons/${icon}.svg`])
+  expect(image?.getAttribute('alt')).toBe('')
+  expect(filesystem.prepareMediaPreview).not.toHaveBeenCalled()
+})
+
+it('resolves every supported code icon to a local asset', () => {
+  for (const name of [
+    'a.js',
+    'a.ts',
+    'a.tsx',
+    'a.py',
+    'a.rs',
+    'a.go',
+    'a.html',
+    'a.css',
+    'a.scss',
+    'a.less',
+    'a.json',
+    'a.xml',
+    'a.yaml',
+    'a.c',
+    'a.cpp',
+    'a.cs',
+    'a.java',
+    'a.kt',
+    'a.swift',
+    'a.rb',
+    'a.php',
+    'a.vue',
+    'a.svelte',
+    'a.lua',
+    'a.sh',
+    'a.sql',
+    'Dockerfile',
+    '.gitignore'
+  ]) {
+    expect(codeIconFor(name), name).toBeTruthy()
+  }
+  expect(codeIconFor('unknown.xyz')).toBeUndefined()
+})
+
+it('keeps code icon sizing and protection badges', () => {
+  const { container, getByRole } = render(<FileIcon entry={{ name: 'app.ts', kind: 'file', protected: true }} size="large" />)
+  expect(container.querySelector('.files-icon--large .files-icon__code')).toBeTruthy()
+  const document = container.querySelector<HTMLElement>('.files-icon__code-document')
+  expect(document?.style.width).toBe('36px')
+  expect(document?.style.height).toBe('36px')
+  expect(document?.querySelector('.files-icon__code-page path')).toBeTruthy()
+  expect(document?.querySelector('img')).toBeTruthy()
+  expect(getByRole('img', { name: 'Acesso restrito ou somente leitura' })).toBeTruthy()
+})
+
 it('keeps a file glyph when thumbnail authorization fails', async () => {
   vi.mocked(filesystem.prepareMediaPreview).mockRejectedValueOnce('Access denied')
-  const { container } = render(<FileIcon entry={image} />)
+  const { container } = render(<FileIcon entry={{ ...image, modified: 1 }} />)
   await waitFor(() => expect(filesystem.prepareMediaPreview).toHaveBeenCalledWith(image.path))
   expect(container.querySelector('img')).toBeNull()
   expect(container.querySelector('svg')).toBeTruthy()

@@ -78,33 +78,6 @@
   --win-close-hover: #c42b1c;
 }
 
-:root[data-material='mica'],
-:root[data-material='acrylic'] {
-  --hover: #ffffff10;
-  --press: #ffffff1a;
-  --press-strong: #ffffff24;
-  --active: color-mix(in srgb, var(--accent) 24%, transparent);
-  --selected: color-mix(in srgb, var(--accent) 34%, transparent);
-  --selected-2: color-mix(in srgb, var(--accent) 46%, transparent);
-  --field-bg: #ffffff14;
-  --field-bg-focus: #ffffff24;
-  --field-border: var(--mat-border);
-  --press-bg: #ffffff1f;
-  --focus-bg: #ffffff17;
-  --active-strong: #ffffff2e;
-}
-
-:root[data-theme='light'][data-material='mica'],
-:root[data-theme='light'][data-material='acrylic'] {
-  --hover: #1018280d;
-  --press: #10182814;
-  --press-strong: #1018281f;
-  --field-bg: #ffffff8f;
-  --field-bg-focus: #ffffffb8;
-  --press-bg: #1018281a;
-  --focus-bg: #1018280f;
-  --active-strong: #fffffff2;
-}
 :root {
   font-family: 'Segoe UI Variable', 'Segoe UI', Inter, ui-sans-serif, system-ui, sans-serif;
   color: #eef1f7;

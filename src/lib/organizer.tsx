@@ -3,9 +3,19 @@ import { STORAGE, writeStorage } from '../constants/storage'
 
 export type Tag = { id: string; name: string; color: string; emoji: string }
 export type QuickAccessItem = { path: string; name: string }
+export type TagSection = { id: string; name: string; tagIds: string[] }
+
+export function pathsForSection(section: TagSection, taggedPaths: Record<string, string[]>): string[] {
+  return Object.keys(taggedPaths)
+    .filter((path) => taggedPaths[path].some((id) => section.tagIds.includes(id)))
+    .sort((a, b) => a.localeCompare(b))
+}
 
 type Organizer = {
   tags: Tag[]
+  tagSections: TagSection[]
+  saveTagSection: (section: Omit<TagSection, 'id'> & { id?: string }) => void
+  removeTagSection: (id: string) => void
   quickAccess: QuickAccessItem[]
   hiddenQuickAccess: string[]
   taggedPaths: Record<string, string[]>
@@ -39,10 +49,14 @@ function newTagId(name: string): string {
 
 export function OrganizerProvider({ children }: { children: React.ReactNode }) {
   const [tags, setTags] = useState<Tag[]>(() => read('cosmarium-tags', []))
+  const [tagSections, setTagSections] = useState<TagSection[]>(() => read(STORAGE.tagSections, []))
   const [quickAccess, setQuickAccess] = useState<QuickAccessItem[]>(() => read('cosmarium-quick-access', []))
   const [hiddenQuickAccess, setHiddenQuickAccess] = useState<string[]>(() => read(STORAGE.hiddenQuickAccess, []))
   const [taggedPaths, setTaggedPaths] = useState<Record<string, string[]>>(() => read('cosmarium-tagged-paths', {}))
 
+  useEffect(() => {
+    writeStorage(STORAGE.tagSections, JSON.stringify(tagSections))
+  }, [tagSections])
   useEffect(() => {
     writeStorage(STORAGE.tags, JSON.stringify(tags))
   }, [tags])
@@ -61,6 +75,13 @@ export function OrganizerProvider({ children }: { children: React.ReactNode }) {
     setTags((current) => [...current, next])
     return next
   }
+  const saveTagSection: Organizer['saveTagSection'] = (section) => {
+    const name = section.name.trim()
+    if (!name) return
+    const next = { ...section, name, id: section.id || newTagId(name), tagIds: [...new Set(section.tagIds)].filter((id) => tags.some((tag) => tag.id === id)) }
+    setTagSections((current) => (current.some((item) => item.id === next.id) ? current.map((item) => (item.id === next.id ? next : item)) : [...current, next]))
+  }
+  const removeTagSection = (id: string) => setTagSections((current) => current.filter((section) => section.id !== id))
   const assignTag = (path: string, tagId: string) => setTaggedPaths((current) => ({ ...current, [path]: [...new Set([...(current[path] || []), tagId])] }))
   const unassignTag = (path: string, tagId: string) =>
     setTaggedPaths((current) => {
@@ -81,6 +102,7 @@ export function OrganizerProvider({ children }: { children: React.ReactNode }) {
     })
   const removeTag = (tagId: string) => {
     setTags((current) => current.filter((tag) => tag.id !== tagId))
+    setTagSections((current) => current.map((section) => ({ ...section, tagIds: section.tagIds.filter((id) => id !== tagId) })))
     setTaggedPaths((current) => {
       const next: Record<string, string[]> = {}
       for (const [path, ids] of Object.entries(current)) {
@@ -101,7 +123,22 @@ export function OrganizerProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <OrganizerContext.Provider
-      value={{ tags, quickAccess, hiddenQuickAccess, taggedPaths, createTag, assignTag, unassignTag, moveTag, removeTag, addQuickAccess, removeQuickAccess }}
+      value={{
+        tags,
+        tagSections,
+        saveTagSection,
+        removeTagSection,
+        quickAccess,
+        hiddenQuickAccess,
+        taggedPaths,
+        createTag,
+        assignTag,
+        unassignTag,
+        moveTag,
+        removeTag,
+        addQuickAccess,
+        removeQuickAccess
+      }}
     >
       {children}
     </OrganizerContext.Provider>

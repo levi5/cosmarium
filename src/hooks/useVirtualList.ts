@@ -54,9 +54,9 @@ export function useVirtualList({ count, itemHeight, overscan = 6, enabled = true
   }, [])
 
   const range = ((): VirtualWindow => {
-    if (!enabled || itemHeight === null || viewport === 0) return identity(count)
-    const visible = Math.max(1, Math.ceil(viewport / itemHeight))
-    const first = Math.floor(scrollTop / itemHeight)
+    if (!enabled || itemHeight === null || itemHeight <= 0) return identity(count)
+    const visible = Math.max(1, Math.ceil((viewport || itemHeight * 12) / itemHeight))
+    const first = Math.min(Math.max(0, Math.floor(scrollTop / itemHeight)), Math.max(0, count - visible))
     const start = Math.max(0, first - overscan)
     const end = Math.min(count, first + visible + overscan)
     return {

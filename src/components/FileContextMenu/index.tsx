@@ -8,6 +8,8 @@ import { Portal } from '../base/Portal'
 type Labels = {
   open: string
   openInNewTab: string
+  openTerminal: string
+  openTerminalRoot: string
   preview: string
   cut: string
   copy: string
@@ -29,6 +31,8 @@ type Props = {
   labels: Labels
   onOpen: () => void
   onOpenInNewTab: () => void
+  onOpenTerminal: () => void
+  onOpenTerminalRoot: () => void
   onPreview: () => void
   onCut: () => void
   onCopy: () => void
@@ -51,6 +55,8 @@ export function FileContextMenu({
   labels,
   onOpen,
   onOpenInNewTab,
+  onOpenTerminal,
+  onOpenTerminalRoot,
   onPreview,
   onCut,
   onCopy,
@@ -115,6 +121,18 @@ export function FileContextMenu({
             <Icon name="eye" size={14} />
             {labels.preview}
           </button>
+        )}
+        {isDirectory && (
+          <>
+            <button type="button" onClick={run(onOpenTerminal)}>
+              <Icon name="code" size={14} />
+              {labels.openTerminal}
+            </button>
+            <button type="button" onClick={run(onOpenTerminalRoot)}>
+              <Icon name="code" size={14} />
+              {labels.openTerminalRoot}
+            </button>
+          </>
         )}
         <div className="file-context-menu__divider" />
         <button type="button" onClick={run(onCut)}>

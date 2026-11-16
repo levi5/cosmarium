@@ -2,6 +2,7 @@ import { listen } from '@tauri-apps/api/event'
 import { _try } from 'funcio'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewMode } from '../../constants/view'
+import { fileRows } from '../../lib/fileRows'
 import { useFolderSizes } from '../../hooks/useFolderSizes'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { dispatchShortcut } from '../../hooks/useShortcuts'
@@ -250,12 +251,7 @@ export function SecondaryPane({
             <p role="status">{t('loading')}</p>
           ) : (
             <FileTable
-              rows={visibleEntries.map((entry) => ({
-                entry,
-                tags: tagsOf(entry.path),
-                isSelected: selected.includes(entry.path),
-                isActive: active === entry.path
-              }))}
+              rows={fileRows(visibleEntries, selected, active, tagsOf)}
               currentPath={path}
               selectedPaths={selected}
               activePath={active}

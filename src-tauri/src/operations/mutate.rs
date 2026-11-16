@@ -67,8 +67,6 @@ pub fn trash_entries<R: tauri::Runtime>(
         if target.exists() {
             targets.push(target);
         } else {
-            // The item vanished between listing and deleting (common for temp files).
-            // Treat it as already removed instead of failing the whole operation.
             removed.push(path.clone());
         }
     }

@@ -19,10 +19,6 @@ struct MediaState {
     by_id: HashMap<String, PathBuf>,
 }
 
-/// Serves authorized media files over loopback HTTP so WebKitGTK can decode
-/// `<video>` and `<audio>` sources. Video over Tauri's custom `asset:` scheme
-/// is not supported by GStreamer, which leaves video previews and thumbnails
-/// blank on Linux.
 pub struct MediaServer {
     address: String,
     token: String,
@@ -54,7 +50,6 @@ impl MediaServer {
         })
     }
 
-    /// Authorizes a canonical file path and returns a stable loopback URL.
     pub fn url_for(&self, path: &Path) -> String {
         let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
         let id = state

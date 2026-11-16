@@ -1,18 +1,19 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import type { Language } from '../../lib/preferences'
 import type { FileEntry } from '../../types/explorer'
 import { Button } from '../base/Button'
 import { Dropdown } from '../base/Dropdown'
 import { Icon } from '../base/Icon'
 import { IconButton } from '../base/IconButton'
-import { ArchiveDialog } from './ArchiveDialog'
 import { toolsApi } from './api'
-import { BatchRenameDialog } from './BatchRenameDialog'
-import { DuplicatesDialog } from './DuplicatesDialog'
 import { toolMessages } from './messages'
 import { ToolDialog } from './ToolDialog'
 import { useTask } from './useTask'
 import './styles.css'
+
+const ArchiveDialog = lazy(() => import('./ArchiveDialog').then((module) => ({ default: module.ArchiveDialog })))
+const BatchRenameDialog = lazy(() => import('./BatchRenameDialog').then((module) => ({ default: module.BatchRenameDialog })))
+const DuplicatesDialog = lazy(() => import('./DuplicatesDialog').then((module) => ({ default: module.DuplicatesDialog })))
 
 type Action = 'compress' | 'extract' | 'rename' | 'duplicates'
 type Props = {
@@ -79,11 +80,13 @@ export function FileTools({ entries, path, language, split, onSplit, onChanged, 
           ))}
         </Dropdown>
       )}
-      {action === 'rename' && <BatchRenameDialog entries={entries} labels={labels} onClose={close} onRenamed={onRenamed} />}
-      {(action === 'compress' || action === 'extract') && (
-        <ArchiveDialog mode={action} entries={entries} destination={path} labels={labels} onClose={close} onComplete={onChanged} />
-      )}
-      {action === 'duplicates' && <DuplicatesDialog root={path} labels={labels} language={language} onClose={close} />}
+      <Suspense fallback={null}>
+        {action === 'rename' && <BatchRenameDialog entries={entries} labels={labels} onClose={close} onRenamed={onRenamed} />}
+        {(action === 'compress' || action === 'extract') && (
+          <ArchiveDialog mode={action} entries={entries} destination={path} labels={labels} onClose={close} onComplete={onChanged} />
+        )}
+        {action === 'duplicates' && <DuplicatesDialog root={path} labels={labels} language={language} onClose={close} />}
+      </Suspense>
       {showError && error && (
         <ToolDialog title={labels.error} labels={labels} error={error} busy={busy} onClose={() => setShowError(false)}>
           <Button disabled={busy} onClick={() => void run(() => toolsApi.openTerminal(path))}>

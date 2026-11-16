@@ -14,6 +14,7 @@ beforeEach(() => {
     'src/global/material.css',
     'src/global/material-light.css',
     'src/global/notifications.css',
+    'src/global/material-surfaces.css',
     'src/components/UndoToast/styles.css',
     'src/components/ConfirmDialog/styles.css'
   ]

@@ -1,0 +1,192 @@
+:root:is([data-material='mica'], [data-material='acrylic'])
+  :is(
+    .context-menu,
+    .file-context-menu,
+    .background-context-menu,
+    .dropdown,
+    .preview-pane,
+    .system-open-dialog,
+    .tool-dialog,
+    .prompt-dialog,
+    .conflict-dialog,
+    .shortcuts-dialog,
+    .tag-dialog,
+    .properties-dialog,
+    .titlebar,
+    .sidebar,
+    .status-bar,
+    .details-pane,
+    .notification-surface,
+    .drive-overview__card
+  ) {
+  background: var(--mat-veil);
+  border-color: var(--mat-border);
+  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
+}
+
+:root:is([data-material='mica'], [data-material='acrylic'])
+  :is(
+    .context-menu,
+    .file-context-menu,
+    .background-context-menu,
+    .dropdown,
+    .system-open-dialog,
+    .tool-dialog,
+    .prompt-dialog,
+    .conflict-dialog,
+    .shortcuts-dialog,
+    .tag-dialog,
+    .properties-dialog
+  ) {
+  background: color-mix(in srgb, var(--mat-veil-hex) 96%, transparent);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .app-shell {
+  position: relative;
+  isolation: isolate;
+  background: #1b1d24;
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .app-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--mat-background);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .home-panel {
+  background: transparent;
+  border-color: transparent;
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .app-content {
+  background: var(--mat-content);
+  backdrop-filter: blur(calc(var(--mat-blur) * 0.7)) saturate(var(--mat-sat));
+  -webkit-backdrop-filter: blur(calc(var(--mat-blur) * 0.7)) saturate(var(--mat-sat));
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .status-bar {
+  background: var(--mat-status);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .details-pane {
+  background: color-mix(in srgb, var(--mat-veil-hex) 90%, transparent);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .drive-overview__card {
+  background: var(--mat-tint);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .notification-surface {
+  background-image: linear-gradient(var(--mat-tint), var(--mat-tint)), var(--mat-background);
+  background-attachment: fixed;
+  border-color: var(--notification-border, var(--mat-border));
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) :is(.breadcrumb, .search, .search-box, .view-switch) {
+  background: var(--mat-control);
+  border-color: var(--mat-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .quick-access__grid button {
+  background: var(--mat-card);
+  border-color: var(--mat-border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .quick-access__grid button:hover {
+  background: var(--mat-card-hover);
+  border-color: var(--line-strong);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) :is(.file-row, .recents-row).is-selected {
+  background: var(--mat-selected);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .file-table--grid .file-row.is-selected {
+  background: var(--mat-grid-selected);
+  border-color: var(--accent);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic'])
+  :is(.theme-options button, .language-options button, .icon-size-option, .details-pane__tags li, .details-pane__text) {
+  background: var(--field-bg);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .icon-size-option:hover {
+  background: var(--hover);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) :is(.breadcrumb, .search, .search-box):focus-within {
+  background: var(--field-bg-focus);
+  border-color: var(--accent-line);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) :is(.file-row, .recents-row):focus-visible.is-selected {
+  background: var(--selected-2);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .preview-pane__text {
+  background: var(--mat-veil);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .preview-pane__media:has(.preview-pane__text) {
+  background: transparent;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root:is([data-material='mica'], [data-material='acrylic']),
+  :root[data-theme='light']:is([data-material='mica'], [data-material='acrylic']) {
+    --mat-veil: var(--mat-veil-hex);
+    --mat-content: var(--mat-veil-hex);
+    --mat-status: var(--mat-veil-hex);
+    --mat-control: var(--mat-veil-hex);
+    --mat-card: var(--mat-veil-hex);
+    --mat-card-hover: var(--mat-veil-hex);
+    --mat-tint: var(--mat-veil-hex);
+    --field-bg-focus: var(--mat-veil-hex);
+  }
+
+  :root:is([data-material='mica'], [data-material='acrylic'])
+    :is(
+      .app-content,
+      .titlebar,
+      .sidebar,
+      .status-bar,
+      .details-pane,
+      .notification-surface,
+      .context-menu,
+      .file-context-menu,
+      .background-context-menu,
+      .dropdown,
+      .preview-pane,
+      .preview-pane__text,
+      .system-open-dialog,
+      .tool-dialog,
+      .prompt-dialog,
+      .conflict-dialog,
+      .shortcuts-dialog,
+      .tag-dialog,
+      .properties-dialog,
+      .drive-overview__card,
+      .quick-access__grid button,
+      .breadcrumb,
+      .search,
+      .search-box,
+      .view-switch
+    ) {
+    background: var(--mat-veil-hex);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :is(.dialog-backdrop, .preview-backdrop, .prompt-backdrop, .conflict-backdrop, .shortcuts-backdrop, .tag-backdrop, .properties-backdrop, .confirm-backdrop) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

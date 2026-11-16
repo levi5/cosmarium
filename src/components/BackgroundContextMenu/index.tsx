@@ -11,6 +11,8 @@ type Labels = {
   paste: string
   refresh: string
   copyCurrentPath: string
+  openTerminal: string
+  openTerminalRoot: string
   grid: string
   list: string
   details: string
@@ -33,6 +35,8 @@ type Props = {
   onPaste: () => void
   onRefresh: () => void
   onCopyCurrentPath: () => void
+  onOpenTerminal: () => void
+  onOpenTerminalRoot: () => void
   onGrid: () => void
   onList: () => void
   onDetails: () => void
@@ -56,6 +60,8 @@ export function BackgroundContextMenu({
   onPaste,
   onRefresh,
   onCopyCurrentPath,
+  onOpenTerminal,
+  onOpenTerminalRoot,
   onGrid,
   onList,
   onDetails,
@@ -94,6 +100,15 @@ export function BackgroundContextMenu({
         <button type="button" onClick={run(onPaste)} disabled={!canPaste}>
           <Icon name="paste" size={14} />
           {labels.paste}
+        </button>
+        <div className="background-context-menu__divider" />
+        <button type="button" onClick={run(onOpenTerminal)}>
+          <Icon name="code" size={14} />
+          {labels.openTerminal}
+        </button>
+        <button type="button" onClick={run(onOpenTerminalRoot)}>
+          <Icon name="code" size={14} />
+          {labels.openTerminalRoot}
         </button>
         <div className="background-context-menu__divider" />
         <button type="button" onClick={run(onRefresh)}>

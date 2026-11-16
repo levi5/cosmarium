@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { type FileIconSize, ICON_PX, ROW_ANIMATION_MAX_INDEX, ROW_ANIMATION_STEP_MS, type ViewMode } from '../../constants/view'
 import { useRowNavigation } from '../../hooks/useRowNavigation'
 import { useVirtualList } from '../../hooks/useVirtualList'
@@ -99,7 +99,7 @@ export function FileTable({
     enabled: useWindowing
   })
   const visible = useWindowing ? rows.slice(range.start, range.start + range.count) : rows
-  const paths = rows.map((row) => row.entry.path)
+  const paths = useMemo(() => rows.map((row) => row.entry.path), [rows])
   const { tabIndexFor, onRowFocus, handleKeyDown } = useRowNavigation({
     paths,
     activePath,

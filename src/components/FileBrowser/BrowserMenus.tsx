@@ -1,7 +1,8 @@
-import { copyText, previewType } from '../../lib/format'
+import { copyText, errorMessage, previewType } from '../../lib/format'
 import { useExplorerStore } from '../../stores/explorerStore'
 import { BackgroundContextMenu } from '../BackgroundContextMenu'
 import { FileContextMenu } from '../FileContextMenu'
+import { toolsApi } from '../FileTools/api'
 import type { FileBrowserController } from './useFileBrowser'
 
 export function BrowserMenus({ browser: b }: { browser: FileBrowserController }) {
@@ -17,6 +18,11 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
     transfers
   } = b
   const createTab = useExplorerStore((state) => state.createTab)
+  const openTerminal = (path: string, asRoot = false) => {
+    void toolsApi
+      .openTerminal(path, asRoot)
+      .catch((reason) => actions.setNotice({ title: t(asRoot ? 'openTerminalRoot' : 'openTerminal'), message: errorMessage(reason) }))
+  }
   const fileAction = (action: () => void) => () => {
     action()
     b.setMenu(null)
@@ -37,6 +43,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           labels={{
             open: t('open'),
             openInNewTab: t('openInNewTab'),
+            openTerminal: t('openTerminal'),
+            openTerminalRoot: t('openTerminalRoot'),
             preview: t('preview'),
             cut: t('cut'),
             copy: t('copy'),
@@ -50,6 +58,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           }}
           onOpen={fileAction(() => b.open(menu.entry))}
           onOpenInNewTab={fileAction(() => createTab(menu.entry.path))}
+          onOpenTerminal={fileAction(() => openTerminal(menu.entry.path))}
+          onOpenTerminalRoot={fileAction(() => openTerminal(menu.entry.path, true))}
           onPreview={fileAction(() => inspection.setPreview(menu.entry))}
           onCut={fileAction(() => b.copy('cut', menu.entry))}
           onCopy={fileAction(() => b.copy('copy', menu.entry))}
@@ -77,6 +87,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
             paste: t('paste'),
             refresh: t('refresh'),
             copyCurrentPath: t('copyCurrentPath'),
+            openTerminal: t('openTerminal'),
+            openTerminalRoot: t('openTerminalRoot'),
             grid: t('gridView'),
             list: t('listView'),
             details: t('details'),
@@ -90,6 +102,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           onPaste={backgroundAction(() => void transfers.doPaste(currentPath))}
           onRefresh={backgroundAction(() => void refresh())}
           onCopyCurrentPath={backgroundAction(() => void copyText(currentPath))}
+          onOpenTerminal={backgroundAction(() => openTerminal(currentPath))}
+          onOpenTerminalRoot={backgroundAction(() => openTerminal(currentPath, true))}
           onGrid={backgroundAction(() => b.setView('grid'))}
           onList={backgroundAction(() => b.setView('list'))}
           onDetails={backgroundAction(() => b.setView('details'))}
