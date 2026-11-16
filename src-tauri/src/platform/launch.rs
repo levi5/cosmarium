@@ -79,7 +79,7 @@ mod tests {
             );
         }
         let desktop = include_str!("../../linux/Cosmarium.desktop");
-        assert!(desktop.contains("Exec={{exec}} %f\n"));
+        assert!(desktop.lines().any(|line| line == "Exec={{exec}} %f"));
         assert!(desktop.contains("MimeType=inode/directory;"));
         assert!(desktop.contains("{{mime_type}}"));
         assert!(desktop.contains("FileManager;"));
