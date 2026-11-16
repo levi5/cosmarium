@@ -33,3 +33,54 @@ it('reports a watcher failure without hiding directory entries', async () => {
   await waitFor(() => expect(result.current).toBe('Permission denied'))
   unmount()
 })
+
+it('coalesces changes during a refresh instead of starting overlapping reads', async () => {
+  vi.mocked(filesystem.watchDirectory).mockResolvedValue(undefined)
+  let finish!: () => void
+  const changed = vi
+    .fn()
+    .mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve
+        })
+    )
+    .mockResolvedValue(undefined)
+  const { unmount } = renderHook(() => useDirectoryWatch('/folder', changed))
+  await waitFor(() => expect(filesystem.watchDirectory).toHaveBeenCalledWith('/folder'))
+  const calls = vi.mocked(listen).mock.calls
+  const onEvent = calls[calls.length - 1][1]
+  const event = { event: 'cosmarium://fs-changed', id: 1, payload: '/folder' }
+  await act(async () => {
+    onEvent(event)
+    onEvent(event)
+    onEvent(event)
+  })
+  expect(changed).toHaveBeenCalledTimes(1)
+  await act(async () => finish())
+  expect(changed).toHaveBeenCalledTimes(2)
+  unmount()
+})
+
+it('discards queued refreshes after navigating away', async () => {
+  vi.mocked(filesystem.watchDirectory).mockResolvedValue(undefined)
+  let finish!: () => void
+  const changed = vi.fn(
+    () =>
+      new Promise<void>((resolve) => {
+        finish = resolve
+      })
+  )
+  const { unmount } = renderHook(() => useDirectoryWatch('/folder', changed))
+  await waitFor(() => expect(filesystem.watchDirectory).toHaveBeenCalledWith('/folder'))
+  const calls = vi.mocked(listen).mock.calls
+  const onEvent = calls[calls.length - 1][1]
+  const event = { event: 'cosmarium://fs-changed', id: 1, payload: '/folder' }
+  await act(async () => {
+    onEvent(event)
+    onEvent(event)
+  })
+  unmount()
+  await act(async () => finish())
+  expect(changed).toHaveBeenCalledTimes(1)
+})

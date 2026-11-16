@@ -71,7 +71,7 @@ export function useFileBrowser(compact: boolean) {
     [locations]
   )
   const recents = useRecentEntries({ enabled: compact, roots: recentRoots, limit: 40, includeHidden: showHidden, reloadToken: recentsToken })
-  const folderSizes = useFolderSizes(entries, showSize)
+  const folderSizes = useFolderSizes(compact ? recents.entries : entries, showSize)
   const searchRef = useRef<HTMLInputElement>(null)
   const tagsOf = useCallback(
     (path: string): Tag[] => (taggedPaths[path] || []).map((id) => tags.find((tag) => tag.id === id)).filter((tag): tag is Tag => Boolean(tag)),

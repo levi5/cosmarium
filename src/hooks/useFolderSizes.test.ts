@@ -39,3 +39,21 @@ it('ignores an in-flight response after navigating to an empty folder', async ()
   await act(async () => complete())
   expect(result.current).toEqual({})
 })
+
+it('keeps the pending size scan when a listing refresh replaces the same folders', async () => {
+  const complete = pendingSizes()
+  const { result, rerender } = renderHook(({ entries }) => useFolderSizes(entries, true), { initialProps: { entries: [folder] } })
+  rerender({ entries: [{ ...folder, modified: 123 }] })
+  expect(filesystem.getFolderSizes).toHaveBeenCalledTimes(1)
+  await act(async () => complete())
+  expect(result.current).toEqual({ '/folder': 42 })
+})
+
+it('does not restart size scans when the folder order changes', async () => {
+  const complete = pendingSizes()
+  const other = { ...folder, path: '/other', name: 'other' }
+  const { rerender } = renderHook(({ entries }) => useFolderSizes(entries, true), { initialProps: { entries: [folder, other] } })
+  rerender({ entries: [{ ...other }, { ...folder }] })
+  expect(filesystem.getFolderSizes).toHaveBeenCalledTimes(1)
+  await act(async () => complete())
+})
