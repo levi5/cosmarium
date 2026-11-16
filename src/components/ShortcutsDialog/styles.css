@@ -75,26 +75,3 @@
 .shortcuts-dialog__row dd {
   flex: 0 0 auto;
 }
-
-:root[data-material='acrylic'] .shortcuts-dialog,
-:root[data-material='mica'] .shortcuts-dialog {
-  background: #202020e6;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-
-:root[data-material='mica'] .shortcuts-dialog {
-  background: #202020d9;
-  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-}
-
-:root[data-theme='light'][data-material='acrylic'] .shortcuts-dialog,
-:root[data-theme='light'][data-material='mica'] .shortcuts-dialog {
-  background: #ffffffeb;
-}
-
-:root[data-theme='light'][data-material='mica'] .shortcuts-dialog {
-  background: #ffffffe0;
-}

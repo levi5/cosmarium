@@ -107,10 +107,62 @@ it('times out videos that never load and frees their resources', async () => {
   vi.useFakeTimers()
   const load = vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
   const request = requestThumbnail(entry('stuck.mp4'), new AbortController().signal)
-  const rejected = expect(request).rejects.toThrow('Video thumbnail unavailable')
+  const rejected = expect(request).rejects.toThrow('Thumbnail timed out')
   await vi.advanceTimersByTimeAsync(15000)
   await rejected
   expect(load).toHaveBeenCalled()
+})
+
+it('shares pending thumbnails without cancelling other consumers', async () => {
+  let release!: (path: string) => void
+  const prepare = vi.mocked(filesystem.prepareMediaPreview).mockReturnValueOnce(
+    new Promise((resolve) => {
+      release = resolve
+    })
+  )
+  const before = prepare.mock.calls.length
+  const firstController = new AbortController()
+  const first = requestThumbnail(entry('shared.png'), firstController.signal)
+  const second = requestThumbnail(entry('shared.png'), new AbortController().signal)
+  const rejected = expect(first).rejects.toBeTruthy()
+  firstController.abort()
+  await rejected
+  expect(prepare.mock.calls.length - before).toBe(1)
+  release('/shared.png')
+  expect(await second).toBe('/shared.png')
+})
+
+it('times out stalled native authorizations and continues processing the queue', async () => {
+  vi.useFakeTimers()
+  vi.mocked(filesystem.prepareMediaPreview).mockImplementationOnce(() => new Promise(() => {}))
+  vi.mocked(filesystem.prepareMediaPreview).mockImplementationOnce(() => new Promise(() => {}))
+  const first = requestThumbnail(entry('stalled1.png'), new AbortController().signal)
+  const second = requestThumbnail(entry('stalled2.png'), new AbortController().signal)
+  const rejectedFirst = expect(first).rejects.toThrow('Thumbnail timed out')
+  const rejectedSecond = expect(second).rejects.toThrow('Thumbnail timed out')
+  const third = requestThumbnail(entry('after-stall.png'), new AbortController().signal)
+  await vi.advanceTimersByTimeAsync(15000)
+  await Promise.all([rejectedFirst, rejectedSecond])
+  expect(await third).toBe('/after-stall.png')
+})
+
+it('cancels stalled work immediately and does not cache its late result', async () => {
+  let release!: (path: string) => void
+  const prepare = vi.mocked(filesystem.prepareMediaPreview).mockReturnValueOnce(
+    new Promise((resolve) => {
+      release = resolve
+    })
+  )
+  const controller = new AbortController()
+  const cancelled = requestThumbnail(entry('late.png'), controller.signal)
+  const rejected = expect(cancelled).rejects.toBeTruthy()
+  controller.abort()
+  await rejected
+  expect(await requestThumbnail(entry('late.png'), new AbortController().signal)).toBe('/late.png')
+  release('/obsolete.png')
+  await Promise.resolve()
+  expect(await requestThumbnail(entry('late.png'), new AbortController().signal)).toBe('/late.png')
+  expect(prepare.mock.calls.filter(([path]) => path === '/late.png')).toHaveLength(2)
 })
 
 it('caches image authorization and rejects cancelled requests even on cache hits', async () => {

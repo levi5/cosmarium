@@ -6,7 +6,13 @@ let pane: HTMLElement
 
 beforeEach(() => {
   styles = document.createElement('style')
-  styles.textContent = ['src/global/tokens.css', 'src/global/material.css', 'src/global/material-light.css', 'src/components/DetailsPane/styles.css']
+  styles.textContent = [
+    'src/global/tokens.css',
+    'src/global/material.css',
+    'src/global/material-light.css',
+    'src/components/DetailsPane/styles.css',
+    'src/global/material-surfaces.css'
+  ]
     .map((path) => readFileSync(path, 'utf8'))
     .join('\n')
   document.head.append(styles)

@@ -126,15 +126,3 @@
     transform: none;
   }
 }
-:root[data-material='acrylic'] .dropdown,
-:root[data-material='mica'] .dropdown {
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-:root[data-material='acrylic'] .dropdown {
-  background: #2d2d2dd9;
-}
-:root[data-theme='light'][data-material='acrylic'] .dropdown,
-:root[data-theme='light'][data-material='mica'] .dropdown {
-  background: #ffffffe6;
-}

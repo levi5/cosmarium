@@ -66,25 +66,6 @@
   gap: 7px;
   margin-top: 14px;
 }
-:root[data-material='acrylic'] .prompt-dialog,
-:root[data-material='mica'] .prompt-dialog {
-  background: #202020e6;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-:root[data-material='mica'] .prompt-dialog {
-  background: #202020d9;
-  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-}
-:root[data-theme='light'][data-material='acrylic'] .prompt-dialog,
-:root[data-theme='light'][data-material='mica'] .prompt-dialog {
-  background: #ffffffeb;
-}
-:root[data-theme='light'][data-material='mica'] .prompt-dialog {
-  background: #ffffffe0;
-}
 @keyframes dialog-in {
   from {
     opacity: 0;

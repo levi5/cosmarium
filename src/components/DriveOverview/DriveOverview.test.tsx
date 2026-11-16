@@ -17,6 +17,7 @@ beforeEach(() => {
     'src/global/tokens.css',
     'src/global/material.css',
     'src/global/material-light.css',
+    'src/global/material-surfaces.css',
     'src/components/base/Button/styles.css',
     'src/components/base/IconButton/styles.css',
     'src/components/DriveOverview/styles.css'

@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { globSync, readFileSync } from 'node:fs'
 import { afterEach, beforeEach, expect, it } from 'vitest'
 
 const surfaces = [
@@ -29,7 +29,9 @@ const stylesheets = [
     'TagDialog',
     'PropertiesDialog',
     'SearchBox',
-    'FileBrowser'
+    'FileBrowser',
+    'DriveOverview',
+    'DetailsPane'
   ].map((component) => `src/components/${component}/styles.css`),
   'src/global/tokens.css',
   'src/global/material.css',
@@ -117,5 +119,11 @@ it('keeps theme material variables on the root instead of changing them on hover
     if (!(rule instanceof CSSStyleRule) || !rule.style.getPropertyValue('--mat-veil')) continue
     expect(rule.selectorText).not.toContain(':hover')
     expect(rule.selectorText).not.toMatch(/:root[^,]*\s+:root/)
+  }
+})
+
+it('keeps material selectors out of component stylesheets', () => {
+  for (const path of globSync('src/components/**/*.css')) {
+    expect(readFileSync(path, 'utf8'), path).not.toContain('data-material')
   }
 })

@@ -139,25 +139,6 @@
   justify-content: flex-end;
   gap: 7px;
 }
-:root[data-material='acrylic'] .conflict-dialog,
-:root[data-material='mica'] .conflict-dialog {
-  background: #202020e6;
-  border-color: var(--mat-border);
-  backdrop-filter: blur(40px) saturate(170%);
-  -webkit-backdrop-filter: blur(40px) saturate(170%);
-}
-:root[data-material='mica'] .conflict-dialog {
-  background: #202020d9;
-  backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-  -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
-}
-:root[data-theme='light'][data-material='acrylic'] .conflict-dialog,
-:root[data-theme='light'][data-material='mica'] .conflict-dialog {
-  background: #ffffffeb;
-}
-:root[data-theme='light'][data-material='mica'] .conflict-dialog {
-  background: #ffffffe0;
-}
 @keyframes dialog-in {
   from {
     opacity: 0;
