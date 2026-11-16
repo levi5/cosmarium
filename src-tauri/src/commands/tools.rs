@@ -74,6 +74,6 @@ pub async fn extract_zip(
 }
 
 #[tauri::command]
-pub async fn open_terminal(path: String) -> Result<(), String> {
-    off_thread(move || crate::platform::terminal::open(&path)).await
+pub async fn open_terminal(path: String, as_root: Option<bool>) -> Result<(), String> {
+    off_thread(move || crate::platform::terminal::open(&path, as_root.unwrap_or(false))).await
 }

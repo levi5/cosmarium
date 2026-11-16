@@ -1,9 +1,13 @@
 use std::process::{Command, Stdio};
 
-pub fn open(path: &str) -> Result<(), String> {
+pub fn open(path: &str, as_root: bool) -> Result<(), String> {
     let directory = std::fs::canonicalize(path).map_err(|error| error.to_string())?;
     if !directory.is_dir() {
         return Err("Choose a folder.".into());
+    }
+    #[cfg(any(target_os = "windows", target_os = "macos"))]
+    if as_root {
+        return Err("Opening a terminal as root is only supported on Linux.".into());
     }
     #[cfg(target_os = "windows")]
     let programs = ["wt.exe", "powershell.exe"];
@@ -33,6 +37,24 @@ pub fn open(path: &str) -> Result<(), String> {
                 command.arg("-NoExit");
             }
             _ => {}
+        }
+        #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+        if as_root {
+            command
+                .arg(match program {
+                    "gnome-terminal" => "--",
+                    "xfce4-terminal" => "-x",
+                    _ => "-e",
+                })
+                .args([
+                    "sudo",
+                    "--",
+                    "/bin/sh",
+                    "-c",
+                    "cd -- \"$1\" && exec /bin/sh -l",
+                    "cosmarium",
+                ])
+                .arg(&directory);
         }
         command
             .current_dir(&directory)

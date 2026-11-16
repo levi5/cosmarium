@@ -89,8 +89,6 @@ it.each([
 ])('removes blur across the UI with reduced transparency in %s / %s', (theme, material) => {
   document.documentElement.dataset.theme = theme
   document.documentElement.dataset.material = material
-  // jsdom does not evaluate media preferences. Apply the matching media rules
-  // explicitly so their cascade is checked against the normal component styles.
   reducedStyles.textContent = Array.from(styles.sheet?.cssRules ?? [])
     .filter((rule): rule is CSSMediaRule => rule instanceof CSSMediaRule && rule.conditionText === '(prefers-reduced-transparency: reduce)')
     .flatMap((rule) => Array.from(rule.cssRules, (child) => child.cssText))

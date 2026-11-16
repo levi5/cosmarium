@@ -8,7 +8,6 @@ export type FolderSizes = Record<string, number>
 export function useFolderSizes(entries: FileEntry[], enabled: boolean): FolderSizes {
   const [sizes, setSizes] = useState<FolderSizes>({})
   const cache = useRef<FolderSizes>({})
-  const request = useRef(0)
 
   useEffect(() => {
     if (!enabled) {
@@ -22,11 +21,11 @@ export function useFolderSizes(entries: FileEntry[], enabled: boolean): FolderSi
       .filter((path) => cache.current[path] === undefined)
     if (missing.length === 0) return
 
-    const token = ++request.current
+    let cancelled = false
     filesystem
       .getFolderSizes(missing)
       .then((result) => {
-        if (request.current !== token) return
+        if (cancelled) return
         const next: FolderSizes = { ...cache.current }
         for (const [path, stats] of Object.entries(result)) next[path] = stats.size
         const keys = Object.keys(next)
@@ -37,6 +36,9 @@ export function useFolderSizes(entries: FileEntry[], enabled: boolean): FolderSi
         setSizes(next)
       })
       .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
   }, [entries, enabled])
 
   return sizes

@@ -1,3 +1,4 @@
+import { fileRows } from '../../lib/fileRows'
 import { Button } from '../base/Button'
 import { DetailsPane } from '../DetailsPane'
 import { SecondaryPane } from '../SecondaryPane'
@@ -37,12 +38,7 @@ function emptyLabel(b: FileBrowserController, compact: boolean) {
 
 export function BrowserBody({ browser: b, compact }: { browser: FileBrowserController; compact: boolean }) {
   const { t, preferences: p, workspace: w } = b
-  const rows = b.visibleEntries.map((entry) => ({
-    entry,
-    tags: b.tagsOf(entry.path),
-    isSelected: b.selected.includes(entry.path),
-    isActive: b.activeEntry?.path === entry.path
-  }))
+  const rows = fileRows(b.visibleEntries, b.selected, b.activeEntry?.path ?? null, b.tagsOf)
   const status = browserStatus(b)
   const shared = {
     rows,

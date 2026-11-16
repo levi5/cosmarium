@@ -33,7 +33,7 @@ it('authorizes image thumbnails before assigning their source', async () => {
 
 it('keeps a file glyph when thumbnail authorization fails', async () => {
   vi.mocked(filesystem.prepareMediaPreview).mockRejectedValueOnce('Access denied')
-  const { container } = render(<FileIcon entry={image} />)
+  const { container } = render(<FileIcon entry={{ ...image, modified: 1 }} />)
   await waitFor(() => expect(filesystem.prepareMediaPreview).toHaveBeenCalledWith(image.path))
   expect(container.querySelector('img')).toBeNull()
   expect(container.querySelector('svg')).toBeTruthy()

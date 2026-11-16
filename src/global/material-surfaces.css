@@ -37,7 +37,6 @@
   background: var(--selected-2);
 }
 
-/* Text previews can use the material; media canvases keep their opaque background. */
 :root:is([data-material='mica'], [data-material='acrylic']) .preview-pane__text {
   background: var(--mat-veil);
 }

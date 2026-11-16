@@ -3,6 +3,8 @@ import type { Language } from './preferences'
 const text = {
   'pt-BR': {
     appName: 'Cosmarium',
+    openTerminal: 'Abrir terminal',
+    openTerminalRoot: 'Abrir terminal como root',
     search: 'Pesquisar arquivos',
     newFolder: 'Nova pasta',
     upload: 'Enviar',
@@ -212,6 +214,8 @@ const text = {
   },
   en: {
     appName: 'Cosmarium',
+    openTerminal: 'Open terminal',
+    openTerminalRoot: 'Open terminal as root',
     search: 'Search files',
     newFolder: 'New folder',
     upload: 'Upload',

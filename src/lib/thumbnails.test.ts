@@ -112,3 +112,16 @@ it('times out videos that never load and frees their resources', async () => {
   await rejected
   expect(load).toHaveBeenCalled()
 })
+
+it('caches image authorization and rejects cancelled requests even on cache hits', async () => {
+  const image = entry('authorized.png')
+  const prepare = vi.mocked(filesystem.prepareMediaPreview)
+  const before = prepare.mock.calls.length
+  expect(await requestThumbnail(image, new AbortController().signal)).toBe(image.path)
+  expect(await requestThumbnail(image, new AbortController().signal)).toBe(image.path)
+  expect(prepare.mock.calls.length - before).toBe(1)
+  const controller = new AbortController()
+  controller.abort()
+  await expect(requestThumbnail(image, controller.signal)).rejects.toBeTruthy()
+  expect(prepare.mock.calls.length - before).toBe(1)
+})
