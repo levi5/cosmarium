@@ -17,6 +17,7 @@ import { type FileIconSize, ICON_PX } from '../../constants/view'
 import { useThumbnail } from '../../hooks/useThumbnail'
 import { usePreferences } from '../../lib/preferences'
 import type { FileEntry } from '../../types/explorer'
+import { codeIconFor } from './codeIcons'
 import './styles.css'
 
 type Glyph = { icon: ElementType; color: string }
@@ -92,6 +93,23 @@ export function FileIcon({ entry, size = 'small' }: { entry: FileIconEntry; size
     return (
       <span ref={ref} className={`files-icon files-icon--thumb files-icon--${size}`}>
         <img src={source} alt="" loading="lazy" decoding="async" onError={() => setFailedKey(key)} />
+        {protection}
+      </span>
+    )
+  }
+
+  const codeIcon = codeIconFor(entry.name)
+  if (codeIcon) {
+    return (
+      <span ref={ref} className={`files-icon files-icon--${size}`}>
+        <span className="files-icon__code-document" style={{ width: ICON_PX[size], height: ICON_PX[size] }} aria-hidden="true">
+          <svg className="files-icon__code-page" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M10 3h17l13 13v26a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" fill="#F0F0F0" />
+            <path d="m27 3 13 13H30a3 3 0 0 1-3-3V3Z" fill="#D2D6DC" />
+            <path d="m27 13 13 6v-3H30a3 3 0 0 1-3-3Z" fill="#B6BDC7" opacity=".35" />
+          </svg>
+          <img className="files-icon__code" src={codeIcon} alt="" />
+        </span>
         {protection}
       </span>
     )
