@@ -25,6 +25,23 @@
   -webkit-backdrop-filter: blur(var(--mat-blur)) saturate(var(--mat-sat));
 }
 
+:root:is([data-material='mica'], [data-material='acrylic'])
+  :is(
+    .context-menu,
+    .file-context-menu,
+    .background-context-menu,
+    .dropdown,
+    .system-open-dialog,
+    .tool-dialog,
+    .prompt-dialog,
+    .conflict-dialog,
+    .shortcuts-dialog,
+    .tag-dialog,
+    .properties-dialog
+  ) {
+  background: color-mix(in srgb, var(--mat-veil-hex) 96%, transparent);
+}
+
 :root:is([data-material='mica'], [data-material='acrylic']) .app-shell {
   position: relative;
   isolation: isolate;
@@ -52,6 +69,10 @@
 
 :root:is([data-material='mica'], [data-material='acrylic']) .status-bar {
   background: var(--mat-status);
+}
+
+:root:is([data-material='mica'], [data-material='acrylic']) .details-pane {
+  background: color-mix(in srgb, var(--mat-veil-hex) 90%, transparent);
 }
 
 :root:is([data-material='mica'], [data-material='acrylic']) .drive-overview__card {
@@ -164,7 +185,7 @@
     -webkit-backdrop-filter: none;
   }
 
-  :is(.preview-backdrop, .prompt-backdrop, .conflict-backdrop, .shortcuts-backdrop, .tag-backdrop, .properties-backdrop, .confirm-backdrop) {
+  :is(.dialog-backdrop, .preview-backdrop, .prompt-backdrop, .conflict-backdrop, .shortcuts-backdrop, .tag-backdrop, .properties-backdrop, .confirm-backdrop) {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }

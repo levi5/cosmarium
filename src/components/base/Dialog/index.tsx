@@ -19,7 +19,7 @@ export function Dialog({ backdropClass, dismissLabel, onClose, children }: Props
 
   return (
     <Portal>
-      <div ref={ref} className={backdropClass} role="dialog" aria-modal="true" aria-label={dismissLabel} tabIndex={-1}>
+      <div ref={ref} className={`dialog-backdrop ${backdropClass}`} role="dialog" aria-modal="true" aria-label={dismissLabel} tabIndex={-1}>
         <button type="button" className="dialog-dismiss" aria-label={dismissLabel} onClick={onClose} tabIndex={-1} aria-hidden="true" />
         {children}
       </div>

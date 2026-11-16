@@ -15,6 +15,7 @@ import { filesystem } from '../../services/tauri/filesystem'
 import { driveLabel, useDriveAliasStore } from '../../stores/driveAliasStore'
 import { usePendingDropStore } from '../../stores/pendingDropStore'
 import { DriveAliasButton } from '../DriveAliasButton'
+import { TaggedSections } from './TaggedSections'
 import './styles.css'
 
 const locations = [
@@ -159,6 +160,21 @@ export function Sidebar() {
               </button>
             ))
           )}
+
+        <TaggedSections
+          onOpen={(path) => {
+            void (async () => {
+              try {
+                const parent = await filesystem.getParent(path)
+                const entries = await filesystem.listDirectory(parent)
+                if (entries.some((entry) => entry.path === path && entry.kind === 'directory')) openPath(path)
+                else await filesystem.openWithDefault(path)
+              } catch (reason) {
+                setNotice({ title: translateText('tagsTitle'), message: errorMessage(reason) })
+              }
+            })()
+          }}
+        />
 
         {section(
           'drives',

@@ -18,6 +18,7 @@ const surfaces = [
 const stylesheets = [
   ...[
     'base/ContextMenu',
+    'base/Dialog',
     'base/Dropdown',
     'FileContextMenu',
     'BackgroundContextMenu',
@@ -106,6 +107,7 @@ it.each([
     'notification-surface',
     'breadcrumb',
     'search-box',
+    'dialog-backdrop',
     'preview-backdrop'
   ]) {
     const computed = getComputedStyle(surface(className))
@@ -119,6 +121,30 @@ it('keeps theme material variables on the root instead of changing them on hover
     if (!(rule instanceof CSSStyleRule) || !rule.style.getPropertyValue('--mat-veil')) continue
     expect(rule.selectorText).not.toContain(':hover')
     expect(rule.selectorText).not.toMatch(/:root[^,]*\s+:root/)
+  }
+})
+
+it('blurs shared modal backdrops and keeps menus and modal surfaces only slightly translucent', () => {
+  expect(getComputedStyle(surface('dialog-backdrop')).getPropertyValue('backdrop-filter')).toBe('blur(10px)')
+  const modalRule = Array.from(styles.sheet?.cssRules ?? []).find(
+    (rule): rule is CSSStyleRule =>
+      rule instanceof CSSStyleRule && rule.style.getPropertyValue('background') === 'color-mix(in srgb, var(--mat-veil-hex) 96%, transparent)'
+  )
+  expect(modalRule).toBeDefined()
+  for (const className of [
+    'context-menu',
+    'file-context-menu',
+    'background-context-menu',
+    'dropdown',
+    'tag-dialog',
+    'prompt-dialog',
+    'tool-dialog',
+    'conflict-dialog',
+    'shortcuts-dialog',
+    'properties-dialog',
+    'system-open-dialog'
+  ]) {
+    expect(modalRule?.selectorText).toContain(`.${className}`)
   }
 })
 
