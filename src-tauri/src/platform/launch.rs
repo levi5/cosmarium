@@ -65,3 +65,23 @@ pub fn register_pending_path(app: &AppHandle) -> Option<PendingPath> {
     }
     pending
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn linux_packages_register_as_a_file_manager() {
+        let config: serde_json::Value =
+            serde_json::from_str(include_str!("../../tauri.conf.json")).unwrap();
+        for format in ["deb", "rpm"] {
+            assert_eq!(
+                config["bundle"]["linux"][format]["desktopTemplate"],
+                "linux/Cosmarium.desktop"
+            );
+        }
+        let desktop = include_str!("../../linux/Cosmarium.desktop");
+        assert!(desktop.contains("Exec={{exec}} %f\n"));
+        assert!(desktop.contains("MimeType=inode/directory;"));
+        assert!(desktop.contains("{{mime_type}}"));
+        assert!(desktop.contains("FileManager;"));
+    }
+}

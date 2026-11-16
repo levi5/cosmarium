@@ -161,6 +161,19 @@ workflow artifacts and, for tags, attaches them to a draft GitHub release.
 Linux builds target Ubuntu 22.04 for a wider glibc range; Windows builds are
 unsigned unless a code-signing certificate is configured.
 
+### Default file manager on Linux
+
+Installed Linux packages register Cosmarium as a handler for folders
+(`inode/directory`). In Cinnamon, reopen **Preferred Applications → File Manager**
+and select **Cosmarium**. Installation does not change your default automatically.
+Running `pnpm tauri dev` alone does not register the app with the desktop.
+
+You can also select an installed package as the default from a terminal:
+
+```bash
+xdg-mime default Cosmarium.desktop inode/directory
+```
+
 ## Website
 
 The marketing site lives in [`web/`](web) and is published to GitHub Pages at
