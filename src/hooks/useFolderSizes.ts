@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FOLDER_SIZE_CACHE_LIMIT } from '../constants/files'
 import { filesystem } from '../services/tauri/filesystem'
 import type { FileEntry } from '../types/explorer'
@@ -8,6 +8,14 @@ export type FolderSizes = Record<string, number>
 export function useFolderSizes(entries: FileEntry[], enabled: boolean): FolderSizes {
   const [sizes, setSizes] = useState<FolderSizes>({})
   const cache = useRef<FolderSizes>({})
+  // Listing refreshes replace entry objects, even when the folders have not changed.
+  const folderKey = JSON.stringify(
+    entries
+      .filter((entry) => entry.kind === 'directory')
+      .map((entry) => entry.path)
+      .sort()
+  )
+  const folders = useMemo<string[]>(() => JSON.parse(folderKey), [folderKey])
 
   useEffect(() => {
     if (!enabled) {
@@ -15,10 +23,7 @@ export function useFolderSizes(entries: FileEntry[], enabled: boolean): FolderSi
       setSizes({})
       return
     }
-    const missing = entries
-      .filter((entry) => entry.kind === 'directory')
-      .map((entry) => entry.path)
-      .filter((path) => cache.current[path] === undefined)
+    const missing = folders.filter((path) => cache.current[path] === undefined)
     if (missing.length === 0) return
 
     let cancelled = false
@@ -39,7 +44,7 @@ export function useFolderSizes(entries: FileEntry[], enabled: boolean): FolderSi
     return () => {
       cancelled = true
     }
-  }, [entries, enabled])
+  }, [folders, enabled])
 
   return sizes
 }

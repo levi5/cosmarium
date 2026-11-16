@@ -80,9 +80,9 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
       .catch(() => setVolumes([]))
   }, [])
 
-  const loadDirectory = useCallback(async (path: string) => {
+  const loadDirectory = useCallback(async (path: string, background = false) => {
     const id = ++requestId.current
-    setLoading(true)
+    if (!background) setLoading(true)
     setError(null)
     try {
       const result = await filesystem.listDirectory(path)
@@ -102,7 +102,7 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
     void loadDirectory(currentPath)
   }, [currentPath, loadDirectory])
 
-  const watchError = useDirectoryWatch(currentPath, () => void loadDirectory(currentPath))
+  const watchError = useDirectoryWatch(currentPath, () => loadDirectory(currentPath, true))
 
   const navigateTo = useCallback(
     (path: string) => {

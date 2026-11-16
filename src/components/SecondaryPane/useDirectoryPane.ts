@@ -10,28 +10,32 @@ export function useDirectoryPane(initialPath: string) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const request = useRef(0)
-  const refresh = useCallback(async () => {
-    const token = ++request.current
-    setLoading(true)
-    setError(null)
-    const result = await _try.async(() => filesystem.listDirectory(path))
-    if (token !== request.current) return
-    result.match({
-      right: setEntries,
-      left: (reason) => {
-        setError(errorMessage(reason))
-        setEntries([])
-      }
-    })
-    setLoading(false)
-  }, [path])
+  const loadDirectory = useCallback(
+    async (background = false) => {
+      const token = ++request.current
+      if (!background) setLoading(true)
+      setError(null)
+      const result = await _try.async(() => filesystem.listDirectory(path))
+      if (token !== request.current) return
+      result.match({
+        right: setEntries,
+        left: (reason) => {
+          setError(errorMessage(reason))
+          setEntries([])
+        }
+      })
+      setLoading(false)
+    },
+    [path]
+  )
+  const refresh = useCallback(() => loadDirectory(), [loadDirectory])
   useEffect(() => {
     void refresh()
     return () => {
       request.current++
     }
   }, [refresh])
-  const watchError = useDirectoryWatch(path, () => void refresh())
+  const watchError = useDirectoryWatch(path, () => loadDirectory(true))
   const insertEntry = (entry: FileEntry) => setEntries((current) => [...current.filter((item) => item.path !== entry.path), entry])
   const createFolder = async (name: string) => insertEntry(await filesystem.createDirectory(path, name))
   const createFile = async (name: string) => {

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { errorMessage } from '../lib/format'
 import { filesystem } from '../services/tauri/filesystem'
 
-export function useDirectoryWatch(path: string, onChanged: () => void) {
+export function useDirectoryWatch(path: string, onChanged: () => void | Promise<void>) {
   const latest = useRef(onChanged)
   latest.current = onChanged
   const [error, setError] = useState<string | null>(null)
@@ -12,10 +12,27 @@ export function useDirectoryWatch(path: string, onChanged: () => void) {
     let cancelled = false
     let unlisten: (() => void) | undefined
     let watching = false
+    let refreshing = false
+    let pending = false
+    const refresh = async () => {
+      pending = true
+      if (refreshing) return
+      refreshing = true
+      try {
+        while (pending && !cancelled) {
+          pending = false
+          await latest.current()
+        }
+      } catch (reason) {
+        if (!cancelled) setError(errorMessage(reason))
+      } finally {
+        refreshing = false
+      }
+    }
     setError(null)
     const subscribe = async () => {
       const off = await listen<string>('cosmarium://fs-changed', ({ payload }) => {
-        if (!cancelled && payload === path) latest.current()
+        if (!cancelled && payload === path) void refresh()
       })
       if (cancelled) {
         off()

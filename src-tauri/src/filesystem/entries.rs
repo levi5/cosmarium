@@ -123,10 +123,7 @@ pub fn entry_from_path(path: &Path) -> Result<FileEntry, String> {
 }
 
 pub fn sort_default(entries: &mut [FileEntry]) {
-    entries.sort_by(|left, right| {
-        (!left.is_directory(), left.name.to_lowercase())
-            .cmp(&(!right.is_directory(), right.name.to_lowercase()))
-    });
+    entries.sort_by_cached_key(|entry| (!entry.is_directory(), entry.name.to_lowercase()));
 }
 
 pub fn list_directory(path: &str) -> Result<Vec<FileEntry>, String> {
