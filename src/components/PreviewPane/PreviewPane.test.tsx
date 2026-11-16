@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { filesystem } from '../../services/tauri/filesystem'
 import { PreviewPane } from './index'
@@ -38,6 +38,18 @@ const mediaProps = {
   labels: { image: 'Image', video: 'Video', text: 'Text', loading: 'Loading', binary: 'Not text', truncated: 'Truncated', size: 'Size', close: 'Close' },
   onClose: () => {}
 }
+
+it('keeps video sound enabled and reports playback failures', async () => {
+  vi.mocked(filesystem.prepareMediaPreview).mockResolvedValueOnce('http://127.0.0.1/video')
+  render(<PreviewPane {...mediaProps} type="video" />)
+  await waitFor(() => expect(document.querySelector('video')).not.toBeNull())
+  const video = document.querySelector('video')
+  if (!video) throw new Error('Video preview was not mounted')
+  expect(video.muted).toBe(false)
+  expect(video.controls).toBe(true)
+  fireEvent.error(video)
+  expect(screen.getByRole('alert').textContent).toContain('Unable to play this video')
+})
 
 it('does not request an asset until the backend authorizes its canonical path', async () => {
   let authorize!: (path: string) => void

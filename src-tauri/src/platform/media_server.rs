@@ -9,7 +9,6 @@ use std::thread;
 use std::time::Duration;
 
 const MAX_HEADER_BYTES: usize = 16 * 1024;
-const MAX_RANGE_BYTES: u64 = 1000 * 1024;
 const READ_TIMEOUT: Duration = Duration::from_secs(10);
 const WRITE_TIMEOUT: Duration = Duration::from_secs(30);
 const CORS_ALLOW_HEADERS: &str = "Range";
@@ -150,7 +149,7 @@ fn handle_connection(
             0,
         );
     }
-    let Some((start, mut end)) = range
+    let Some((start, end)) = range
         .as_deref()
         .map_or(Some((0, length - 1)), |value| parse_range(value, length))
     else {
@@ -162,7 +161,6 @@ fn handle_connection(
         );
     };
     let partial = range.is_some();
-    end = start + (end - start).min(MAX_RANGE_BYTES - 1);
 
     if partial {
         file.seek(SeekFrom::Start(start))?;
@@ -330,8 +328,12 @@ mod tests {
     use std::io::Write;
 
     fn raw_get(address: &str, target: &str, range: Option<&str>) -> String {
+        raw_request(address, target, "GET", range)
+    }
+
+    fn raw_request(address: &str, target: &str, method: &str, range: Option<&str>) -> String {
         let mut stream = TcpStream::connect(address).unwrap();
-        let mut request = format!("GET {target} HTTP/1.1\r\nHost: {address}\r\n");
+        let mut request = format!("{method} {target} HTTP/1.1\r\nHost: {address}\r\n");
         if let Some(range) = range {
             request.push_str(&format!("Range: {range}\r\n"));
         }
@@ -383,6 +385,34 @@ mod tests {
             None,
         );
         assert!(response.starts_with("HTTP/1.1 404 Not Found"));
+    }
+
+    #[test]
+    fn streams_large_files_and_ranges_without_truncating_metadata_at_the_end() {
+        let directory = tempfile::tempdir().unwrap();
+        let file = directory.path().join("large.mp4");
+        let mut contents = "x".repeat(2 * 1024 * 1024);
+        contents.push_str("metadata-at-end");
+        std::fs::write(&file, &contents).unwrap();
+        let server = MediaServer::start().unwrap();
+        let url = server.url_for(&file);
+        let target = format!(
+            "/{}",
+            url.trim_start_matches("http://").split_once('/').unwrap().1
+        );
+        let full_range = format!("bytes=0-{}", contents.len() - 1);
+        for range in [None, Some("bytes=0-"), Some(full_range.as_str())] {
+            let response = raw_get(&server.address, &target, range);
+            let (headers, body) = response.split_once("\r\n\r\n").unwrap();
+            assert!(headers.contains(&format!("Content-Length: {}", contents.len())));
+            assert_eq!(body, contents);
+        }
+        let response = raw_get(&server.address, &target, Some("bytes=-15"));
+        assert!(response.ends_with("metadata-at-end"));
+        let response = raw_request(&server.address, &target, "HEAD", None);
+        let (headers, body) = response.split_once("\r\n\r\n").unwrap();
+        assert!(headers.contains(&format!("Content-Length: {}", contents.len())));
+        assert!(body.is_empty());
     }
 
     #[test]

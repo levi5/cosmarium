@@ -60,7 +60,9 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
     video.muted = true
     video.playsInline = true
     const holder = document.createElement('div')
-    holder.style.display = 'none'
+    // Keep a rendered surface: WebKit may suspend decoding in display:none.
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;width:192px;height:108px;pointer-events:none'
+    holder.setAttribute('aria-hidden', 'true')
     holder.appendChild(video)
     document.body.appendChild(holder)
     const cleanup = () => {
@@ -99,7 +101,10 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
     video.onerror = fail
     signal.addEventListener('abort', fail, { once: true })
     if (signal.aborted) fail()
-    else video.src = source
+    else {
+      video.src = source
+      video.load()
+    }
   })
 }
 
