@@ -43,8 +43,8 @@
   height: 38px;
   padding: 0 10px;
   color: var(--text);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 7px;
   outline: 0;
   font-size: 13px;
@@ -52,7 +52,7 @@
 .prompt-dialog input:focus {
   color: var(--text);
   border-color: var(--accent-line);
-  background: var(--surface-4);
+  background: var(--field-bg-focus);
 }
 .prompt-dialog__error {
   margin: 8px 0 0;
@@ -84,13 +84,6 @@
 }
 :root[data-theme='light'][data-material='mica'] .prompt-dialog {
   background: #ffffffe0;
-}
-:root[data-material='mica'] .prompt-dialog input {
-  background: #ffffff0f;
-  border-color: var(--mat-border);
-}
-:root[data-theme='light'][data-material='mica'] .prompt-dialog input {
-  background: #ffffff8f;
 }
 @keyframes dialog-in {
   from {

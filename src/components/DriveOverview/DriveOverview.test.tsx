@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { DriveOverview } from '.'
 
@@ -30,6 +30,7 @@ afterEach(() => {
   styles.remove()
   delete document.documentElement.dataset.material
   delete document.documentElement.dataset.theme
+  vi.clearAllMocks()
 })
 
 it.each([
@@ -65,4 +66,23 @@ it('keeps drive navigation and nickname editing separate', () => {
   if (!alias) throw new Error('Missing nickname control')
   fireEvent.click(alias)
   expect(workspace.navigateTo).not.toHaveBeenCalled()
+})
+
+it('collapses and expands the drives without navigating', () => {
+  render(<DriveOverview />)
+  const heading = screen.getByRole('button', { name: 'Drives' })
+  const grid = document.getElementById(heading.getAttribute('aria-controls') as string)
+  expect(grid?.hidden).toBe(false)
+  expect(heading.getAttribute('aria-expanded')).toBe('true')
+
+  fireEvent.click(heading)
+  expect(grid?.hidden).toBe(true)
+  expect(heading.getAttribute('aria-expanded')).toBe('false')
+  expect(screen.queryByRole('button', { name: /^Data/ })).toBeNull()
+  expect(workspace.navigateTo).not.toHaveBeenCalled()
+
+  fireEvent.click(heading)
+  expect(grid?.hidden).toBe(false)
+  fireEvent.click(screen.getByRole('button', { name: /^Data/ }))
+  expect(workspace.navigateTo).toHaveBeenCalledWith('/media/data')
 })

@@ -458,11 +458,11 @@
 
 .file-row:active:not(.is-selected),
 .recents-row:active:not(.is-selected) {
-  background: var(--surface-4);
+  background: var(--press-bg);
 }
 .file-row:focus-visible,
 .recents-row:focus-visible {
-  background: var(--surface-3);
+  background: var(--focus-bg);
 }
 .file-row:focus-visible.is-selected,
 .recents-row:focus-visible.is-selected {

@@ -9,7 +9,7 @@
   height: 28px;
   padding: 0 8px;
   color: var(--muted);
-  background: var(--surface-2);
+  background: var(--field-bg);
   border: 1px solid var(--line);
   border-radius: 6px;
   transition:
@@ -19,7 +19,7 @@
 .search-box:focus-within {
   color: var(--text);
   border-color: var(--accent-line);
-  background: var(--surface-4);
+  background: var(--field-bg-focus);
 }
 .search-box input {
   flex: 1;

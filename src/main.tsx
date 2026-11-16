@@ -12,6 +12,7 @@ import './global/tokens.css'
 import './global/material.css'
 import './global/material-light.css'
 import './global/notifications.css'
+import './global/material-surfaces.css'
 
 const container = document.getElementById('root')
 
