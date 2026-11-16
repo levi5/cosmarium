@@ -1,4 +1,6 @@
+pub mod launch;
 pub mod locations;
+pub mod media_server;
 pub mod open;
 pub mod paths;
 pub mod rename;

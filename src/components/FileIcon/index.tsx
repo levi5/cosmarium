@@ -1,4 +1,5 @@
 import { ArchiveFilled } from '@fluentui/react-icons/svg/archive'
+import { CodeFilled } from '@fluentui/react-icons/svg/code'
 import { DocumentFilled } from '@fluentui/react-icons/svg/document'
 import { DocumentDataFilled } from '@fluentui/react-icons/svg/document-data'
 import { DocumentImageFilled } from '@fluentui/react-icons/svg/document-image'
@@ -32,7 +33,24 @@ const byExt: Record<string, Glyph> = {
   txt: { icon: DocumentTextFilled, color: '#9AA4B2' },
   md: { icon: DocumentTextFilled, color: '#9AA4B2' },
   log: { icon: DocumentTextFilled, color: '#9AA4B2' },
-  ini: { icon: DocumentTextFilled, color: '#9AA4B2' }
+  ini: { icon: DocumentTextFilled, color: '#9AA4B2' },
+  html: { icon: CodeFilled, color: '#4C8DF6' },
+  htm: { icon: CodeFilled, color: '#4C8DF6' },
+  py: { icon: CodeFilled, color: '#4C8DF6' },
+  js: { icon: CodeFilled, color: '#4C8DF6' },
+  mjs: { icon: CodeFilled, color: '#4C8DF6' },
+  cjs: { icon: CodeFilled, color: '#4C8DF6' },
+  ts: { icon: CodeFilled, color: '#4C8DF6' },
+  tsx: { icon: CodeFilled, color: '#4C8DF6' },
+  jsx: { icon: CodeFilled, color: '#4C8DF6' },
+  css: { icon: CodeFilled, color: '#4C8DF6' },
+  scss: { icon: CodeFilled, color: '#4C8DF6' },
+  less: { icon: CodeFilled, color: '#4C8DF6' },
+  json: { icon: CodeFilled, color: '#2FA36B' },
+  xml: { icon: CodeFilled, color: '#2FA36B' },
+  yaml: { icon: CodeFilled, color: '#2FA36B' },
+  yml: { icon: CodeFilled, color: '#2FA36B' },
+  toml: { icon: CodeFilled, color: '#2FA36B' }
 }
 
 function glyphFor(name: string): Glyph {

@@ -1,4 +1,3 @@
-import { convertFileSrc } from '@tauri-apps/api/core'
 import { fileExtension, hasExtension, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from '../constants/files'
 import { filesystem } from '../services/tauri/filesystem'
 import type { FileEntry } from '../types/explorer'
@@ -60,6 +59,12 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
     video.preload = 'auto'
     video.muted = true
     video.playsInline = true
+    const holder = document.createElement('div')
+    // Keep a rendered surface: WebKit may suspend decoding in display:none.
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;width:192px;height:108px;pointer-events:none'
+    holder.setAttribute('aria-hidden', 'true')
+    holder.appendChild(video)
+    document.body.appendChild(holder)
     const cleanup = () => {
       signal.removeEventListener('abort', fail)
       video.onloadeddata = null
@@ -67,6 +72,7 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
       video.onerror = null
       video.removeAttribute('src')
       video.load()
+      holder.remove()
     }
     const fail = () => {
       cleanup()
@@ -95,7 +101,10 @@ function videoThumbnail(source: string, signal: AbortSignal): Promise<string> {
     video.onerror = fail
     signal.addEventListener('abort', fail, { once: true })
     if (signal.aborted) fail()
-    else video.src = source
+    else {
+      video.src = source
+      video.load()
+    }
   })
 }
 
@@ -121,7 +130,7 @@ export function requestThumbnail(entry: FileEntry, signal: AbortSignal): Promise
       signal.addEventListener('abort', abort, { once: true })
       const timer = setTimeout(abort, 15000)
       const generate = async () => {
-        const source = convertFileSrc(await filesystem.prepareMediaPreview(entry.path))
+        const source = await filesystem.prepareMediaPreview(entry.path)
         controller.signal.throwIfAborted()
         if (hasExtension(entry.name, IMAGE_EXTENSIONS)) return source
         const result = await (fileExtension(entry.name) === 'pdf' ? pdfThumbnail(source, controller.signal) : videoThumbnail(source, controller.signal))

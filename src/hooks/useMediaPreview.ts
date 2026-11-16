@@ -1,4 +1,3 @@
-import { convertFileSrc } from '@tauri-apps/api/core'
 import { _try } from 'funcio'
 import { useEffect, useState } from 'react'
 import { errorMessage } from '../lib/format'
@@ -13,7 +12,7 @@ export function useMediaPreview(path: string, enabled: boolean) {
     let alive = true
     setState(null)
     void _try
-      .async(async () => convertFileSrc(await filesystem.prepareMediaPreview(path)))
+      .async(async () => filesystem.prepareMediaPreview(path))
       .then((result) => {
         if (!alive) return
         result.match({

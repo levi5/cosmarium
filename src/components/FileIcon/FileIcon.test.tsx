@@ -23,7 +23,7 @@ it('authorizes image thumbnails before assigning their source', async () => {
   const { container } = render(<FileIcon entry={image} />)
   expect(container.querySelector('img')).toBeNull()
   await act(async () => authorize('/resolved/photo.webp'))
-  expect(container.querySelector('img')?.getAttribute('src')).toBe('asset:///resolved/photo.webp')
+  expect(container.querySelector('img')?.getAttribute('src')).toBe('/resolved/photo.webp')
   const thumbnail = container.querySelector('img')
   if (!thumbnail) throw new Error('Missing authorized thumbnail')
   fireEvent.error(thumbnail)

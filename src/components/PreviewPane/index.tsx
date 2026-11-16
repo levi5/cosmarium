@@ -62,7 +62,19 @@ export function PreviewPane({ entry, type, language, title, labels, onClose }: P
           {sourceError && <p role="alert">{sourceError}</p>}
           {type !== 'text' && !source && !sourceError && <p role="status">{labels.loading}</p>}
           {source && type === 'video' && (
-            <video src={source} controls autoPlay>
+            <video
+              src={source}
+              controls
+              autoPlay
+              playsInline
+              onError={() =>
+                setMediaError(
+                  language === 'pt-BR'
+                    ? 'Não foi possível reproduzir o vídeo. Verifique os codecs do sistema ou abra no aplicativo padrão.'
+                    : 'Unable to play this video. Check system codecs or open in the default application.'
+                )
+              }
+            >
               <track kind="captions" src={EMPTY_CAPTIONS} />
             </video>
           )}

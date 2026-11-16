@@ -3,6 +3,7 @@ import { useDirectoryWatch } from '../hooks/useDirectoryWatch'
 import { filesystem } from '../services/tauri/filesystem'
 import { useExplorerStore } from '../stores/explorerStore'
 import type { ExplorerTab, FileEntry, Locations, Volume } from '../types/explorer'
+import { parentPath } from './format'
 import { usePreferences } from './preferences'
 
 export type { ExplorerTab, FileEntry, Locations, Volume } from '../types/explorer'
@@ -32,7 +33,7 @@ type FileWorkspace = {
 const FileWorkspaceContext = createContext<FileWorkspace | null>(null)
 
 export function FileWorkspaceProvider({ children }: { children: React.ReactNode }) {
-  const { tabs, activeTabId, initialize, navigate, goBack, goForward } = useExplorerStore()
+  const { tabs, activeTabId, initialize, startAt, navigate, goBack, goForward } = useExplorerStore()
   const activeTab = tabs.find((tab) => tab.id === activeTabId)
   const currentPath = activeTab?.path || ''
 
@@ -41,7 +42,9 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
   const [volumes, setVolumes] = useState<Volume[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { showHidden } = usePreferences()
+  const { showHidden, rememberLastLocation } = usePreferences()
+  const rememberLastLocationAtStart = useRef(rememberLastLocation)
+  const startupReady = useRef(false)
 
   const requestId = useRef(0)
 
@@ -51,14 +54,24 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
     filesystem
       .getLocations()
       .then((result) => {
+        startupReady.current = true
         setLocations(result)
-        initialize(result.home)
+        if (rememberLastLocationAtStart.current) initialize(result.home)
+        else startAt(result.home)
+        void filesystem
+          .takeStartupPath()
+          .then((pending) => {
+            if (!pending) return
+            const path = pending.isDirectory ? pending.path : parentPath(pending.path)
+            if (path) useExplorerStore.getState().navigate(path)
+          })
+          .catch(() => undefined)
       })
       .catch((reason) => {
         setLoading(false)
         setError(typeof reason === 'string' ? reason : 'Could not load your home folder. Check your system permissions.')
       })
-  }, [initialize])
+  }, [initialize, startAt])
 
   useEffect(() => {
     filesystem
@@ -84,7 +97,9 @@ export function FileWorkspaceProvider({ children }: { children: React.ReactNode 
   }, [])
 
   useEffect(() => {
-    if (currentPath) void loadDirectory(currentPath)
+    if (!currentPath) return
+    if (!rememberLastLocationAtStart.current && !startupReady.current) return
+    void loadDirectory(currentPath)
   }, [currentPath, loadDirectory])
 
   const watchError = useDirectoryWatch(currentPath, () => void loadDirectory(currentPath))

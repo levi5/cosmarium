@@ -7,6 +7,7 @@ type ExplorerState = {
   activeTabId: string | null
   closedTabs: ExplorerTab[]
   initialize: (home: string) => void
+  startAt: (path: string) => void
   createTab: (path: string) => void
   duplicateTab: (id: string) => void
   closeTab: (id: string) => void
@@ -32,6 +33,10 @@ export const useExplorerStore = create<ExplorerState>()(
         if (get().tabs.length > 0 && get().activeTabId) return
         const tab = createTab(home)
         set({ tabs: [tab], activeTabId: tab.id })
+      },
+      startAt: (path) => {
+        const tab = createTab(path)
+        set({ tabs: [tab], activeTabId: tab.id, closedTabs: [] })
       },
       createTab: (path) => {
         const tab = createTab(path)

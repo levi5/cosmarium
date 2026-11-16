@@ -46,7 +46,12 @@ it('renders only the first PDF page, caches it and invalidates modified files', 
 })
 
 it('captures a video frame and releases the decoder', async () => {
-  vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+  vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(function (this: HTMLMediaElement) {
+    if (this.getAttribute('src')) {
+      expect(this.isConnected).toBe(true)
+      expect((this.parentElement as HTMLElement).style.display).not.toBe('none')
+    }
+  })
   const drawImage = vi.fn()
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage } as unknown as CanvasRenderingContext2D)
   vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/jpeg;base64,video')
@@ -67,6 +72,8 @@ it('captures a video frame and releases the decoder', async () => {
   expect(await requestThumbnail(entry('frame.mp4'), new AbortController().signal)).toBe('data:image/jpeg;base64,video')
   expect(drawImage).toHaveBeenCalled()
   expect(video?.getAttribute('src')).toBeNull()
+  expect(HTMLMediaElement.prototype.load).toHaveBeenCalledTimes(2)
+  expect(video?.isConnected).toBe(false)
 })
 
 it('limits authorization/generation to two jobs and removes cancelled queued jobs', async () => {

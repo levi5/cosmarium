@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { filesystem } from '../../services/tauri/filesystem'
 import { PreviewPane } from './index'
@@ -39,6 +39,18 @@ const mediaProps = {
   onClose: () => {}
 }
 
+it('keeps video sound enabled and reports playback failures', async () => {
+  vi.mocked(filesystem.prepareMediaPreview).mockResolvedValueOnce('http://127.0.0.1/video')
+  render(<PreviewPane {...mediaProps} type="video" />)
+  await waitFor(() => expect(document.querySelector('video')).not.toBeNull())
+  const video = document.querySelector('video')
+  if (!video) throw new Error('Video preview was not mounted')
+  expect(video.muted).toBe(false)
+  expect(video.controls).toBe(true)
+  fireEvent.error(video)
+  expect(screen.getByRole('alert').textContent).toContain('Unable to play this video')
+})
+
 it('does not request an asset until the backend authorizes its canonical path', async () => {
   let authorize!: (path: string) => void
   vi.mocked(filesystem.prepareMediaPreview).mockReturnValueOnce(
@@ -50,7 +62,7 @@ it('does not request an asset until the backend authorizes its canonical path', 
   expect(screen.queryByRole('img')).toBeNull()
   expect(screen.getByRole('status').textContent).toBe('Loading')
   await act(async () => authorize('/resolved/image.png'))
-  expect((await screen.findByRole('img')).getAttribute('src')).toBe('asset:///resolved/image.png')
+  expect((await screen.findByRole('img')).getAttribute('src')).toBe('/resolved/image.png')
 })
 
 it('shows authorization failures without exposing a media source', async () => {
@@ -72,7 +84,7 @@ it('ignores stale authorization responses after changing the preview target', as
     .mockResolvedValueOnce('/resolved/next.png')
   const { rerender } = render(<PreviewPane {...mediaProps} type="image" />)
   rerender(<PreviewPane {...mediaProps} entry={{ ...mediaProps.entry, path: '/next.png', name: 'next.png' }} type="image" />)
-  await waitFor(() => expect(screen.getByRole('img').getAttribute('src')).toBe('asset:///resolved/next.png'))
+  await waitFor(() => expect(screen.getByRole('img').getAttribute('src')).toBe('/resolved/next.png'))
   await act(async () => authorize('/resolved/image.png'))
-  expect(screen.getByRole('img').getAttribute('src')).toBe('asset:///resolved/next.png')
+  expect(screen.getByRole('img').getAttribute('src')).toBe('/resolved/next.png')
 })

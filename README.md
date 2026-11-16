@@ -88,6 +88,8 @@ web/            GitHub Pages site built with React and Vite
 - Content-based duplicate detection with SHA-256 (read-only)
 - PDF preview rendered with PDF.js and audio playback
 - Image, first-page PDF and video-frame thumbnails, generated for visible items with two concurrent jobs and a bounded in-memory cache. Video support depends on the native WebView codecs; unsupported files keep their icons. Generated thumbnails are discarded when the app closes.
+- Media previews and thumbnails are streamed over an authorized loopback HTTP endpoint, so audio and video also work on Linux where WebKitGTK cannot decode Tauri's `asset:` scheme.
+- Registered file associations for the supported media and PDF types so the app can be offered as the handler in the system "Open with" list. When launched through an association, it opens the folder of the given path.
 - Open a terminal in the current folder
 - Serialized transfers with in-session pause/resume, cancellation, speed and remaining time
 - Saved searches and recursive filters for size, modification date and text content
@@ -107,7 +109,7 @@ Dates use UTC day boundaries. Content search scans UTF-8 text files up to 2 MiB.
 
 ## Operation safety
 
-- Media previews start with an empty asset-protocol scope. Only supported, readable regular files requested for preview or thumbnails are authorized, by canonical path, for the current application session.
+- Media previews start with an empty asset-protocol scope. Only supported, readable regular files requested for preview or thumbnails are authorized, by canonical path, for the current application session. Authorized media is streamed from a token-protected HTTP server bound to `127.0.0.1` with byte-range support.
 - ZIP extraction rejects path traversal and symbolic links, and is limited to 100,000 entries and 20 GiB of extracted content. Existing output folders are never replaced.
 - Batch renames validate the full plan first, reject existing targets and attempt rollback on failure. Cyclic renames are not supported.
 - Transfers do not follow symbolic links. Replacement copies are staged before recycling an existing destination. A failed directory copy never triggers deletion of its source tree.
@@ -158,6 +160,19 @@ workflow**, or push a tag such as `v0.1.0`. Each run uploads the installers as
 workflow artifacts and, for tags, attaches them to a draft GitHub release.
 Linux builds target Ubuntu 22.04 for a wider glibc range; Windows builds are
 unsigned unless a code-signing certificate is configured.
+
+### Default file manager on Linux
+
+Installed Linux packages register Cosmarium as a handler for folders
+(`inode/directory`). In Cinnamon, reopen **Preferred Applications → File Manager**
+and select **Cosmarium**. Installation does not change your default automatically.
+Running `pnpm tauri dev` alone does not register the app with the desktop.
+
+You can also select an installed package as the default from a terminal:
+
+```bash
+xdg-mime default Cosmarium.desktop inode/directory
+```
 
 ## Website
 

@@ -14,6 +14,8 @@ use std::path::PathBuf;
 
 use operations::transfer::TransferCancels;
 use operations::undo::UndoStack;
+use platform::launch::StartupState;
+use platform::media_server::MediaServer;
 use serde::{Deserialize, Serialize};
 use tauri::{
     Manager, PhysicalPosition, PhysicalSize, Position, Runtime, Size, WebviewWindow, WindowEvent,
@@ -75,6 +77,7 @@ fn main() {
         .manage(TransferCancels::default())
         .manage(UndoStack::new())
         .manage(WatcherState::new())
+        .manage(StartupState::new())
         .invoke_handler(tauri::generate_handler![
             commands::drag::start_file_drag,
             commands::drag::drag_copy_modifier,
@@ -88,6 +91,7 @@ fn main() {
             commands::fs_read::prepare_media_preview,
             commands::fs_read::get_folder_stats,
             commands::fs_read::get_folder_sizes,
+            crate::platform::launch::take_startup_path,
             commands::fs_write::create_directory,
             commands::fs_write::create_file,
             commands::fs_write::rename_entry,
@@ -113,6 +117,8 @@ fn main() {
             commands::tools::open_terminal,
         ])
         .setup(|app| {
+            app.manage(MediaServer::start()?);
+            let _ = platform::launch::register_pending_path(&app.handle().clone());
             let window = app
                 .get_webview_window("main")
                 .expect("main window should exist");

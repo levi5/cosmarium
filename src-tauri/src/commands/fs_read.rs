@@ -3,6 +3,7 @@ use crate::filesystem::entries::{self, FileEntry, SearchQuery};
 use crate::filesystem::recent::{self, RecentQuery};
 use crate::filesystem::stats::{self, FolderStats, MAX_STATS_ENTRIES};
 use crate::platform::locations;
+use crate::platform::media_server::MediaServer;
 use crate::platform::paths::parent_of;
 use crate::platform::volumes::{self, Volume};
 use std::collections::HashMap;
@@ -18,7 +19,7 @@ pub async fn prepare_media_preview<R: tauri::Runtime>(
     app.asset_protocol_scope()
         .allow_file(&canonical)
         .map_err(|error| error.to_string())?;
-    Ok(canonical.to_string_lossy().into_owned())
+    Ok(app.state::<MediaServer>().url_for(&canonical))
 }
 
 #[tauri::command]
@@ -106,6 +107,7 @@ mod preview_tests {
         let app = tauri::test::mock_builder()
             .build(tauri::test::mock_context(tauri::test::noop_assets()))
             .unwrap();
+        app.manage(MediaServer::start().unwrap());
         let scope = app.asset_protocol_scope();
         let directory = tempfile::tempdir().unwrap();
         let image = directory.path().join("photo[1].png");
@@ -120,10 +122,7 @@ mod preview_tests {
             image.to_string_lossy().into_owned(),
         ))
         .unwrap();
-        assert_eq!(
-            std::path::PathBuf::from(result),
-            std::fs::canonicalize(&image).unwrap()
-        );
+        assert!(result.starts_with("http://127.0.0.1:"));
         assert!(scope.is_allowed(&image));
         assert!(!scope.is_allowed(&sibling));
         assert!(!scope.is_allowed(&secret));

@@ -17,6 +17,7 @@ type Preferences = {
   iconSize: IconSize
   showHidden: boolean
   showRecent: boolean
+  rememberLastLocation: boolean
   setTheme: (theme: Theme) => void
   setAccent: (accent: Accent) => void
   setCustomAccent: (color: string) => void
@@ -26,6 +27,7 @@ type Preferences = {
   setIconSize: (iconSize: IconSize) => void
   setShowHidden: (show: boolean) => void
   setShowRecent: (show: boolean) => void
+  setRememberLastLocation: (remember: boolean) => void
 }
 
 type StorageParser<T> = (stored: string | null) => T
@@ -90,6 +92,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [iconSize, setIconSize] = useStoredState<IconSize>(STORAGE.iconSize, asEnum('medium'))
   const [showHidden, setShowHidden] = useStoredState(STORAGE.showHidden, asBoolean(false))
   const [showRecent, setShowRecent] = useStoredState(STORAGE.showRecent, asBoolean(true))
+  const [rememberLastLocation, setRememberLastLocation] = useStoredState(STORAGE.rememberLastLocation, asBoolean(true))
 
   useEffect(() => applyTheme(theme), [theme])
   useEffect(() => applyMaterial(material), [material])
@@ -107,6 +110,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
         iconSize,
         showHidden,
         showRecent,
+        rememberLastLocation,
         setTheme,
         setAccent,
         setCustomAccent,
@@ -115,7 +119,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
         setShowSize,
         setIconSize,
         setShowHidden,
-        setShowRecent
+        setShowRecent,
+        setRememberLastLocation
       }}
     >
       {children}
