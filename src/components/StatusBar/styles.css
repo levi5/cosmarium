@@ -41,7 +41,7 @@
   color: var(--text);
 }
 .status-bar__notifications.is-active {
-  color: var(--accent);
+  color: var(--accent-fg);
 }
 .status-bar__notifications.has-error {
   color: var(--danger);

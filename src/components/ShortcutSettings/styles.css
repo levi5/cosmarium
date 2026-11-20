@@ -75,7 +75,7 @@
 }
 
 .shortcut-key.is-recording {
-  color: var(--accent);
+  color: var(--accent-fg);
   background: var(--accent-soft);
   border-color: var(--accent-line);
   animation: shortcut-pulse 1.1s ease-in-out infinite;

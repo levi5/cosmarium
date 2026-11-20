@@ -43,7 +43,7 @@
   margin-left: auto;
   display: grid;
   place-items: center;
-  color: var(--accent);
+  color: var(--accent-fg);
 }
 .background-context-menu__divider {
   height: 1px;

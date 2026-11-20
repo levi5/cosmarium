@@ -14,7 +14,7 @@
   --on-accent: #20242d;
   --accent: #9b7cff;
   --accent-soft: #9b7cff24;
-  --accent-line: var(--accent);
+  --accent-line: var(--accent-fg);
   --selected: color-mix(in srgb, var(--accent) 24%, var(--surface));
   --selected-2: color-mix(in srgb, var(--accent) 34%, var(--surface));
   --menu: #302b32;
@@ -40,9 +40,10 @@
   --press-strong: #00000024;
   --active: #3a3a3a;
   --active-strong: #454545;
+  --tab-active-bg: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
   --win-hover-text: #ffffff;
   --win-close-hover: #c42b1c;
-  --focus-ring: var(--accent);
+  --focus-ring: var(--accent-fg);
   --field-bg: var(--surface-2);
   --field-bg-focus: var(--surface-4);
   --field-border: var(--line);
@@ -61,7 +62,7 @@
   --surface-4: #e9ebef;
   --line: #e4e6ea;
   --line-strong: #cfd4dc;
-  --accent-line: color-mix(in srgb, var(--accent) 60%, #101319);
+  --accent-line: var(--accent-fg);
   --menu: #ffffff;
   --menu-line: #dfe2e8;
   --menu-hover: #eceef2;

@@ -116,7 +116,7 @@
 
 :root:is([data-material='mica'], [data-material='acrylic']) .file-table--grid .file-row.is-selected {
   background: var(--mat-grid-selected);
-  border-color: var(--accent);
+  border-color: var(--accent-line);
 }
 
 :root:is([data-material='mica'], [data-material='acrylic'])

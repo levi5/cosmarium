@@ -42,7 +42,7 @@
   height: 36px;
   border-radius: 10px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-fg);
 }
 
 .productivity-header h2 {
@@ -208,7 +208,7 @@
 }
 
 .productivity-section input:focus-visible {
-  outline: 2px solid var(--accent-soft);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
   border-color: var(--accent-line);
 }
@@ -225,7 +225,7 @@
 }
 
 .productivity-rules summary {
-  color: var(--accent);
+  color: var(--accent-fg);
   cursor: pointer;
 }
 
@@ -299,7 +299,7 @@
 
 .productivity-dialog button:focus-visible,
 .productivity-dialog summary:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

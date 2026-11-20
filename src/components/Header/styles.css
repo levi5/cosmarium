@@ -219,7 +219,7 @@
 }
 
 .header-settings.is-active {
-  color: var(--accent);
+  color: var(--accent-fg);
   background: var(--accent-soft);
 }
 

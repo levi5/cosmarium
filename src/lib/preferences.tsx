@@ -1,6 +1,6 @@
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useContext, useEffect, useState } from 'react'
 import { readStorage, STORAGE, type StorageKey, writeStorage } from '../constants/storage'
-import { accentTextColor } from './colors'
+import { accentForegroundColor, accentTextColor } from './colors'
 
 export type Theme = 'dark' | 'light'
 export type Accent = 'violet' | 'blue' | 'coral' | 'lime' | 'custom'
@@ -77,11 +77,12 @@ function applyMaterial(material: Material) {
   document.documentElement.dataset.material = material
 }
 
-function applyAccent(accent: Accent, customAccent: string) {
+function applyAccent(accent: Accent, customAccent: string, theme: Theme) {
   const resolved = accentFor(accent, customAccent)
   document.documentElement.style.setProperty('--accent', resolved.main)
   document.documentElement.style.setProperty('--accent-soft', resolved.soft)
   document.documentElement.style.setProperty('--on-accent', accentTextColor(resolved.main))
+  document.documentElement.style.setProperty('--accent-fg', accentForegroundColor(resolved.main, theme))
 }
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
@@ -98,7 +99,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => applyTheme(theme), [theme])
   useEffect(() => applyMaterial(material), [material])
-  useEffect(() => applyAccent(accent, customAccent), [accent, customAccent])
+  useEffect(() => applyAccent(accent, customAccent, theme), [accent, customAccent, theme])
 
   return (
     <PreferencesContext.Provider

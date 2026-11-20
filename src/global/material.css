@@ -11,6 +11,7 @@
   --press-bg: #ffffff1f;
   --focus-bg: #ffffff17;
   --active-strong: #ffffff2e;
+  --tab-active-bg: color-mix(in srgb, var(--accent) 20%, var(--mat-veil));
   --card-bg: var(--mat-card);
   --card-border: var(--mat-border);
   --mat-background:

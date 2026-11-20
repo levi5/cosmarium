@@ -57,7 +57,7 @@
   display: grid;
   place-items: center;
   flex: 0 0 14px;
-  color: var(--accent);
+  color: var(--accent-fg);
 }
 .dropdown__preview {
   display: flex;

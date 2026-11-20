@@ -51,7 +51,7 @@
 }
 
 .open-with-dialog__heading-icon {
-  color: var(--accent);
+  color: var(--accent-fg);
   background: var(--accent-soft);
 }
 
@@ -210,7 +210,7 @@
 }
 
 .open-with-dialog button:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -226,7 +226,7 @@
 }
 
 .is-default .open-with-dialog__app-icon {
-  color: var(--accent);
+  color: var(--accent-fg);
   background: var(--accent-soft);
 }
 
@@ -242,7 +242,7 @@
   flex-shrink: 0;
   padding: 4px 7px;
   border-radius: 5px;
-  color: var(--accent);
+  color: var(--accent-fg);
   background: var(--accent-soft);
   font-size: 10px;
   font-weight: 500;

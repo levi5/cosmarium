@@ -316,7 +316,7 @@
 }
 
 .icon-size-option__input:focus-visible + .icon-size-option__box {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -339,7 +339,7 @@
 }
 
 .icon-size-option:has(.icon-size-option__input:focus-visible) {
-  border-color: var(--accent);
+  border-color: var(--accent-line);
 }
 
 :root[data-theme='light'] .material-swatch--mica::before {

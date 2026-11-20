@@ -73,6 +73,18 @@ function surface(className: string) {
   return element
 }
 
+it('uses the contrast-adjusted accent for icon and text foregrounds', () => {
+  for (const path of globSync('src/components/**/*.css')) {
+    expect(readFileSync(path, 'utf8'), path).not.toMatch(/^\s*color:\s*var\(--accent\)\s*;/m)
+  }
+})
+
+it('uses contrast-aware tokens for focus outlines, not the raw custom accent', () => {
+  for (const path of [...globSync('src/components/**/*.css'), ...globSync('src/pages/**/*.css')]) {
+    expect(readFileSync(path, 'utf8'), path).not.toMatch(/outline:\s*[^;]*var\(--accent\)/)
+  }
+})
+
 it.each([
   ['dark', 'solid'],
   ['dark', 'mica'],
