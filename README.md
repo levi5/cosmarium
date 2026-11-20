@@ -120,18 +120,6 @@ Dates use UTC day boundaries. Content search scans UTF-8 text files up to 2 MiB.
 - Pause/resume applies to the running application session; transfers do not survive an application restart. Same-volume moves may complete atomically before they can be paused.
 - Duplicate scans are limited to 100,000 visited entries and never delete files automatically.
 
-## Organization without AI
-
-Open **Organization without AI** in the file browser toolbar (**Organização sem IA** in Portuguese).
-Create named virtual folders with a root path and the search filters above, or save the current workspace.
-Opening a workspace replaces the current tabs but does not modify files. Saved collections are stored locally, up to 50 of each.
-Virtual folders rerun their search when opened; refresh reloads the listing and search. They use the same depth and result limits as normal searches.
-
-Enable **Rehearsal mode** in that dialog to review copies and moves, including paste and drag-and-drop, before executing them.
-Cancelling a rehearsal does not change files. Conflicts still require the existing resolution step.
-Reported volume is an estimate, not a free-space guarantee, and files can change after scanning.
-This mode does not intercept deletion, archive operations or individual renames; batch rename retains its existing preview.
-
 ## Tests
 
 ```bash
