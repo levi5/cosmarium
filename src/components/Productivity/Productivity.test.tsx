@@ -27,7 +27,7 @@ it('saves and opens workspaces and virtual rules from the dialog', () => {
   const onClose = vi.fn()
   render(<Productivity language="en" root="/docs" query="ext:pdf" snapshot={() => snapshot} onWorkspace={onWorkspace} onFolder={onFolder} onClose={onClose} />)
   expect(screen.getByRole('heading', { name: 'Organization', level: 2 })).toBeTruthy()
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Rehearsal mode' }))
+  fireEvent.click(screen.getByRole('switch', { name: 'Rehearsal mode' }))
   expect(useProductivityStore.getState().rehearsal).toBe(true)
   fireEvent.change(screen.getAllByLabelText('Name')[0], { target: { value: 'Work' } })
   fireEvent.click(screen.getByRole('button', { name: 'Save current workspace' }))

@@ -22,6 +22,7 @@ type Labels = {
   quickAccess: string
   tag: string
   properties: string
+  showDetailsPane?: string
 }
 
 type Props = {
@@ -47,6 +48,8 @@ type Props = {
   onQuickAccess: () => void
   onTag: () => void
   onProperties: () => void
+  detailsPane?: boolean
+  onToggleDetailsPane?: () => void
   onClose: () => void
 }
 
@@ -73,6 +76,8 @@ export function FileContextMenu({
   onQuickAccess,
   onTag,
   onProperties,
+  detailsPane = false,
+  onToggleDetailsPane,
   onClose
 }: Props) {
   const { ref, position } = useMenuPosition(anchorX, anchorY)
@@ -190,6 +195,17 @@ export function FileContextMenu({
           {labels.tag}
         </button>
         <div className="file-context-menu__divider" />
+        {onToggleDetailsPane && labels.showDetailsPane && (
+          <button type="button" role="menuitemcheckbox" aria-checked={detailsPane} onClick={run(onToggleDetailsPane)}>
+            <Icon name="details" size={14} />
+            {labels.showDetailsPane}
+            {detailsPane && (
+              <span className="menu-check">
+                <Icon name="check" size={12} />
+              </span>
+            )}
+          </button>
+        )}
         <button type="button" onClick={run(onProperties)}>
           <Icon name="info" size={14} />
           {labels.properties}

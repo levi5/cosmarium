@@ -307,6 +307,7 @@ export function SecondaryPane({
                   event.preventDefault()
                   event.stopPropagation()
                   setActive(entry.path)
+                  if (!selected.includes(entry.path)) setSelected([entry.path])
                   setBackgroundMenu(null)
                   setMenu({ entry, anchorX: event.clientX, anchorY: event.clientY })
                 }}

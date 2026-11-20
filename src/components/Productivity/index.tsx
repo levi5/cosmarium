@@ -4,6 +4,7 @@ import { type SavedWorkspace, useProductivityStore, type VirtualFolder, type Wor
 import { Button } from '../base/Button'
 import { Dialog } from '../base/Dialog'
 import { Icon } from '../base/Icon'
+import { Switch } from '../base/Switch'
 import { toolMessages } from '../FileTools/messages'
 import { productivityMessages } from './messages'
 import './styles.css'
@@ -47,11 +48,16 @@ export function Productivity({ language, root, query, snapshot, onWorkspace, onF
               <Icon name="check" size={20} />
             </span>
             <div>
-              <label className="productivity-rehearsal__toggle">
-                <strong>{l.rehearsal}</strong>
-                <input type="checkbox" checked={store.rehearsal} onChange={(event) => store.setRehearsal(event.target.checked)} />
-              </label>
-              <p>{l.rehearsalHelp}</p>
+              <div className="productivity-rehearsal__toggle">
+                <strong id={`${titleId}-rehearsal`}>{l.rehearsal}</strong>
+                <Switch
+                  checked={store.rehearsal}
+                  onChange={store.setRehearsal}
+                  aria-labelledby={`${titleId}-rehearsal`}
+                  aria-describedby={`${titleId}-rehearsal-help`}
+                />
+              </div>
+              <p id={`${titleId}-rehearsal-help`}>{l.rehearsalHelp}</p>
             </div>
           </section>
           <div className="productivity-columns">

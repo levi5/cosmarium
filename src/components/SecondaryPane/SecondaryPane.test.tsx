@@ -31,6 +31,7 @@ vi.mock('../FileTools/api', () => ({ toolsApi: { openTerminal: vi.fn(async () =>
 vi.mock('../../services/tauri/filesystem', () => ({
   filesystem: {
     listDirectory: vi.fn(),
+    getFolderStats: vi.fn(),
     createDirectory: vi.fn(),
     createFile: vi.fn(),
     renameEntry: vi.fn(),
@@ -68,6 +69,7 @@ const file: FileEntry = { name: 'note.txt', path: '/secondary/note.txt', kind: '
 beforeEach(() => {
   vi.resetAllMocks()
   vi.mocked(filesystem.listDirectory).mockResolvedValue([file])
+  vi.mocked(filesystem.getFolderStats).mockResolvedValue({ files: 0, dirs: 0, size: 0, truncated: false })
   vi.mocked(filesystem.readTextPreview).mockResolvedValue({ text: 'hello', isText: true, truncated: false, size: 5 })
   localStorage.clear()
 })
@@ -117,6 +119,31 @@ it('shows and closes details inside the same responsive content area as the list
   expect(within(details).getByText('note.txt')).toBeTruthy()
   fireEvent.click(within(details).getByRole('button', { name: 'Fechar painel' }))
   expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+})
+
+it.each(['file', 'directory'] as const)('selects a right-clicked %s and opens details from its own menu', async (kind) => {
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([{ ...file, kind }])
+  await setup()
+  const item = screen.getByRole('button', { name: 'note.txt' })
+  fireEvent.contextMenu(item)
+  expect(item.getAttribute('aria-pressed')).toBe('true')
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Mostrar painel de detalhes' }))
+  const details = await screen.findByRole('complementary', { name: 'Painel de detalhes' })
+  expect(within(details).getByText('note.txt')).toBeTruthy()
+  expect(screen.queryByRole('menu')).toBeNull()
+})
+
+it('preserves a multi-selection when opening the menu of an already selected item', async () => {
+  const other = { ...file, name: 'other.txt', path: '/secondary/other.txt' }
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([file, other])
+  await setup()
+  const first = screen.getByRole('button', { name: 'note.txt' })
+  const second = screen.getByRole('button', { name: 'other.txt' })
+  fireEvent.click(first)
+  fireEvent.click(second, { ctrlKey: true })
+  fireEvent.contextMenu(first)
+  expect(first.getAttribute('aria-pressed')).toBe('true')
+  expect(second.getAttribute('aria-pressed')).toBe('true')
 })
 
 it('hides the details option and ignores its shortcut without a selection', async () => {

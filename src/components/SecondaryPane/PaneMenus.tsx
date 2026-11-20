@@ -68,7 +68,8 @@ export function PaneMenus(p: Props) {
             copyPath: t('copyPath'),
             quickAccess: t('addQuickAccess'),
             tag: t('addTag'),
-            properties: t('properties')
+            properties: t('properties'),
+            showDetailsPane: t('showDetailsPane')
           }}
           onOpen={run(() => p.menu && p.onOpen(p.menu.entry))}
           onOpenWith={run(() => p.menu && p.inspection.setOpenWithTarget(p.menu.entry))}
@@ -92,6 +93,8 @@ export function PaneMenus(p: Props) {
           onQuickAccess={run(() => p.menu && addQuickAccess({ path: p.menu.entry.path, name: p.menu.entry.name }))}
           onTag={run(() => p.menu && p.inspection.setTagTarget(p.menu.entry))}
           onProperties={run(() => p.menu && p.inspection.setPropertiesTarget(p.menu.entry))}
+          detailsPane={p.detailsPane}
+          onToggleDetailsPane={run(p.onToggleDetailsPane)}
           onClose={p.onClose}
         />
       )}

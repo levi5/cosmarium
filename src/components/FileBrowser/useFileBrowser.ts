@@ -160,6 +160,7 @@ export function useFileBrowser(compact: boolean) {
     event.stopPropagation()
     setBackgroundMenu(null)
     setActiveEntry(entry)
+    if (!selected.includes(entry.path)) setSelected([entry.path])
     setMenu({ entry, anchorX: event.clientX, anchorY: event.clientY })
   }
   const openBackgroundMenu = (event: MouseEvent<HTMLElement>) => {
@@ -216,6 +217,7 @@ export function useFileBrowser(compact: boolean) {
     }
   })
   return {
+    compact,
     preferences,
     workspace,
     organizer,

@@ -1,4 +1,5 @@
 import { Icon } from '../../components/base/Icon'
+import { Switch } from '../../components/base/Switch'
 import { ShortcutSettings } from '../../components/ShortcutSettings'
 import { createTranslator } from '../../lib/i18n'
 import { type Accent, type IconSize, type Material, type Theme, usePreferences } from '../../lib/preferences'
@@ -148,64 +149,28 @@ export function Settings() {
           <span>{translateText('showSize')}</span>
           <small>{translateText('showSizeDesc')}</small>
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={showSize}
-          aria-label={translateText('showSize')}
-          className={`switch ${showSize ? 'is-on' : ''}`}
-          onClick={() => setShowSize(!showSize)}
-        >
-          <i />
-        </button>
+        <Switch checked={showSize} aria-label={translateText('showSize')} onChange={setShowSize} />
       </div>
       <div className="settings-card">
         <div className="setting-label">
           <span>{translateText('showHidden')}</span>
           <small>{translateText('showHiddenDesc')}</small>
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={showHidden}
-          aria-label={translateText('showHidden')}
-          className={`switch ${showHidden ? 'is-on' : ''}`}
-          onClick={() => setShowHidden(!showHidden)}
-        >
-          <i />
-        </button>
+        <Switch checked={showHidden} aria-label={translateText('showHidden')} onChange={setShowHidden} />
       </div>
       <div className="settings-card">
         <div className="setting-label">
           <span>{translateText('showRecent')}</span>
           <small>{translateText('showRecentDesc')}</small>
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={showRecent}
-          aria-label={translateText('showRecent')}
-          className={`switch ${showRecent ? 'is-on' : ''}`}
-          onClick={() => setShowRecent(!showRecent)}
-        >
-          <i />
-        </button>
+        <Switch checked={showRecent} aria-label={translateText('showRecent')} onChange={setShowRecent} />
       </div>
       <div className="settings-card">
         <div className="setting-label">
           <span>{translateText('rememberLastLocation')}</span>
           <small>{translateText('rememberLastLocationDesc')}</small>
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={rememberLastLocation}
-          aria-label={translateText('rememberLastLocation')}
-          className={`switch ${rememberLastLocation ? 'is-on' : ''}`}
-          onClick={() => setRememberLastLocation(!rememberLastLocation)}
-        >
-          <i />
-        </button>
+        <Switch checked={rememberLastLocation} aria-label={translateText('rememberLastLocation')} onChange={setRememberLastLocation} />
       </div>
       <div className="settings-card">
         <div className="setting-label">

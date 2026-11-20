@@ -56,7 +56,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
             copyPath: t('copyPath'),
             quickAccess: t('addQuickAccess'),
             tag: t('addTag'),
-            properties: t('properties')
+            properties: t('properties'),
+            showDetailsPane: t('showDetailsPane')
           }}
           onOpen={fileAction(() => b.open(menu.entry))}
           onOpenWith={fileAction(() => inspection.setOpenWithTarget(menu.entry))}
@@ -74,6 +75,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           onTag={fileAction(() => inspection.setTagTarget(menu.entry))}
           onQuickAccess={fileAction(() => b.organizer.addQuickAccess({ path: menu.entry.path, name: menu.entry.name }))}
           onProperties={fileAction(() => inspection.setPropertiesTarget(menu.entry))}
+          detailsPane={b.detailsPane}
+          onToggleDetailsPane={b.compact ? undefined : fileAction(() => b.setDetailsPane(!b.detailsPane))}
           onClose={() => b.setMenu(null)}
         />
       )}

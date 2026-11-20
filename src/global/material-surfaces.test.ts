@@ -37,6 +37,7 @@ const stylesheets = [
     'DetailsPane',
     'OpenWithDialog',
     'base/Button',
+    'base/Switch',
     'base/IconButton',
     'SecondaryPane',
     'Productivity'
@@ -175,7 +176,6 @@ it.each([
 ])('uses theme and material tokens for nested controls in %s / %s', (theme, material) => {
   document.documentElement.dataset.theme = theme
   document.documentElement.dataset.material = material
-  // jsdom does not resolve var() in color properties; verify CSSOM bindings as well as root tokens.
   const declaration = (selector: string, property: string) =>
     Array.from(styles.sheet?.cssRules ?? [])
       .find((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule && rule.selectorText === selector)
