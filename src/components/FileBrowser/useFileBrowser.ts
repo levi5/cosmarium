@@ -129,9 +129,12 @@ export function useFileBrowser(compact: boolean) {
     setMenu(null)
     setBackgroundMenu({ anchorX: event.clientX, anchorY: event.clientY })
   }
-  const requestDelete = (entry?: FileEntry) => {
+  const requestDelete = (entry?: FileEntry, permanent = false) => {
     const targets = targetsFor(entry)
-    if (targets.length) actions.setDeleteTargets(targets)
+    if (targets.length) {
+      if (permanent) actions.setPermanentDeleteTargets(targets)
+      else actions.setDeleteTargets(targets)
+    }
   }
   const hasOverlay = Boolean(actions.hasDialog || transfers.conflictState || inspection.hasDialog || menu || backgroundMenu)
   useShortcuts({
@@ -150,6 +153,7 @@ export function useFileBrowser(compact: boolean) {
       paste: () => void transfers.doPaste(currentPath),
       selectAll: () => setSelected(visibleEntries.map((entry) => entry.path)),
       delete: () => requestDelete(),
+      deletePermanently: () => requestDelete(undefined, true),
       rename: () => {
         const entry = targetsFor()[0]
         if (entry) actions.doRename(entry)

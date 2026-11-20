@@ -173,6 +173,7 @@ export function SecondaryPane({
                 if (entry) actions.doRename(entry)
               },
               delete: () => actions.setDeleteTargets(targets()),
+              deletePermanently: () => actions.setPermanentDeleteTargets(targets()),
               newFolder: () => actions.setFolderDialog({ open: true, error: null }),
               newFile: () => actions.setFileDialog({ open: true, error: null }),
               refresh: () => void refresh(),
@@ -340,7 +341,8 @@ export function SecondaryPane({
         inspection={inspection}
         onOpen={open}
         onCopy={copy}
-        onDelete={(entry) => actions.setDeleteTargets(targets(entry))}
+        onTrash={(entry) => actions.setDeleteTargets(targets(entry))}
+        onDelete={(entry) => actions.setPermanentDeleteTargets(targets(entry))}
         onPaste={(dest) => void transfer(clipboard.paths, dest, clipboard.mode === 'cut')}
         canPaste={clipboard.paths.length > 0 && !busy}
         onRefresh={() => void refresh()}

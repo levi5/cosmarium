@@ -50,7 +50,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
             copy: t('copy'),
             paste: t('paste'),
             rename: t('rename'),
-            delete_: t('delete_'),
+            delete_: t('deletePermanently'),
+            moveToTrash: t('moveToTrash'),
             copyPath: t('copyPath'),
             quickAccess: t('addQuickAccess'),
             tag: t('addTag'),
@@ -65,7 +66,8 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           onCopy={fileAction(() => b.copy('copy', menu.entry))}
           onPaste={fileAction(() => void transfers.doPaste(menu.entry.path))}
           onRename={fileAction(() => actions.doRename(menu.entry))}
-          onDelete={fileAction(() => b.requestDelete(menu.entry))}
+          onTrash={fileAction(() => b.requestDelete(menu.entry))}
+          onDelete={fileAction(() => b.requestDelete(menu.entry, true))}
           onCopyPath={fileAction(() => void copyText(menu.entry.path))}
           onTag={fileAction(() => inspection.setTagTarget(menu.entry))}
           onQuickAccess={fileAction(() => b.organizer.addQuickAccess({ path: menu.entry.path, name: menu.entry.name }))}

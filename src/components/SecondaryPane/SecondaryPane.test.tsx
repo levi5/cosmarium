@@ -37,6 +37,7 @@ vi.mock('../../services/tauri/filesystem', () => ({
     recordCreated: vi.fn(),
     recordRename: vi.fn(),
     trashEntries: vi.fn(),
+    deleteEntries: vi.fn(),
     openWithDefault: vi.fn()
   }
 }))
@@ -198,10 +199,37 @@ it('deletes secondary entries only after confirmation', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
   fireEvent.keyDown(region, { key: 'Delete' })
   expect(filesystem.trashEntries).not.toHaveBeenCalled()
-  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir' }))
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Mover para a lixeira' }))
   await waitFor(() => expect(filesystem.trashEntries).toHaveBeenCalledWith([file.path], expect.any(String)))
   await waitFor(() => expect(screen.queryByRole('button', { name: 'note.txt' })).toBeNull())
   expect(primary.removeEntries).not.toHaveBeenCalled()
+})
+
+it('permanently deletes only after confirmation without using trash', async () => {
+  const { region } = await setup()
+  vi.mocked(filesystem.deleteEntries).mockResolvedValue({ removed: [file.path], cancelled: false, errors: [] })
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([])
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.keyDown(region, { key: 'Delete', shiftKey: true })
+  expect(filesystem.deleteEntries).not.toHaveBeenCalled()
+  expect(screen.getByRole('dialog').textContent).toContain('Esta ação não pode ser desfeita.')
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir permanentemente' }))
+  await waitFor(() => expect(filesystem.deleteEntries).toHaveBeenCalledWith([file.path]))
+  expect(filesystem.trashEntries).not.toHaveBeenCalled()
+  await waitFor(() => expect(screen.queryByRole('button', { name: 'note.txt' })).toBeNull())
+  expect(primary.removeEntries).not.toHaveBeenCalled()
+})
+
+it('cancels permanent deletion from the context menu', async () => {
+  await setup()
+  fireEvent.contextMenu(screen.getByRole('button', { name: 'note.txt' }))
+  const menu = screen.getByRole('menu')
+  expect(within(menu).getByText('Mover para a lixeira')).toBeTruthy()
+  fireEvent.click(within(menu).getByText('Excluir permanentemente'))
+  fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button', { name: 'Cancelar' })[0])
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(filesystem.deleteEntries).not.toHaveBeenCalled()
+  expect(filesystem.trashEntries).not.toHaveBeenCalled()
 })
 
 it('keeps keyboard navigation and Escape working in secondary menus', async () => {
@@ -242,7 +270,7 @@ it('honors customized rename, copy, and delete bindings instead of fixed keys', 
   expect(within(screen.getByRole('dialog')).getByRole('textbox').getAttribute('aria-label')).toBe('Renomear')
   fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button', { name: 'Cancelar' })[0])
   fireEvent.keyDown(region, { key: 'd', ctrlKey: true, shiftKey: true })
-  expect(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir' })).toBeTruthy()
+  expect(within(screen.getByRole('dialog')).getByRole('button', { name: 'Mover para a lixeira' })).toBeTruthy()
   expect(filesystem.trashEntries).not.toHaveBeenCalled()
 })
 

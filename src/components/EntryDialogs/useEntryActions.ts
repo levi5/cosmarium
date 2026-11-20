@@ -34,6 +34,7 @@ export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: st
   const [renameTarget, setRenameTarget] = useState<FileEntry | null>(null)
   const [renameError, setRenameError] = useState<string | null>(null)
   const [deleteTargets, setDeleteTargets] = useState<FileEntry[] | null>(null)
+  const [permanentDeleteTargets, setPermanentDeleteTargets] = useState<FileEntry[] | null>(null)
   const [emptyTrashOpen, setEmptyTrashOpen] = useState(false)
   const [notice, setNotice] = useState<{ title: string; message: string } | null>(null)
   const { busy, run } = useTask()
@@ -65,13 +66,15 @@ export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: st
         }
       })
     })
-  const handleDelete = () =>
+  const handleDelete = (permanent = false) =>
     run(async () => {
-      if (!deleteTargets) return
-      const paths = deleteTargets.map((entry) => entry.path)
-      setDeleteTargets(null)
+      const targets = permanent ? permanentDeleteTargets : deleteTargets
+      if (!targets) return
+      const paths = targets.map((entry) => entry.path)
+      if (permanent) setPermanentDeleteTargets(null)
+      else setDeleteTargets(null)
       const result = await _try.async(async () => {
-        const summary = await filesystem.trashEntries(paths, newOperationId())
+        const summary = permanent ? await filesystem.deleteEntries(paths) : await filesystem.trashEntries(paths, newOperationId())
         removeEntries(summary.removed)
         if (summary.errors.length) setNotice({ title: t('deleteTitle'), message: summary.errors.join('\n') })
         await refresh()
@@ -122,6 +125,8 @@ export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: st
     renameError,
     deleteTargets,
     setDeleteTargets,
+    permanentDeleteTargets,
+    setPermanentDeleteTargets,
     emptyTrashOpen,
     setEmptyTrashOpen,
     notice,
@@ -133,7 +138,7 @@ export function useEntryActions(workspace?: ActionWorkspace, select?: (paths: st
     handleEmptyTrash,
     create,
     entryCount: entries.length,
-    hasDialog: Boolean(busy || folderDialog.open || fileDialog.open || renameTarget || deleteTargets || emptyTrashOpen || notice)
+    hasDialog: Boolean(busy || folderDialog.open || fileDialog.open || renameTarget || deleteTargets || permanentDeleteTargets || emptyTrashOpen || notice)
   }
 }
 

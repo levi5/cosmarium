@@ -29,6 +29,7 @@ type Props = {
   onOpen: (entry: FileEntry) => void
   onCopy: (mode: 'copy' | 'cut', entry: FileEntry) => void
   onDelete: (entry: FileEntry) => void
+  onTrash: (entry: FileEntry) => void
   onPaste: (dest: string) => void
   canPaste: boolean
   onRefresh: () => void
@@ -60,7 +61,8 @@ export function PaneMenus(p: Props) {
             copy: t('copy'),
             paste: t('paste'),
             rename: t('rename'),
-            delete_: t('delete_'),
+            delete_: t('deletePermanently'),
+            moveToTrash: t('moveToTrash'),
             copyPath: t('copyPath'),
             quickAccess: t('addQuickAccess'),
             tag: t('addTag'),
@@ -80,6 +82,7 @@ export function PaneMenus(p: Props) {
           onPaste={run(() => p.menu && p.onPaste(p.menu.entry.path))}
           onRename={run(() => p.menu && p.actions.doRename(p.menu.entry))}
           onDelete={run(() => p.menu && p.onDelete(p.menu.entry))}
+          onTrash={run(() => p.menu && p.onTrash(p.menu.entry))}
           onCopyPath={run(() => {
             if (p.menu) void copyText(p.menu.entry.path).catch(p.onError)
           })}

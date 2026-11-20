@@ -96,6 +96,7 @@ fn main() {
             commands::fs_write::create_file,
             commands::fs_write::rename_entry,
             commands::fs_write::trash_entries,
+            commands::fs_write::delete_entries,
             commands::fs_write::empty_trash,
             commands::fs_write::record_created,
             commands::fs_write::record_rename,

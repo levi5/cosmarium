@@ -81,6 +81,48 @@ fn path(root: &TempDir, name: &str) -> String {
 }
 
 #[test]
+fn permanent_delete_removes_files_and_nonempty_directories() {
+    let root = TempDir::new().unwrap();
+    std::fs::create_dir_all(root.path().join("folder/nested")).unwrap();
+    std::fs::write(root.path().join("folder/nested/file.txt"), b"delete").unwrap();
+    std::fs::write(root.path().join("file.txt"), b"delete").unwrap();
+    let paths = vec![path(&root, "file.txt"), path(&root, "folder"), path(&root, "missing")];
+    let summary = crate::operations::mutate::delete_entries(&paths).unwrap();
+    assert_eq!(summary.removed, paths);
+    assert!(summary.errors.is_empty());
+    assert!(!root.path().join("file.txt").exists());
+    assert!(!root.path().join("folder").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn permanent_delete_removes_symlinks_without_deleting_their_targets() {
+    let root = TempDir::new().unwrap();
+    std::fs::create_dir(root.path().join("keep")).unwrap();
+    std::fs::write(root.path().join("keep/file.txt"), b"keep").unwrap();
+    std::os::unix::fs::symlink(root.path().join("keep"), root.path().join("link")).unwrap();
+    std::os::unix::fs::symlink(root.path().join("missing"), root.path().join("dangling")).unwrap();
+    let paths = vec![path(&root, "link"), path(&root, "dangling")];
+    let summary = crate::operations::mutate::delete_entries(&paths).unwrap();
+    assert_eq!(summary.removed, paths);
+    assert!(summary.errors.is_empty());
+    assert!(root.path().join("keep/file.txt").exists());
+    assert!(std::fs::symlink_metadata(root.path().join("dangling")).is_err());
+}
+
+#[test]
+fn permanent_delete_rejects_empty_selection_and_unsafe_paths() {
+    assert!(crate::operations::mutate::delete_entries(&[]).is_err());
+    let summary = crate::operations::mutate::delete_entries(&[
+        "/".into(),
+        "relative".into(),
+        "/tmp/..".into(),
+    ]).unwrap();
+    assert!(summary.removed.is_empty());
+    assert_eq!(summary.errors.len(), 3);
+}
+
+#[test]
 fn trash_ignores_items_that_vanished_before_deletion() {
     let app = tauri::test::mock_builder()
         .build(tauri::test::mock_context(tauri::test::noop_assets()))

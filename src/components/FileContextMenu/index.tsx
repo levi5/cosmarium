@@ -16,6 +16,7 @@ type Labels = {
   paste: string
   rename: string
   delete_: string
+  moveToTrash: string
   copyPath: string
   quickAccess: string
   tag: string
@@ -39,6 +40,7 @@ type Props = {
   onPaste: () => void
   onRename: () => void
   onDelete: () => void
+  onTrash: () => void
   onCopyPath: () => void
   onQuickAccess: () => void
   onTag: () => void
@@ -63,6 +65,7 @@ export function FileContextMenu({
   onPaste,
   onRename,
   onDelete,
+  onTrash,
   onCopyPath,
   onQuickAccess,
   onTag,
@@ -152,6 +155,10 @@ export function FileContextMenu({
         <button type="button" onClick={run(onRename)}>
           <Icon name="rename" size={14} />
           {labels.rename}
+        </button>
+        <button type="button" onClick={run(onTrash)}>
+          <Icon name="trash" size={14} />
+          {labels.moveToTrash}
         </button>
         <button type="button" className="is-danger" onClick={run(onDelete)}>
           <Icon name="trash" size={14} />

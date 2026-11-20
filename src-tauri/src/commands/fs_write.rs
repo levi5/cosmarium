@@ -60,6 +60,25 @@ pub async fn trash_entries(
     .await
 }
 
+#[tauri::command]
+pub async fn delete_entries(
+    paths: Vec<String>,
+    undo: State<'_, UndoStack>,
+    cancels: State<'_, TransferCancels>,
+) -> Result<mutate::TrashSummary, String> {
+    let undo = undo.inner().clone();
+    let cancels = cancels.inner().clone();
+    off_thread(move || {
+        let _queue = cancels.queue.lock().map_err(|_| "Internal error.")?;
+        let summary = mutate::delete_entries(&paths)?;
+        if !summary.removed.is_empty() {
+            undo.push(UndoStep::Clear);
+        }
+        Ok(summary)
+    })
+    .await
+}
+
 fn new_trash_ids(
     before: &[crate::platform::trash::TrashEntry],
     after: Vec<crate::platform::trash::TrashEntry>,

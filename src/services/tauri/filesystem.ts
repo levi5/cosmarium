@@ -30,6 +30,7 @@ export const filesystem = {
   createFile: (path: string, name: string) => invoke<FileEntry>('create_file', { path, name }),
   renameEntry: (path: string, newName: string) => invoke<FileEntry>('rename_entry', { path, newName }),
   trashEntries: (paths: string[], id: string) => invoke<TrashSummary>('trash_entries', { paths, id }),
+  deleteEntries: (paths: string[]) => invoke<TrashSummary>('delete_entries', { paths }),
   emptyTrash: () => invoke<number>('empty_trash'),
   trashList: () => invoke<TrashEntry[]>('trash_list'),
   restoreTrashItems: (ids: string[]) => invoke<number>('restore_trash_items', { ids }),

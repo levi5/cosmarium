@@ -42,13 +42,24 @@ export function EntryDialogs({ actions: a, language }: { actions: EntryActions; 
       )}
       {a.deleteTargets && (
         <ConfirmDialog
-          title={t('deleteTitle')}
+          title={t('moveToTrash')}
           message={t('deleteMessage').replace('{count}', String(a.deleteTargets.length))}
-          confirmLabel={t('delete_')}
+          confirmLabel={t('moveToTrash')}
           cancelLabel={t('cancel')}
           danger
           onConfirm={() => void a.handleDelete()}
           onClose={() => a.setDeleteTargets(null)}
+        />
+      )}
+      {a.permanentDeleteTargets && (
+        <ConfirmDialog
+          title={t('deletePermanently')}
+          message={t('permanentDeleteMessage').replace('{count}', String(a.permanentDeleteTargets.length))}
+          confirmLabel={t('deletePermanently')}
+          cancelLabel={t('cancel')}
+          danger
+          onConfirm={() => void a.handleDelete(true)}
+          onClose={() => a.setPermanentDeleteTargets(null)}
         />
       )}
       {a.emptyTrashOpen && (

@@ -117,7 +117,8 @@ export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserCo
         cut: t('cut'),
         copy: t('copy'),
         paste: t('paste'),
-        delete_: t('delete_'),
+        delete_: t('deletePermanently'),
+        moveToTrash: t('moveToTrash'),
         emptyTrash: t('emptyTrash'),
         refresh: t('refresh'),
         list: t('list'),
@@ -135,7 +136,8 @@ export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserCo
       onCut={() => b.copy('cut')}
       onCopy={() => b.copy('copy')}
       onPaste={() => void b.transfers.doPaste(w.currentPath)}
-      onDelete={() => b.requestDelete()}
+      onTrash={() => b.requestDelete()}
+      onDelete={() => b.requestDelete(undefined, true)}
       canEmptyTrash={b.isTrash && w.entries.length > 0}
       onEmptyTrash={() => a.setEmptyTrashOpen(true)}
       onRefresh={() => void w.refresh()}
