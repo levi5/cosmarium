@@ -1,0 +1,362 @@
+.productivity-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: var(--overlay);
+  isolation: isolate;
+}
+
+.productivity-dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(940px, 100%);
+  min-width: 0;
+  max-height: calc(100dvh - 40px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 24px 80px #00000055;
+}
+
+.productivity-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.productivity-header__icon,
+.productivity-section__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-fg);
+}
+
+.productivity-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+}
+
+.productivity-header p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.productivity-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.productivity-close:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.productivity-content {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  padding: 20px 24px 24px;
+}
+
+.productivity-rehearsal {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+.productivity-rehearsal.is-enabled {
+  border-color: var(--accent-line);
+}
+
+.productivity-rehearsal > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.productivity-rehearsal__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.productivity-rehearsal p,
+.productivity-help {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.productivity-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+}
+
+.productivity-section {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+.productivity-section__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.productivity-section h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.productivity-count {
+  display: grid;
+  place-items: center;
+  min-width: 23px;
+  height: 23px;
+  padding: 0 5px;
+  margin-left: auto;
+  border-radius: 6px;
+  color: var(--muted);
+  background: var(--hover);
+  font-size: 11px;
+}
+
+.productivity-help {
+  margin: 0;
+}
+
+.productivity-section form {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.productivity-section label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.productivity-section input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: var(--field-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.productivity-section input::placeholder {
+  color: var(--muted);
+}
+
+.productivity-section input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+  border-color: var(--accent-line);
+}
+
+.productivity-section form > .button {
+  justify-content: center;
+  min-height: 36px;
+}
+
+.productivity-rules {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.productivity-rules summary {
+  color: var(--accent-fg);
+  cursor: pointer;
+}
+
+.productivity-rules p {
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.productivity-saved-heading {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.productivity-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 18px 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.productivity-empty p {
+  max-width: 250px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.productivity-list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.productivity-list li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--card-border);
+  border-radius: 9px;
+  background: var(--field-bg);
+}
+
+.productivity-list li > span {
+  flex: 1;
+  min-width: 100px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.productivity-list small {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.productivity-remove:hover {
+  color: var(--danger);
+}
+
+.productivity-dialog button:focus-visible,
+.productivity-dialog summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.productivity-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--line);
+}
+
+.productivity-footer__hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.productivity-footer svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .productivity-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 420px), (max-height: 500px) {
+  .productivity-backdrop {
+    padding: 10px;
+  }
+
+  .productivity-dialog {
+    max-height: calc(100dvh - 20px);
+    border-radius: 12px;
+  }
+
+  .productivity-header,
+  .productivity-footer {
+    padding: 12px 16px;
+  }
+
+  .productivity-content {
+    padding: 14px;
+  }
+
+  .productivity-header__icon,
+  .productivity-header p {
+    display: none;
+  }
+
+  .productivity-footer {
+    flex-wrap: wrap;
+  }
+}

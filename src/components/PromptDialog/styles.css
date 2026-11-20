@@ -5,13 +5,17 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: #08090c88;
+  background: var(--overlay);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: fade-in 0.15s ease-out;
 }
 .prompt-dialog {
   width: min(360px, 100%);
+  min-width: 0;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
   padding: 17px;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -36,7 +40,7 @@
 }
 .prompt-dialog__top button:hover {
   color: var(--text);
-  background: var(--surface-3);
+  background: var(--hover);
 }
 .prompt-dialog input {
   width: 100%;
@@ -62,6 +66,7 @@
 }
 .prompt-dialog__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 7px;
   margin-top: 14px;

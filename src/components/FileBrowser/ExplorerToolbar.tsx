@@ -31,6 +31,7 @@ type Props = {
   onCopy: () => void
   onPaste: () => void
   onDelete: () => void
+  onTrash: () => void
   canEmptyTrash: boolean
   onEmptyTrash: () => void
   onRefresh: () => void
@@ -60,6 +61,7 @@ export function ExplorerToolbar({
   onCopy,
   onPaste,
   onDelete,
+  onTrash,
   canEmptyTrash,
   onEmptyTrash,
   onRefresh
@@ -101,7 +103,8 @@ export function ExplorerToolbar({
       <IconButton icon="cut" label={labels.cut} disabled={!canModify} onClick={onCut} />
       <IconButton icon="copy" label={labels.copy} disabled={!canModify} onClick={onCopy} />
       <IconButton icon="paste" label={labels.paste} disabled={!canPaste} onClick={onPaste} />
-      <IconButton icon="trash" label={labels.delete_} disabled={!canModify} onClick={onDelete} />
+      <IconButton icon="trash" label={labels.moveToTrash} disabled={!canModify} onClick={onTrash} />
+      <IconButton icon="close" label={labels.delete_} disabled={!canModify} onClick={onDelete} />
       {canEmptyTrash && <IconButton icon="broom" label={labels.emptyTrash} className="explorer-toolbar__danger" onClick={onEmptyTrash} />}
       <IconButton icon="refresh" label={labels.refresh} onClick={onRefresh} />
       {tools}

@@ -9,6 +9,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "screenshots": "node scripts/capture-site.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "vite",

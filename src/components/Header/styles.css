@@ -156,7 +156,7 @@
 }
 
 .breadcrumb.is-editing {
-  background: var(--surface-4);
+  background: var(--field-bg-focus);
   border-color: var(--accent-line);
 }
 
@@ -219,7 +219,7 @@
 }
 
 .header-settings.is-active {
-  color: var(--accent);
+  color: var(--accent-fg);
   background: var(--accent-soft);
 }
 

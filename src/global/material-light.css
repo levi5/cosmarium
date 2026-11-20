@@ -8,8 +8,9 @@
   --focus-bg: #1018280f;
   --active-strong: #fffffff2;
   --mat-background:
-    radial-gradient(120% 90% at 12% 8%, #b9a8ff 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #9fd3f5 0%, transparent 52%),
-    radial-gradient(120% 100% at 50% 105%, #ffc2d6 0%, transparent 58%), linear-gradient(160deg, #eef1fb 0%, #f6ecf6 52%, #eaf3f8 100%);
+    radial-gradient(120% 90% at 12% 8%, color-mix(in srgb, var(--accent) 45%, #eef1fb) 0%, transparent 55%),
+    radial-gradient(100% 80% at 88% 12%, #9fd3f5 0%, transparent 52%), radial-gradient(120% 100% at 50% 105%, #ffc2d6 0%, transparent 58%),
+    linear-gradient(160deg, #eef1fb 0%, #f6ecf6 52%, #eaf3f8 100%);
   --mat-tint: #ffffff2e;
   --mat-veil: #eef0f7a6;
   --mat-veil-hex: #eef0f7;

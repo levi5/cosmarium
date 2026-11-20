@@ -139,6 +139,46 @@ pub struct TrashSummary {
     pub errors: Vec<String>,
 }
 
+pub fn delete_entries(paths: &[String]) -> Result<TrashSummary, String> {
+    if paths.is_empty() {
+        return Err("Nothing selected.".into());
+    }
+    let mut summary = TrashSummary {
+        removed: Vec::new(),
+        cancelled: false,
+        errors: Vec::new(),
+    };
+    for path in paths {
+        let target = std::path::Path::new(path);
+        // Reject roots and relative paths; never follow directory symlinks.
+        if !target.is_absolute()
+            || target.parent().is_none()
+            || target.components().any(|component| {
+                matches!(
+                    component,
+                    std::path::Component::ParentDir | std::path::Component::CurDir
+                )
+            })
+        {
+            summary
+                .errors
+                .push(format!("{path}: Cannot delete this location."));
+            continue;
+        }
+        let result = match std::fs::symlink_metadata(target) {
+            Ok(metadata) if metadata.is_dir() => std::fs::remove_dir_all(target),
+            Ok(_) => std::fs::remove_file(target),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(error),
+        };
+        match result {
+            Ok(()) => summary.removed.push(path.clone()),
+            Err(error) => summary.errors.push(format!("{path}: {error}")),
+        }
+    }
+    Ok(summary)
+}
+
 pub fn restore_trash(ids: &[String]) -> Result<usize, String> {
     crate::platform::trash::restore_items(ids)
 }

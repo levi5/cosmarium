@@ -7,6 +7,7 @@ import { filesystem } from '../services/tauri/filesystem'
 import { transferEntries } from '../services/transfers'
 import { useClipboardStore } from '../stores/clipboardStore'
 import { usePendingDropStore } from '../stores/pendingDropStore'
+import { useProductivityStore } from '../stores/productivityStore'
 import { useSelectionStore } from '../stores/selectionStore'
 import type { ConflictResolution, TransferScan } from '../types/explorer'
 
@@ -19,6 +20,7 @@ export function useFileTransfers(titles: { copying: string; moving: string }, on
   const { mode, paths: clipPaths, clear: clearClipboard } = useClipboardStore()
   const setSelected = useSelectionStore((state) => state.setSelected)
   const [conflictState, setConflictState] = useState<ConflictState | null>(null)
+  const [rehearsalState, setRehearsalState] = useState<ConflictState | null>(null)
   const { copying, moving } = titles
   const runTransfer = useCallback(
     async (sources: string[], dest: string, cut: boolean, resolutions: ConflictResolution[]) => {
@@ -44,6 +46,10 @@ export function useFileTransfers(titles: { copying: string; moving: string }, on
       if (!sources.length || !dest || sources.includes(dest)) return
       try {
         const scan = await filesystem.scanTransfer(sources, dest)
+        if (useProductivityStore.getState().rehearsal) {
+          setRehearsalState({ sources: [...sources], dest, cut, scan })
+          return
+        }
         if (scan.conflicts.length) {
           setConflictState({ sources: [...sources], dest, cut, scan })
           return
@@ -63,5 +69,12 @@ export function useFileTransfers(titles: { copying: string; moving: string }, on
     clearPendingDrop()
     void doDrop(pendingDrop.paths, pendingDrop.dest, pendingDrop.cut)
   }, [pendingDrop, clearPendingDrop, doDrop])
-  return { conflictState, setConflictState, runTransfer, doDrop, doPaste, currentPath }
+  const confirmRehearsal = () => {
+    if (!rehearsalState) return
+    const state = rehearsalState
+    setRehearsalState(null)
+    if (state.scan.conflicts.length) setConflictState(state)
+    else void runTransfer(state.sources, state.dest, state.cut, [])
+  }
+  return { conflictState, setConflictState, rehearsalState, setRehearsalState, confirmRehearsal, runTransfer, doDrop, doPaste, currentPath }
 }

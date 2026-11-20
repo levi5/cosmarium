@@ -11,7 +11,7 @@ src/
   assets/       Logo and imported images
   components/   One folder per component, with a co-located styles.css
     base/       Button, Icon, SectionHeading, GitHubMark
-    AppWindow/  Rendered preview of the file manager
+    AppWindow/  Screenshots captured from the actual app frontend
     Header/ Hero/ FeatureGrid/ Shortcuts/ Stack/ Download/ Footer/
   constants/    Repository links and storage keys
   global/       Reset, design tokens and site-wide styles
@@ -36,6 +36,21 @@ Requires Node.js 24+ and pnpm 10+.
 All copy lives in `src/lib/i18n.ts` with `pt-BR` and `en` dictionaries. The site
 defaults to Portuguese and remembers the visitor's choice in `localStorage`.
 Theme (dark/light) works the same way.
+
+## Preview privacy
+
+The hero displays actual app frontend screenshots, not a separately styled
+recreation. Four images in `public/screenshots/` cover Portuguese/English and
+dark/light themes.
+
+From the repository root, run `pnpm screenshots` to regenerate them and
+`public/og.png`. Requires Google Chrome (`CHROME_BIN` can override the executable).
+The script starts temporary Vite servers and a clean, temporary browser profile,
+then renders the current app with the isolated native-command fixture in
+`scripts/screenshot-fixture.mjs`. It never reads personal folders or profile data.
+Keep all fixture paths, filenames and metadata fictional; native commands not
+explicitly mocked are blocked. Inspect the generated images before publishing.
+The repository/author links are intentional public credits, not demo file data.
 
 ## Deployment
 

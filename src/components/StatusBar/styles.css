@@ -14,6 +14,13 @@
   width: 1px;
   height: 13px;
   background: var(--status-divider);
+  flex-shrink: 0;
+}
+.status-bar > span:not(.status-bar__divider) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .status-bar__notifications {
   display: inline-flex;
@@ -26,14 +33,15 @@
   color: var(--muted);
   font: inherit;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .status-bar__notifications:hover,
 .status-bar__notifications[aria-expanded='true'] {
-  background: var(--surface-3);
+  background: var(--hover);
   color: var(--text);
 }
 .status-bar__notifications.is-active {
-  color: var(--accent);
+  color: var(--accent-fg);
 }
 .status-bar__notifications.has-error {
   color: var(--danger);

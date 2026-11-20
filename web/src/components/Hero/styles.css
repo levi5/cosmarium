@@ -113,6 +113,16 @@
   min-width: 0;
 }
 
+.hero__demo-note {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 30px;
+  color: var(--subtle);
+  font-size: 11px;
+  text-align: right;
+}
+
 .hero__halo {
   position: absolute;
   inset: 8% -8% -4% 4%;
@@ -121,95 +131,6 @@
     radial-gradient(38% 40% at 76% 74%, #3b9eff2e, transparent 72%);
   filter: blur(36px);
   pointer-events: none;
-}
-
-.hero__transfer {
-  position: absolute;
-  left: -30px;
-  bottom: -20px;
-  width: 268px;
-  padding: 13px 14px 12px;
-  background: color-mix(in srgb, var(--surface-2) 88%, transparent);
-  border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-}
-
-.hero__transfer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 11.5px;
-  font-weight: 600;
-}
-
-.hero__transfer-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-}
-
-.hero__pulse {
-  width: 6px;
-  height: 6px;
-  flex: 0 0 auto;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px var(--accent-soft);
-  animation: hero-pulse 2.2s ease-out infinite;
-}
-
-.hero__transfer-percent {
-  color: var(--accent-fg);
-  font-variant-numeric: tabular-nums;
-}
-
-.hero__progress {
-  height: 5px;
-  margin-top: 10px;
-  overflow: hidden;
-  background: var(--surface-4);
-  border-radius: 999px;
-}
-
-.hero__progress span {
-  display: block;
-  width: 68%;
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), #5aa7ff);
-  border-radius: inherit;
-  animation: hero-progress 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.hero__transfer-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 8px;
-  color: var(--subtle);
-  font-size: 10.5px;
-}
-
-@keyframes hero-pulse {
-  0% {
-    box-shadow: 0 0 0 0 #9b7cff66;
-  }
-  70% {
-    box-shadow: 0 0 0 7px #9b7cff00;
-  }
-  100% {
-    box-shadow: 0 0 0 0 #9b7cff00;
-  }
-}
-
-@keyframes hero-progress {
-  from {
-    width: 0;
-  }
 }
 
 @media (max-width: 1080px) {
@@ -221,9 +142,6 @@
     gap: 36px;
   }
 
-  .hero__transfer {
-    left: -10px;
-  }
 }
 
 @media (max-width: 980px) {
@@ -256,10 +174,6 @@
 
   .hero__description {
     font-size: 16px;
-  }
-
-  .hero__transfer {
-    display: none;
   }
 
   .hero__visual {

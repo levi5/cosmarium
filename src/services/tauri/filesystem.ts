@@ -17,6 +17,8 @@ import type {
 } from '../../types/explorer'
 
 export const filesystem = {
+  listApplications: (path: string) => invoke<FileApplication[]>('list_applications', { path }),
+  openWithApplication: (path: string, appId: string) => invoke('open_with_application', { path, appId }),
   getLocations: () => invoke<Locations>('get_locations'),
   getVolumes: () => invoke<Volume[]>('get_volumes'),
   trashCount: () => invoke<number>('trash_count'),
@@ -30,6 +32,7 @@ export const filesystem = {
   createFile: (path: string, name: string) => invoke<FileEntry>('create_file', { path, name }),
   renameEntry: (path: string, newName: string) => invoke<FileEntry>('rename_entry', { path, newName }),
   trashEntries: (paths: string[], id: string) => invoke<TrashSummary>('trash_entries', { paths, id }),
+  deleteEntries: (paths: string[]) => invoke<TrashSummary>('delete_entries', { paths }),
   emptyTrash: () => invoke<number>('empty_trash'),
   trashList: () => invoke<TrashEntry[]>('trash_list'),
   restoreTrashItems: (ids: string[]) => invoke<number>('restore_trash_items', { ids }),
@@ -48,3 +51,5 @@ export const filesystem = {
   watchDirectory: (path: string) => invoke('watch_directory', { path }),
   unwatchDirectory: (path: string) => invoke('unwatch_directory', { path })
 }
+
+export type FileApplication = { id: string; name: string; isDefault: boolean }

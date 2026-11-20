@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: 28px;
-  background: #08090caa;
+  background: var(--overlay);
   backdrop-filter: blur(5px);
   animation: fade-in 0.18s ease-out;
 }
@@ -48,7 +48,7 @@
 }
 .preview-pane__top p {
   margin: 0 0 3px;
-  color: var(--accent);
+  color: var(--accent-fg);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -79,8 +79,8 @@
   gap: 12px;
   padding: 4px;
   margin-bottom: 12px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 6px;
   font-size: 12px;
 }

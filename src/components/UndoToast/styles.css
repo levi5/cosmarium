@@ -26,7 +26,7 @@
 }
 
 .undo-toast--ok svg {
-  color: var(--accent);
+  color: var(--accent-fg);
 }
 
 .undo-toast--error {

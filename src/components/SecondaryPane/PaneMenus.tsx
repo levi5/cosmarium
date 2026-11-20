@@ -21,6 +21,7 @@ type Props = {
   view: ViewMode
   setView: (view: ViewMode) => void
   detailsPane: boolean
+  canShowDetailsPane: boolean
   onToggleDetailsPane: () => void
   showHidden: boolean
   onToggleHidden: () => void
@@ -29,6 +30,7 @@ type Props = {
   onOpen: (entry: FileEntry) => void
   onCopy: (mode: 'copy' | 'cut', entry: FileEntry) => void
   onDelete: (entry: FileEntry) => void
+  onTrash: (entry: FileEntry) => void
   onPaste: (dest: string) => void
   canPaste: boolean
   onRefresh: () => void
@@ -52,6 +54,7 @@ export function PaneMenus(p: Props) {
           canPaste={p.canPaste}
           labels={{
             open: t('open'),
+            openWith: t('openWith'),
             openInNewTab: t('openInNewTab'),
             openTerminal: t('openTerminal'),
             openTerminalRoot: t('openTerminalRoot'),
@@ -60,13 +63,16 @@ export function PaneMenus(p: Props) {
             copy: t('copy'),
             paste: t('paste'),
             rename: t('rename'),
-            delete_: t('delete_'),
+            delete_: t('deletePermanently'),
+            moveToTrash: t('moveToTrash'),
             copyPath: t('copyPath'),
             quickAccess: t('addQuickAccess'),
             tag: t('addTag'),
-            properties: t('properties')
+            properties: t('properties'),
+            showDetailsPane: t('showDetailsPane')
           }}
           onOpen={run(() => p.menu && p.onOpen(p.menu.entry))}
+          onOpenWith={run(() => p.menu && p.inspection.setOpenWithTarget(p.menu.entry))}
           onOpenInNewTab={run(() => p.menu && createTab(p.menu.entry.path))}
           onOpenTerminal={run(() => {
             if (p.menu) void toolsApi.openTerminal(p.menu.entry.path).catch(p.onError)
@@ -80,12 +86,15 @@ export function PaneMenus(p: Props) {
           onPaste={run(() => p.menu && p.onPaste(p.menu.entry.path))}
           onRename={run(() => p.menu && p.actions.doRename(p.menu.entry))}
           onDelete={run(() => p.menu && p.onDelete(p.menu.entry))}
+          onTrash={run(() => p.menu && p.onTrash(p.menu.entry))}
           onCopyPath={run(() => {
             if (p.menu) void copyText(p.menu.entry.path).catch(p.onError)
           })}
           onQuickAccess={run(() => p.menu && addQuickAccess({ path: p.menu.entry.path, name: p.menu.entry.name }))}
           onTag={run(() => p.menu && p.inspection.setTagTarget(p.menu.entry))}
           onProperties={run(() => p.menu && p.inspection.setPropertiesTarget(p.menu.entry))}
+          detailsPane={p.detailsPane}
+          onToggleDetailsPane={run(p.onToggleDetailsPane)}
           onClose={p.onClose}
         />
       )}
@@ -96,6 +105,7 @@ export function PaneMenus(p: Props) {
           showHidden={p.showHidden}
           view={p.view}
           detailsPane={p.detailsPane}
+          canShowDetailsPane={p.canShowDetailsPane}
           labels={{
             newFolder: t('newFolder'),
             newFile: t('newFile'),

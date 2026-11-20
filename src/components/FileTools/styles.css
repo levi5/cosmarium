@@ -4,7 +4,7 @@
   z-index: 1000;
   display: grid;
   place-items: center;
-  background: #0008;
+  background: var(--overlay);
   padding: 24px;
   isolation: isolate;
 }
@@ -15,7 +15,7 @@
   max-height: calc(100dvh - 48px);
   overflow: auto;
   padding: 24px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--field-border);
   border-radius: 12px;
   background: var(--surface);
   color: var(--text);
@@ -57,13 +57,21 @@
 .tool-dialog li {
   overflow-wrap: anywhere;
 }
-.tool-dialog input {
+.tool-dialog input:not([type='checkbox']):not([type='radio']) {
   padding: 8px;
   background: var(--field-bg);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--field-border);
   border-radius: 6px;
   color: var(--text);
   min-width: 0;
+}
+.tool-dialog input:not([type='checkbox']):not([type='radio']):focus-visible {
+  border-color: var(--accent-line);
+  background: var(--field-bg-focus);
+}
+.tool-dialog input[type='checkbox'],
+.tool-dialog input[type='radio'] {
+  accent-color: var(--accent);
 }
 .tool-dialog table {
   width: 100%;

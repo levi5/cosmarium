@@ -42,6 +42,7 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           canPaste={clipboard.paths.length > 0}
           labels={{
             open: t('open'),
+            openWith: t('openWith'),
             openInNewTab: t('openInNewTab'),
             openTerminal: t('openTerminal'),
             openTerminalRoot: t('openTerminalRoot'),
@@ -50,13 +51,16 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
             copy: t('copy'),
             paste: t('paste'),
             rename: t('rename'),
-            delete_: t('delete_'),
+            delete_: t('deletePermanently'),
+            moveToTrash: t('moveToTrash'),
             copyPath: t('copyPath'),
             quickAccess: t('addQuickAccess'),
             tag: t('addTag'),
-            properties: t('properties')
+            properties: t('properties'),
+            showDetailsPane: t('showDetailsPane')
           }}
           onOpen={fileAction(() => b.open(menu.entry))}
+          onOpenWith={fileAction(() => inspection.setOpenWithTarget(menu.entry))}
           onOpenInNewTab={fileAction(() => createTab(menu.entry.path))}
           onOpenTerminal={fileAction(() => openTerminal(menu.entry.path))}
           onOpenTerminalRoot={fileAction(() => openTerminal(menu.entry.path, true))}
@@ -65,11 +69,14 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           onCopy={fileAction(() => b.copy('copy', menu.entry))}
           onPaste={fileAction(() => void transfers.doPaste(menu.entry.path))}
           onRename={fileAction(() => actions.doRename(menu.entry))}
-          onDelete={fileAction(() => b.requestDelete(menu.entry))}
+          onTrash={fileAction(() => b.requestDelete(menu.entry))}
+          onDelete={fileAction(() => b.requestDelete(menu.entry, true))}
           onCopyPath={fileAction(() => void copyText(menu.entry.path))}
           onTag={fileAction(() => inspection.setTagTarget(menu.entry))}
           onQuickAccess={fileAction(() => b.organizer.addQuickAccess({ path: menu.entry.path, name: menu.entry.name }))}
           onProperties={fileAction(() => inspection.setPropertiesTarget(menu.entry))}
+          detailsPane={b.detailsPane}
+          onToggleDetailsPane={b.compact ? undefined : fileAction(() => b.setDetailsPane(!b.detailsPane))}
           onClose={() => b.setMenu(null)}
         />
       )}
@@ -81,6 +88,7 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           showHidden={preferences.showHidden}
           view={b.view}
           detailsPane={b.detailsPane}
+          canShowDetailsPane={Boolean(b.detailsEntry)}
           labels={{
             newFolder: t('newFolder'),
             newFile: t('newFile'),

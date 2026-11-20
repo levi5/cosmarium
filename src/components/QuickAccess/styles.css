@@ -92,7 +92,7 @@
 }
 .quick-access__pin:hover,
 .quick-access__pin:focus-visible {
-  color: var(--accent);
+  color: var(--accent-fg);
   opacity: 1;
 }
 .quick-access__icon {

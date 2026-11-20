@@ -31,13 +31,18 @@ vi.mock('../FileTools/api', () => ({ toolsApi: { openTerminal: vi.fn(async () =>
 vi.mock('../../services/tauri/filesystem', () => ({
   filesystem: {
     listDirectory: vi.fn(),
+    getFolderStats: vi.fn(),
     createDirectory: vi.fn(),
     createFile: vi.fn(),
     renameEntry: vi.fn(),
     recordCreated: vi.fn(),
     recordRename: vi.fn(),
     trashEntries: vi.fn(),
-    openWithDefault: vi.fn()
+    deleteEntries: vi.fn(),
+    openWithDefault: vi.fn(),
+    listApplications: vi.fn(),
+    openWithApplication: vi.fn(),
+    readTextPreview: vi.fn()
   }
 }))
 vi.mock('../FileBrowser/FileTable', () => ({
@@ -64,6 +69,8 @@ const file: FileEntry = { name: 'note.txt', path: '/secondary/note.txt', kind: '
 beforeEach(() => {
   vi.resetAllMocks()
   vi.mocked(filesystem.listDirectory).mockResolvedValue([file])
+  vi.mocked(filesystem.getFolderStats).mockResolvedValue({ files: 0, dirs: 0, size: 0, truncated: false })
+  vi.mocked(filesystem.readTextPreview).mockResolvedValue({ text: 'hello', isText: true, truncated: false, size: 5 })
   localStorage.clear()
 })
 
@@ -99,6 +106,65 @@ it('renames a secondary entry without changing primary entries', async () => {
   expect(filesystem.renameEntry).toHaveBeenCalledWith(file.path, 'renamed.txt')
   expect(filesystem.recordRename).toHaveBeenCalledWith(file.path, '/secondary/renamed.txt')
   expect(primary.replaceEntry).not.toHaveBeenCalled()
+})
+
+it('shows and closes details inside the same responsive content area as the listing', async () => {
+  const { region } = await setup()
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.contextMenu(region)
+  fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: 'Mostrar painel de detalhes' }))
+  const details = screen.getByRole('complementary', { name: 'Painel de detalhes' })
+  expect(details.parentElement).toBe(region.parentElement)
+  expect(details.parentElement?.classList.contains('workspace-pane__content')).toBe(true)
+  expect(within(details).getByText('note.txt')).toBeTruthy()
+  fireEvent.click(within(details).getByRole('button', { name: 'Fechar painel' }))
+  expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+})
+
+it.each(['file', 'directory'] as const)('selects a right-clicked %s and opens details from its own menu', async (kind) => {
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([{ ...file, kind }])
+  await setup()
+  const item = screen.getByRole('button', { name: 'note.txt' })
+  fireEvent.contextMenu(item)
+  expect(item.getAttribute('aria-pressed')).toBe('true')
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Mostrar painel de detalhes' }))
+  const details = await screen.findByRole('complementary', { name: 'Painel de detalhes' })
+  expect(within(details).getByText('note.txt')).toBeTruthy()
+  expect(screen.queryByRole('menu')).toBeNull()
+})
+
+it('preserves a multi-selection when opening the menu of an already selected item', async () => {
+  const other = { ...file, name: 'other.txt', path: '/secondary/other.txt' }
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([file, other])
+  await setup()
+  const first = screen.getByRole('button', { name: 'note.txt' })
+  const second = screen.getByRole('button', { name: 'other.txt' })
+  fireEvent.click(first)
+  fireEvent.click(second, { ctrlKey: true })
+  fireEvent.contextMenu(first)
+  expect(first.getAttribute('aria-pressed')).toBe('true')
+  expect(second.getAttribute('aria-pressed')).toBe('true')
+})
+
+it('hides the details option and ignores its shortcut without a selection', async () => {
+  const { region } = await setup()
+  fireEvent.contextMenu(region)
+  expect(within(screen.getByRole('menu')).queryByText('Mostrar painel de detalhes')).toBeNull()
+  fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' })
+  fireEvent.keyDown(region, { key: 'e', ctrlKey: true })
+  expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+})
+
+it('hides details when the last item is deselected', async () => {
+  const { region } = await setup()
+  const fileButton = screen.getByRole('button', { name: 'note.txt' })
+  fireEvent.click(fileButton)
+  fireEvent.keyDown(region, { key: 'e', ctrlKey: true })
+  expect(screen.getByRole('complementary', { name: 'Painel de detalhes' })).toBeTruthy()
+  fireEvent.click(fileButton, { ctrlKey: true })
+  expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+  fireEvent.contextMenu(region)
+  expect(within(screen.getByRole('menu')).queryByText('Mostrar painel de detalhes')).toBeNull()
 })
 
 it('selects a range with shift+click in the secondary pane', async () => {
@@ -198,10 +264,37 @@ it('deletes secondary entries only after confirmation', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
   fireEvent.keyDown(region, { key: 'Delete' })
   expect(filesystem.trashEntries).not.toHaveBeenCalled()
-  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir' }))
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Mover para a lixeira' }))
   await waitFor(() => expect(filesystem.trashEntries).toHaveBeenCalledWith([file.path], expect.any(String)))
   await waitFor(() => expect(screen.queryByRole('button', { name: 'note.txt' })).toBeNull())
   expect(primary.removeEntries).not.toHaveBeenCalled()
+})
+
+it('permanently deletes only after confirmation without using trash', async () => {
+  const { region } = await setup()
+  vi.mocked(filesystem.deleteEntries).mockResolvedValue({ removed: [file.path], cancelled: false, errors: [] })
+  vi.mocked(filesystem.listDirectory).mockResolvedValue([])
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.keyDown(region, { key: 'Delete', shiftKey: true })
+  expect(filesystem.deleteEntries).not.toHaveBeenCalled()
+  expect(screen.getByRole('dialog').textContent).toContain('Esta ação não pode ser desfeita.')
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir permanentemente' }))
+  await waitFor(() => expect(filesystem.deleteEntries).toHaveBeenCalledWith([file.path]))
+  expect(filesystem.trashEntries).not.toHaveBeenCalled()
+  await waitFor(() => expect(screen.queryByRole('button', { name: 'note.txt' })).toBeNull())
+  expect(primary.removeEntries).not.toHaveBeenCalled()
+})
+
+it('cancels permanent deletion from the context menu', async () => {
+  await setup()
+  fireEvent.contextMenu(screen.getByRole('button', { name: 'note.txt' }))
+  const menu = screen.getByRole('menu')
+  expect(within(menu).getByText('Mover para a lixeira')).toBeTruthy()
+  fireEvent.click(within(menu).getByText('Excluir permanentemente'))
+  fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button', { name: 'Cancelar' })[0])
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(filesystem.deleteEntries).not.toHaveBeenCalled()
+  expect(filesystem.trashEntries).not.toHaveBeenCalled()
 })
 
 it('keeps keyboard navigation and Escape working in secondary menus', async () => {
@@ -213,6 +306,15 @@ it('keeps keyboard navigation and Escape working in secondary menus', async () =
   expect(document.activeElement).toBe(items[1])
   fireEvent.keyDown(items[1], { key: 'Escape' })
   expect(screen.queryByRole('menu')).toBeNull()
+})
+
+it('opens the application chooser from the secondary file menu', async () => {
+  vi.mocked(filesystem.listApplications).mockResolvedValue([{ id: 'editor.desktop', name: 'Text Editor', isDefault: true }])
+  await setup()
+  fireEvent.contextMenu(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.click(within(screen.getByRole('menu')).getByText('Abrir com…'))
+  expect(await screen.findByRole('button', { name: 'Text Editor Padrão' })).toBeTruthy()
+  expect(filesystem.listApplications).toHaveBeenCalledWith(file.path)
 })
 
 it('pastes into the secondary path and displays transfer failures', async () => {
@@ -242,7 +344,7 @@ it('honors customized rename, copy, and delete bindings instead of fixed keys', 
   expect(within(screen.getByRole('dialog')).getByRole('textbox').getAttribute('aria-label')).toBe('Renomear')
   fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button', { name: 'Cancelar' })[0])
   fireEvent.keyDown(region, { key: 'd', ctrlKey: true, shiftKey: true })
-  expect(within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir' })).toBeTruthy()
+  expect(within(screen.getByRole('dialog')).getByRole('button', { name: 'Mover para a lixeira' })).toBeTruthy()
   expect(filesystem.trashEntries).not.toHaveBeenCalled()
 })
 

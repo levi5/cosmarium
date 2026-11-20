@@ -1,13 +1,16 @@
+import { useProductivityStore } from '../../stores/productivityStore'
 import { Icon } from '../base/Icon'
 import { IconButton } from '../base/IconButton'
 import { FileTools } from '../FileTools'
 import { toolMessages } from '../FileTools/messages'
+import { productivityMessages } from '../Productivity/messages'
 import { SavedSearches } from '../SavedSearches'
 import { ExplorerToolbar } from './ExplorerToolbar'
 import type { FileBrowserController } from './useFileBrowser'
 
 export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserController; compact: boolean }) {
   const { t, preferences: p, workspace: w, actions: a } = b
+  const rehearsal = useProductivityStore((state) => state.rehearsal)
   if (compact)
     return (
       <div className="browser-heading browser-heading--compact">
@@ -56,6 +59,16 @@ export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserCo
     <ExplorerToolbar
       tools={
         <>
+          <button
+            type="button"
+            className="explorer-toolbar__icon"
+            title={productivityMessages(p.language).title}
+            aria-label={productivityMessages(p.language).title}
+            aria-haspopup="dialog"
+            onClick={() => b.setProductivityOpen(true)}
+          >
+            <Icon name={rehearsal ? 'eye' : 'grid'} size={16} />
+          </button>
           <FileTools
             entries={b.targetsFor()}
             path={w.currentPath}
@@ -81,6 +94,7 @@ export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserCo
             onSelect={(search) => {
               w.navigateTo(search.root)
               b.setQuery(search.query)
+              b.search.refresh()
             }}
           />
         </>
@@ -117,7 +131,8 @@ export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserCo
         cut: t('cut'),
         copy: t('copy'),
         paste: t('paste'),
-        delete_: t('delete_'),
+        delete_: t('deletePermanently'),
+        moveToTrash: t('moveToTrash'),
         emptyTrash: t('emptyTrash'),
         refresh: t('refresh'),
         list: t('list'),
@@ -135,7 +150,8 @@ export function BrowserToolbar({ browser: b, compact }: { browser: FileBrowserCo
       onCut={() => b.copy('cut')}
       onCopy={() => b.copy('copy')}
       onPaste={() => void b.transfers.doPaste(w.currentPath)}
-      onDelete={() => b.requestDelete()}
+      onTrash={() => b.requestDelete()}
+      onDelete={() => b.requestDelete(undefined, true)}
       canEmptyTrash={b.isTrash && w.entries.length > 0}
       onEmptyTrash={() => a.setEmptyTrashOpen(true)}
       onRefresh={() => void w.refresh()}

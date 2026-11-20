@@ -1,4 +1,5 @@
 import { useFileWorkspace } from '../../lib/files'
+import { createTranslator } from '../../lib/i18n'
 import { usePreferences } from '../../lib/preferences'
 import { useSelectionStore } from '../../stores/selectionStore'
 import { useTransferStore } from '../../stores/transferStore'
@@ -9,19 +10,20 @@ export function StatusBar() {
   const { entries } = useFileWorkspace()
   const { selected } = useSelectionStore()
   const { language } = usePreferences()
+  const t = createTranslator(language)
   const { items, panelOpen, setPanelOpen } = useTransferStore()
   const count = Object.keys(items).length
   const active = Object.values(items).some((item) => !item.finished)
   const failed = Object.values(items).some((item) => item.error)
   return (
     <footer className="status-bar">
-      <span>{entries.length} items</span>
+      <span>
+        {entries.length} {t('items')}
+      </span>
       {selected.length > 0 && (
         <>
           <span className="status-bar__divider" />
-          <span>
-            {selected.length} item{selected.length === 1 ? '' : 's'} selected
-          </span>
+          <span>{t(selected.length === 1 ? 'statusSelectedOne' : 'statusSelectedMany').replace('{count}', String(selected.length))}</span>
         </>
       )}
       {count > 0 && (

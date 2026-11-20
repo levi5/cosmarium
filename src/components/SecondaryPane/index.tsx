@@ -2,10 +2,10 @@ import { listen } from '@tauri-apps/api/event'
 import { _try } from 'funcio'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewMode } from '../../constants/view'
-import { fileRows } from '../../lib/fileRows'
 import { useFolderSizes } from '../../hooks/useFolderSizes'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { dispatchShortcut } from '../../hooks/useShortcuts'
+import { fileRows } from '../../lib/fileRows'
 import { errorMessage, previewType } from '../../lib/format'
 import { createTranslator } from '../../lib/i18n'
 import { useOrganizer } from '../../lib/organizer'
@@ -37,6 +37,7 @@ type Props = {
   sortKey?: SortKey
   sortDirection?: SortDirection
   initialPath: string
+  onPathChange?: (path: string) => void
   primaryPath: string
   primarySources: string[]
   onChanged: () => void
@@ -45,6 +46,7 @@ type Props = {
 
 export function SecondaryPane({
   initialPath,
+  onPathChange,
   primaryPath,
   primarySources,
   onChanged,
@@ -55,6 +57,9 @@ export function SecondaryPane({
 }: Props) {
   const directory = useDirectoryPane(initialPath)
   const { path, navigate, entries, loading, error, watchError, refresh } = directory
+  useEffect(() => {
+    onPathChange?.(path)
+  }, [path, onPathChange])
   const { language, iconSize, showHidden, showSize, setShowHidden } = usePreferences()
   const organizer = useOrganizer()
   const [viewOverride, setView] = useState<ViewMode | null>(null)
@@ -135,6 +140,10 @@ export function SecondaryPane({
   }
   const tagsOf = (entryPath: string) => organizer.tags.filter((tag) => organizer.taggedPaths[entryPath]?.includes(tag.id))
   const activeEntry = visibleEntries.find((entry) => entry.path === active) ?? null
+  const detailsEntry =
+    visibleEntries.find((entry) => selected.includes(entry.path) && entry.path === active) ??
+    visibleEntries.find((entry) => selected.includes(entry.path)) ??
+    null
   const targets = (entry?: FileEntry) =>
     entry && !selected.includes(entry.path)
       ? [entry]
@@ -173,6 +182,7 @@ export function SecondaryPane({
                 if (entry) actions.doRename(entry)
               },
               delete: () => actions.setDeleteTargets(targets()),
+              deletePermanently: () => actions.setPermanentDeleteTargets(targets()),
               newFolder: () => actions.setFolderDialog({ open: true, error: null }),
               newFile: () => actions.setFileDialog({ open: true, error: null }),
               refresh: () => void refresh(),
@@ -182,7 +192,9 @@ export function SecondaryPane({
                   .then(go)
                   .catch((reason) => setFailure(errorMessage(reason))),
               toggleHidden: () => setShowHidden(!showHidden),
-              toggleDetailsPane: () => setDetailsPane(!detailsPane),
+              toggleDetailsPane: () => {
+                if (detailsEntry) setDetailsPane(!detailsPane)
+              },
               cycleView: () => setView(view === 'grid' ? 'list' : 'grid'),
               properties: () => {
                 const entry = targets()[0]
@@ -231,95 +243,99 @@ export function SecondaryPane({
           }
           onRefresh={() => void refresh()}
         />
-        <section
-          className="workspace-pane__content"
-          aria-label={path}
-          onContextMenu={(event) => {
-            event.preventDefault()
-            event.stopPropagation()
-            setMenu(null)
-            setBackgroundMenu({ anchorX: event.clientX, anchorY: event.clientY })
-          }}
-        >
-          {(error || failure) && <p role="alert">{error ?? failure}</p>}
-          {watchError && (
-            <p role="status">
-              {watchError} — {t('refresh')}
-            </p>
-          )}
-          {loading ? (
-            <p role="status">{t('loading')}</p>
-          ) : (
-            <FileTable
-              rows={fileRows(visibleEntries, selected, active, tagsOf)}
-              currentPath={path}
-              selectedPaths={selected}
-              activePath={active}
-              view={view}
-              iconSize={iconSize}
-              language={language}
-              labels={{
-                name: t('name'),
-                modified: t('modified'),
-                accessed: t('accessedField'),
-                type: t('type'),
-                size: t('size'),
-                file: t('file'),
-                fileType: t('fileType')
-              }}
-              folderLabel={t('folder')}
-              showSize={showSize}
-              folderSizes={folderSizes}
-              onSelect={(event, entry) => {
-                const additive = event.ctrlKey || event.metaKey
-                setActive(entry.path)
-                if (event.shiftKey) {
-                  const range = selectionRange(
-                    visibleEntries.map((item) => item.path),
-                    selectionAnchor.current,
-                    entry.path
+        <div className="browser-body workspace-pane__content">
+          <section
+            className="secondary-pane__listing"
+            aria-label={path}
+            onContextMenu={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              setMenu(null)
+              setBackgroundMenu({ anchorX: event.clientX, anchorY: event.clientY })
+            }}
+          >
+            {(error || failure) && <p role="alert">{error ?? failure}</p>}
+            {watchError && (
+              <p role="status">
+                {watchError} — {t('refresh')}
+              </p>
+            )}
+            {loading ? (
+              <p role="status">{t('loading')}</p>
+            ) : (
+              <FileTable
+                rows={fileRows(visibleEntries, selected, active, tagsOf)}
+                currentPath={path}
+                selectedPaths={selected}
+                activePath={active}
+                view={view}
+                iconSize={iconSize}
+                language={language}
+                labels={{
+                  name: t('name'),
+                  modified: t('modified'),
+                  accessed: t('accessedField'),
+                  type: t('type'),
+                  size: t('size'),
+                  file: t('file'),
+                  fileType: t('fileType')
+                }}
+                folderLabel={t('folder')}
+                showSize={showSize}
+                folderSizes={folderSizes}
+                onSelect={(event, entry) => {
+                  const additive = event.ctrlKey || event.metaKey
+                  setActive(entry.path)
+                  if (event.shiftKey) {
+                    const range = selectionRange(
+                      visibleEntries.map((item) => item.path),
+                      selectionAnchor.current,
+                      entry.path
+                    )
+                    setSelected(applySelectionRange(selected, range, additive))
+                    return
+                  }
+                  selectionAnchor.current = entry.path
+                  setSelected(
+                    additive ? (selected.includes(entry.path) ? selected.filter((item) => item !== entry.path) : [...selected, entry.path]) : [entry.path]
                   )
-                  setSelected(applySelectionRange(selected, range, additive))
-                  return
-                }
-                selectionAnchor.current = entry.path
-                setSelected(
-                  additive ? (selected.includes(entry.path) ? selected.filter((item) => item !== entry.path) : [...selected, entry.path]) : [entry.path]
-                )
-              }}
-              onSelectPaths={setSelected}
-              onFocusEntry={(entry) => setActive(entry.path)}
-              onOpen={open}
-              onContextMenu={(event, entry) => {
-                event.preventDefault()
-                event.stopPropagation()
-                setActive(entry.path)
-                setBackgroundMenu(null)
-                setMenu({ entry, anchorX: event.clientX, anchorY: event.clientY })
-              }}
-              onBackgroundMenu={(event) => {
-                event.preventDefault()
-                event.stopPropagation()
-                setMenu(null)
-                setBackgroundMenu({ anchorX: event.clientX, anchorY: event.clientY })
-              }}
+                }}
+                onSelectPaths={setSelected}
+                onFocusEntry={(entry) => setActive(entry.path)}
+                onOpen={open}
+                onContextMenu={(event, entry) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  setActive(entry.path)
+                  if (!selected.includes(entry.path)) setSelected([entry.path])
+                  setBackgroundMenu(null)
+                  setMenu({ entry, anchorX: event.clientX, anchorY: event.clientY })
+                }}
+                onBackgroundMenu={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  setMenu(null)
+                  setBackgroundMenu({ anchorX: event.clientX, anchorY: event.clientY })
+                }}
+                onUnassign={(entry, tagId) => organizer.unassignTag(entry.path, tagId)}
+                onDrop={(sources, dest, cut) => void transfer(sources, dest, cut)}
+              />
+            )}
+          </section>
+          {detailsPane && detailsEntry && (
+            <DetailsPane
+              entry={detailsEntry}
+              folderSizes={folderSizes}
+              tags={tagsOf(detailsEntry.path)}
+              language={language}
+              folderLabel={t('folder')}
+              fileLabel={t('file')}
+              fileTypeLabel={t('fileType')}
               onUnassign={(entry, tagId) => organizer.unassignTag(entry.path, tagId)}
-              onDrop={(sources, dest, cut) => void transfer(sources, dest, cut)}
+              onClose={() => setDetailsPane(false)}
             />
           )}
-        </section>
-        {detailsPane && (
-          <DetailsPane
-            entry={activeEntry}
-            folderSizes={folderSizes}
-            tags={activeEntry ? tagsOf(activeEntry.path) : []}
-            language={language}
-            folderLabel={t('folder')}
-            fileLabel={t('file')}
-            fileTypeLabel={t('fileType')}
-            onUnassign={(entry, tagId) => organizer.unassignTag(entry.path, tagId)}
-          />
-        )}
+        </div>
       </div>
       <PaneMenus
         menu={menu}
@@ -333,6 +349,7 @@ export function SecondaryPane({
         view={view}
         setView={setView}
         detailsPane={detailsPane}
+        canShowDetailsPane={Boolean(detailsEntry)}
         onToggleDetailsPane={() => setDetailsPane(!detailsPane)}
         showHidden={showHidden}
         onToggleHidden={() => setShowHidden(!showHidden)}
@@ -340,7 +357,8 @@ export function SecondaryPane({
         inspection={inspection}
         onOpen={open}
         onCopy={copy}
-        onDelete={(entry) => actions.setDeleteTargets(targets(entry))}
+        onTrash={(entry) => actions.setDeleteTargets(targets(entry))}
+        onDelete={(entry) => actions.setPermanentDeleteTargets(targets(entry))}
         onPaste={(dest) => void transfer(clipboard.paths, dest, clipboard.mode === 'cut')}
         canPaste={clipboard.paths.length > 0 && !busy}
         onRefresh={() => void refresh()}

@@ -54,7 +54,8 @@ it.each([
     const veil = getComputedStyle(document.documentElement).getPropertyValue('--mat-veil').trim()
     expect(veil).toBe(theme === 'light' ? '#eef0f7a6' : selected === 'mica' ? '#1f2026b8' : '#1c1d2499')
     const background = getComputedStyle(document.documentElement).getPropertyValue('--mat-background')
-    expect(background).toContain(theme === 'light' ? '#b9a8ff' : '#4b3f8f')
+    expect(background).toContain('var(--accent)')
+    expect(background).toContain(theme === 'light' ? '#eef1fb' : '#1d2030')
   }
 })
 

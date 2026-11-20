@@ -7,6 +7,7 @@ import { Portal } from '../base/Portal'
 
 type Labels = {
   open: string
+  openWith: string
   openInNewTab: string
   openTerminal: string
   openTerminalRoot: string
@@ -16,10 +17,12 @@ type Labels = {
   paste: string
   rename: string
   delete_: string
+  moveToTrash: string
   copyPath: string
   quickAccess: string
   tag: string
   properties: string
+  showDetailsPane?: string
 }
 
 type Props = {
@@ -30,6 +33,7 @@ type Props = {
   canPaste: boolean
   labels: Labels
   onOpen: () => void
+  onOpenWith: () => void
   onOpenInNewTab: () => void
   onOpenTerminal: () => void
   onOpenTerminalRoot: () => void
@@ -39,10 +43,13 @@ type Props = {
   onPaste: () => void
   onRename: () => void
   onDelete: () => void
+  onTrash: () => void
   onCopyPath: () => void
   onQuickAccess: () => void
   onTag: () => void
   onProperties: () => void
+  detailsPane?: boolean
+  onToggleDetailsPane?: () => void
   onClose: () => void
 }
 
@@ -54,6 +61,7 @@ export function FileContextMenu({
   canPaste,
   labels,
   onOpen,
+  onOpenWith,
   onOpenInNewTab,
   onOpenTerminal,
   onOpenTerminalRoot,
@@ -63,10 +71,13 @@ export function FileContextMenu({
   onPaste,
   onRename,
   onDelete,
+  onTrash,
   onCopyPath,
   onQuickAccess,
   onTag,
   onProperties,
+  detailsPane = false,
+  onToggleDetailsPane,
   onClose
 }: Props) {
   const { ref, position } = useMenuPosition(anchorX, anchorY)
@@ -116,6 +127,12 @@ export function FileContextMenu({
             {labels.openInNewTab}
           </button>
         )}
+        {!isDirectory && (
+          <button type="button" onClick={run(onOpenWith)}>
+            <Icon name="grid" size={14} />
+            {labels.openWith}
+          </button>
+        )}
         {canPreview && (
           <button type="button" onClick={run(onPreview)}>
             <Icon name="eye" size={14} />
@@ -153,6 +170,10 @@ export function FileContextMenu({
           <Icon name="rename" size={14} />
           {labels.rename}
         </button>
+        <button type="button" onClick={run(onTrash)}>
+          <Icon name="trash" size={14} />
+          {labels.moveToTrash}
+        </button>
         <button type="button" className="is-danger" onClick={run(onDelete)}>
           <Icon name="trash" size={14} />
           {labels.delete_}
@@ -174,6 +195,17 @@ export function FileContextMenu({
           {labels.tag}
         </button>
         <div className="file-context-menu__divider" />
+        {onToggleDetailsPane && labels.showDetailsPane && (
+          <button type="button" role="menuitemcheckbox" aria-checked={detailsPane} onClick={run(onToggleDetailsPane)}>
+            <Icon name="details" size={14} />
+            {labels.showDetailsPane}
+            {detailsPane && (
+              <span className="menu-check">
+                <Icon name="check" size={12} />
+              </span>
+            )}
+          </button>
+        )}
         <button type="button" onClick={run(onProperties)}>
           <Icon name="info" size={14} />
           {labels.properties}

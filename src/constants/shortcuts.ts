@@ -15,6 +15,7 @@ export type ShortcutId =
   | 'paste'
   | 'selectAll'
   | 'delete'
+  | 'deletePermanently'
   | 'rename'
   | 'open'
   | 'preview'
@@ -60,7 +61,8 @@ export const SHORTCUTS: ShortcutDef[] = [
   { id: 'copy', group: 'files', label: 'copy', defaultCombo: 'ctrl+c' },
   { id: 'cut', group: 'files', label: 'cut', defaultCombo: 'ctrl+x' },
   { id: 'paste', group: 'files', label: 'paste', defaultCombo: 'ctrl+v' },
-  { id: 'delete', group: 'files', label: 'delete_', defaultCombo: 'delete', needsTarget: true },
+  { id: 'delete', group: 'files', label: 'moveToTrash', defaultCombo: 'delete', needsTarget: true },
+  { id: 'deletePermanently', group: 'files', label: 'deletePermanently', defaultCombo: 'shift+delete', needsTarget: true },
   { id: 'rename', group: 'files', label: 'rename', defaultCombo: 'f2', needsTarget: true },
   { id: 'open', group: 'files', label: 'open', defaultCombo: 'enter', needsTarget: true },
   { id: 'preview', group: 'files', label: 'preview', defaultCombo: 'space', needsTarget: true },

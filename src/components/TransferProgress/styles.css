@@ -38,7 +38,7 @@
 }
 .transfer-card__top button:hover {
   color: var(--text);
-  background: var(--surface-3);
+  background: var(--hover);
 }
 .transfer-card__bar {
   height: 4px;
@@ -50,7 +50,7 @@
 .transfer-card__bar i {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: var(--accent-fg);
   border-radius: inherit;
   transition: width 0.2s ease;
 }
