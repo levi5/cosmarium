@@ -21,9 +21,9 @@
   --menu-line: #504853;
   --menu-hover: #433b46;
   --menu-divider: #48404a;
-  --status: #2b262e;
-  --status-line: #3d3540;
-  --status-divider: #564c58;
+  --status: var(--surface);
+  --status-line: var(--line);
+  --status-divider: var(--line-strong);
   --track: #5a5a5a;
   --danger: #ed7373;
   --danger-fill: #c42b1c;

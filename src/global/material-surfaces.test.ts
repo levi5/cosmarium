@@ -32,6 +32,7 @@ const stylesheets = [
     'TagDialog',
     'PropertiesDialog',
     'SearchBox',
+    'StatusBar',
     'FileBrowser',
     'DriveOverview',
     'DetailsPane',
@@ -150,6 +151,25 @@ it('keeps theme material variables on the root instead of changing them on hover
     expect(rule.selectorText).not.toContain(':hover')
     expect(rule.selectorText).not.toMatch(/:root[^,]*\s+:root/)
   }
+})
+
+it.each(['mica', 'acrylic'])('restores the neutral solid status bar after switching from %s', (material) => {
+  document.documentElement.dataset.theme = 'dark'
+  const bar = surface('status-bar')
+  document.documentElement.dataset.material = material
+  expect(getComputedStyle(bar).getPropertyValue('backdrop-filter')).toContain('blur(')
+
+  document.documentElement.dataset.material = 'solid'
+  const computed = getComputedStyle(bar)
+  expect(computed.getPropertyValue('backdrop-filter') || 'none').toBe('none')
+  const baseRule = Array.from(styles.sheet?.cssRules ?? []).find(
+    (rule): rule is CSSStyleRule => rule instanceof CSSStyleRule && rule.selectorText === '.status-bar'
+  )
+  expect(baseRule?.style.getPropertyValue('background')).toBe('var(--status)')
+  const root = getComputedStyle(document.documentElement)
+  expect(root.getPropertyValue('--status')).toBe('var(--surface)')
+  expect(root.getPropertyValue('--status-line')).toBe('var(--line)')
+  expect(root.getPropertyValue('--status-divider')).toBe('var(--line-strong)')
 })
 
 it('blurs shared modal backdrops and keeps menus and modal surfaces only slightly translucent', () => {
