@@ -86,7 +86,11 @@ fn permanent_delete_removes_files_and_nonempty_directories() {
     std::fs::create_dir_all(root.path().join("folder/nested")).unwrap();
     std::fs::write(root.path().join("folder/nested/file.txt"), b"delete").unwrap();
     std::fs::write(root.path().join("file.txt"), b"delete").unwrap();
-    let paths = vec![path(&root, "file.txt"), path(&root, "folder"), path(&root, "missing")];
+    let paths = vec![
+        path(&root, "file.txt"),
+        path(&root, "folder"),
+        path(&root, "missing"),
+    ];
     let summary = crate::operations::mutate::delete_entries(&paths).unwrap();
     assert_eq!(summary.removed, paths);
     assert!(summary.errors.is_empty());
@@ -117,7 +121,8 @@ fn permanent_delete_rejects_empty_selection_and_unsafe_paths() {
         "/".into(),
         "relative".into(),
         "/tmp/..".into(),
-    ]).unwrap();
+    ])
+    .unwrap();
     assert!(summary.removed.is_empty());
     assert_eq!(summary.errors.len(), 3);
 }

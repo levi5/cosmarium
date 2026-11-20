@@ -3,11 +3,14 @@ import type { FileEntry } from '../../types/explorer'
 
 export function useInspection() {
   const [preview, setPreview] = useState<FileEntry | null>(null)
+  const [openWithTarget, setOpenWithTarget] = useState<FileEntry | null>(null)
   const [propertiesTarget, setPropertiesTarget] = useState<FileEntry | null>(null)
   const [tagTarget, setTagTarget] = useState<FileEntry | null>(null)
   const [deleteTagId, setDeleteTagId] = useState<string | null>(null)
   return {
     preview,
+    openWithTarget,
+    setOpenWithTarget,
     setPreview,
     propertiesTarget,
     setPropertiesTarget,
@@ -15,7 +18,7 @@ export function useInspection() {
     setTagTarget,
     deleteTagId,
     setDeleteTagId,
-    hasDialog: Boolean(preview || propertiesTarget || tagTarget || deleteTagId)
+    hasDialog: Boolean(preview || openWithTarget || propertiesTarget || tagTarget || deleteTagId)
   }
 }
 

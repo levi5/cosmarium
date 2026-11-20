@@ -6,6 +6,8 @@
     .dropdown,
     .preview-pane,
     .system-open-dialog,
+    .open-with-dialog,
+    .productivity-dialog,
     .tool-dialog,
     .prompt-dialog,
     .conflict-dialog,
@@ -32,6 +34,8 @@
     .background-context-menu,
     .dropdown,
     .system-open-dialog,
+    .open-with-dialog,
+    .productivity-dialog,
     .tool-dialog,
     .prompt-dialog,
     .conflict-dialog,
@@ -45,7 +49,7 @@
 :root:is([data-material='mica'], [data-material='acrylic']) .app-shell {
   position: relative;
   isolation: isolate;
-  background: #1b1d24;
+  background: var(--surface);
 }
 
 :root:is([data-material='mica'], [data-material='acrylic']) .app-shell::before {
@@ -72,7 +76,9 @@
 }
 
 :root:is([data-material='mica'], [data-material='acrylic']) .details-pane {
-  background: color-mix(in srgb, var(--mat-veil-hex) 90%, transparent);
+  background: var(--mat-veil);
+  background-image: linear-gradient(var(--mat-tint), var(--mat-tint)), var(--mat-background);
+  background-attachment: fixed;
 }
 
 :root:is([data-material='mica'], [data-material='acrylic']) .drive-overview__card {
@@ -85,7 +91,7 @@
   border-color: var(--notification-border, var(--mat-border));
 }
 
-:root:is([data-material='mica'], [data-material='acrylic']) :is(.breadcrumb, .search, .search-box, .view-switch) {
+:root:is([data-material='mica'], [data-material='acrylic']) :is(.breadcrumb, .search, .search-box, .view-switch, .pdf-preview nav, .open-with-dialog__search) {
   background: var(--mat-control);
   border-color: var(--mat-border);
   backdrop-filter: blur(12px);
@@ -122,7 +128,7 @@
   background: var(--hover);
 }
 
-:root:is([data-material='mica'], [data-material='acrylic']) :is(.breadcrumb, .search, .search-box):focus-within {
+:root:is([data-material='mica'], [data-material='acrylic']) :is(.breadcrumb, .search, .search-box, .open-with-dialog__search):focus-within {
   background: var(--field-bg-focus);
   border-color: var(--accent-line);
 }
@@ -150,6 +156,7 @@
     --mat-card-hover: var(--mat-veil-hex);
     --mat-tint: var(--mat-veil-hex);
     --field-bg-focus: var(--mat-veil-hex);
+    --field-bg: var(--mat-veil-hex);
   }
 
   :root:is([data-material='mica'], [data-material='acrylic'])
@@ -167,6 +174,8 @@
       .preview-pane,
       .preview-pane__text,
       .system-open-dialog,
+      .open-with-dialog,
+      .productivity-dialog,
       .tool-dialog,
       .prompt-dialog,
       .conflict-dialog,
@@ -178,14 +187,28 @@
       .breadcrumb,
       .search,
       .search-box,
-      .view-switch
+      .open-with-dialog__search,
+      .view-switch,
+      .pdf-preview nav
     ) {
     background: var(--mat-veil-hex);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 
-  :is(.dialog-backdrop, .preview-backdrop, .prompt-backdrop, .conflict-backdrop, .shortcuts-backdrop, .tag-backdrop, .properties-backdrop, .confirm-backdrop) {
+  :is(
+    .dialog-backdrop,
+    .preview-backdrop,
+    .prompt-backdrop,
+    .conflict-backdrop,
+    .shortcuts-backdrop,
+    .tag-backdrop,
+    .properties-backdrop,
+    .confirm-backdrop,
+    .tool-backdrop,
+    .open-with-backdrop,
+    .productivity-backdrop
+  ) {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }

@@ -21,6 +21,7 @@ type Props = {
   view: ViewMode
   setView: (view: ViewMode) => void
   detailsPane: boolean
+  canShowDetailsPane: boolean
   onToggleDetailsPane: () => void
   showHidden: boolean
   onToggleHidden: () => void
@@ -53,6 +54,7 @@ export function PaneMenus(p: Props) {
           canPaste={p.canPaste}
           labels={{
             open: t('open'),
+            openWith: t('openWith'),
             openInNewTab: t('openInNewTab'),
             openTerminal: t('openTerminal'),
             openTerminalRoot: t('openTerminalRoot'),
@@ -69,6 +71,7 @@ export function PaneMenus(p: Props) {
             properties: t('properties')
           }}
           onOpen={run(() => p.menu && p.onOpen(p.menu.entry))}
+          onOpenWith={run(() => p.menu && p.inspection.setOpenWithTarget(p.menu.entry))}
           onOpenInNewTab={run(() => p.menu && createTab(p.menu.entry.path))}
           onOpenTerminal={run(() => {
             if (p.menu) void toolsApi.openTerminal(p.menu.entry.path).catch(p.onError)
@@ -99,6 +102,7 @@ export function PaneMenus(p: Props) {
           showHidden={p.showHidden}
           view={p.view}
           detailsPane={p.detailsPane}
+          canShowDetailsPane={p.canShowDetailsPane}
           labels={{
             newFolder: t('newFolder'),
             newFile: t('newFile'),

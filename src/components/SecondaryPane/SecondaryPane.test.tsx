@@ -38,7 +38,10 @@ vi.mock('../../services/tauri/filesystem', () => ({
     recordRename: vi.fn(),
     trashEntries: vi.fn(),
     deleteEntries: vi.fn(),
-    openWithDefault: vi.fn()
+    openWithDefault: vi.fn(),
+    listApplications: vi.fn(),
+    openWithApplication: vi.fn(),
+    readTextPreview: vi.fn()
   }
 }))
 vi.mock('../FileBrowser/FileTable', () => ({
@@ -65,6 +68,7 @@ const file: FileEntry = { name: 'note.txt', path: '/secondary/note.txt', kind: '
 beforeEach(() => {
   vi.resetAllMocks()
   vi.mocked(filesystem.listDirectory).mockResolvedValue([file])
+  vi.mocked(filesystem.readTextPreview).mockResolvedValue({ text: 'hello', isText: true, truncated: false, size: 5 })
   localStorage.clear()
 })
 
@@ -100,6 +104,40 @@ it('renames a secondary entry without changing primary entries', async () => {
   expect(filesystem.renameEntry).toHaveBeenCalledWith(file.path, 'renamed.txt')
   expect(filesystem.recordRename).toHaveBeenCalledWith(file.path, '/secondary/renamed.txt')
   expect(primary.replaceEntry).not.toHaveBeenCalled()
+})
+
+it('shows and closes details inside the same responsive content area as the listing', async () => {
+  const { region } = await setup()
+  fireEvent.click(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.contextMenu(region)
+  fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: 'Mostrar painel de detalhes' }))
+  const details = screen.getByRole('complementary', { name: 'Painel de detalhes' })
+  expect(details.parentElement).toBe(region.parentElement)
+  expect(details.parentElement?.classList.contains('workspace-pane__content')).toBe(true)
+  expect(within(details).getByText('note.txt')).toBeTruthy()
+  fireEvent.click(within(details).getByRole('button', { name: 'Fechar painel' }))
+  expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+})
+
+it('hides the details option and ignores its shortcut without a selection', async () => {
+  const { region } = await setup()
+  fireEvent.contextMenu(region)
+  expect(within(screen.getByRole('menu')).queryByText('Mostrar painel de detalhes')).toBeNull()
+  fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' })
+  fireEvent.keyDown(region, { key: 'e', ctrlKey: true })
+  expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+})
+
+it('hides details when the last item is deselected', async () => {
+  const { region } = await setup()
+  const fileButton = screen.getByRole('button', { name: 'note.txt' })
+  fireEvent.click(fileButton)
+  fireEvent.keyDown(region, { key: 'e', ctrlKey: true })
+  expect(screen.getByRole('complementary', { name: 'Painel de detalhes' })).toBeTruthy()
+  fireEvent.click(fileButton, { ctrlKey: true })
+  expect(screen.queryByRole('complementary', { name: 'Painel de detalhes' })).toBeNull()
+  fireEvent.contextMenu(region)
+  expect(within(screen.getByRole('menu')).queryByText('Mostrar painel de detalhes')).toBeNull()
 })
 
 it('selects a range with shift+click in the secondary pane', async () => {
@@ -241,6 +279,15 @@ it('keeps keyboard navigation and Escape working in secondary menus', async () =
   expect(document.activeElement).toBe(items[1])
   fireEvent.keyDown(items[1], { key: 'Escape' })
   expect(screen.queryByRole('menu')).toBeNull()
+})
+
+it('opens the application chooser from the secondary file menu', async () => {
+  vi.mocked(filesystem.listApplications).mockResolvedValue([{ id: 'editor.desktop', name: 'Text Editor', isDefault: true }])
+  await setup()
+  fireEvent.contextMenu(screen.getByRole('button', { name: 'note.txt' }))
+  fireEvent.click(within(screen.getByRole('menu')).getByText('Abrir com…'))
+  expect(await screen.findByRole('button', { name: 'Text Editor Padrão' })).toBeTruthy()
+  expect(filesystem.listApplications).toHaveBeenCalledWith(file.path)
 })
 
 it('pastes into the secondary path and displays transfer failures', async () => {

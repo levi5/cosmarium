@@ -154,10 +154,15 @@ pub fn delete_entries(paths: &[String]) -> Result<TrashSummary, String> {
         if !target.is_absolute()
             || target.parent().is_none()
             || target.components().any(|component| {
-                matches!(component, std::path::Component::ParentDir | std::path::Component::CurDir)
+                matches!(
+                    component,
+                    std::path::Component::ParentDir | std::path::Component::CurDir
+                )
             })
         {
-            summary.errors.push(format!("{path}: Cannot delete this location."));
+            summary
+                .errors
+                .push(format!("{path}: Cannot delete this location."));
             continue;
         }
         let result = match std::fs::symlink_metadata(target) {

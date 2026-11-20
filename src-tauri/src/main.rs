@@ -109,6 +109,8 @@ fn main() {
             commands::ops_transfer::cancel_transfer,
             commands::ops_transfer::pause_transfer,
             commands::system::open_with_default,
+            commands::system::list_applications,
+            commands::system::open_with_application,
             commands::system::watch_directory,
             commands::system::unwatch_directory,
             commands::tools::find_duplicates,

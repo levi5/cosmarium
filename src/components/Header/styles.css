@@ -156,7 +156,7 @@
 }
 
 .breadcrumb.is-editing {
-  background: var(--surface-4);
+  background: var(--field-bg-focus);
   border-color: var(--accent-line);
 }
 

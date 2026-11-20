@@ -1,3 +1,4 @@
+pub mod applications;
 pub mod launch;
 pub mod locations;
 pub mod media_server;

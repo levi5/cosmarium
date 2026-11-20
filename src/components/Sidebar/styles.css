@@ -262,7 +262,7 @@
 .tag-section-options input:checked + .tag-section-check {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .tag-section-options input:checked + .tag-section-check svg {
   opacity: 1;

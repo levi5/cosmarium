@@ -43,7 +43,7 @@
 
 .shortcut-row__conflict {
   max-width: 190px;
-  color: #e0a33a;
+  color: var(--warning);
   font-size: 11px;
   text-align: right;
 }

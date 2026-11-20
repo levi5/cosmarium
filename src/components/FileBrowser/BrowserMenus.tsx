@@ -42,6 +42,7 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           canPaste={clipboard.paths.length > 0}
           labels={{
             open: t('open'),
+            openWith: t('openWith'),
             openInNewTab: t('openInNewTab'),
             openTerminal: t('openTerminal'),
             openTerminalRoot: t('openTerminalRoot'),
@@ -58,6 +59,7 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
             properties: t('properties')
           }}
           onOpen={fileAction(() => b.open(menu.entry))}
+          onOpenWith={fileAction(() => inspection.setOpenWithTarget(menu.entry))}
           onOpenInNewTab={fileAction(() => createTab(menu.entry.path))}
           onOpenTerminal={fileAction(() => openTerminal(menu.entry.path))}
           onOpenTerminalRoot={fileAction(() => openTerminal(menu.entry.path, true))}
@@ -83,6 +85,7 @@ export function BrowserMenus({ browser: b }: { browser: FileBrowserController })
           showHidden={preferences.showHidden}
           view={b.view}
           detailsPane={b.detailsPane}
+          canShowDetailsPane={Boolean(b.detailsEntry)}
           labels={{
             newFolder: t('newFolder'),
             newFile: t('newFile'),

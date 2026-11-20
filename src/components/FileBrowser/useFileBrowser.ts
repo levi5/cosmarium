@@ -15,6 +15,8 @@ import { applySelectionRange, selectionRange } from '../../lib/selection'
 import { isActivatableTarget } from '../../lib/shortcuts'
 import { filesystem } from '../../services/tauri/filesystem'
 import { useClipboardStore } from '../../stores/clipboardStore'
+import { useExplorerStore } from '../../stores/explorerStore'
+import type { SavedWorkspace, WorkspaceSnapshot } from '../../stores/productivityStore'
 import { useRecentStore } from '../../stores/recentStore'
 import { useSelectionStore } from '../../stores/selectionStore'
 import type { FileEntry } from '../../types/explorer'
@@ -44,7 +46,7 @@ export function useFileBrowser(compact: boolean) {
   const detailsPane = detailsValue === 'true'
   const setDetailsPane = (show: boolean) => setDetailsValue(show ? 'true' : 'false')
   const [query, setQuery] = useState('')
-  const search = useFileSearch(query, currentPath, showHidden, !compact)
+  const search = useFileSearch(query, currentPath, showHidden, !compact, entries)
   const [menu, setMenu] = useState<MenuState | null>(null)
   const [backgroundMenu, setBackgroundMenu] = useState<Anchor | null>(null)
   const [activeEntry, setActiveEntry] = useState<FileEntry | null>(null)
@@ -53,6 +55,39 @@ export function useFileBrowser(compact: boolean) {
   const transfers = useFileTransfers({ copying: t('copying'), moving: t('moving') }, actions.setNotice)
   const [recentsToken, setRecentsToken] = useState(0)
   const [split, setSplit] = useState(false)
+  const [secondaryPath, setSecondaryPath] = useState('')
+  const [paneRevision, setPaneRevision] = useState(0)
+  const [productivityOpen, setProductivityOpen] = useState(false)
+  const snapshotWorkspace = (): WorkspaceSnapshot => ({
+    paths: workspace.tabs.map((tab) => tab.path),
+    activeIndex: Math.max(
+      0,
+      workspace.tabs.findIndex((tab) => tab.id === workspace.activeTabId)
+    ),
+    view,
+    sortKey,
+    sortDirection,
+    query,
+    detailsPane,
+    split,
+    secondaryPath: secondaryPath || currentPath,
+    showHidden
+  })
+  const restoreWorkspace = ({ snapshot: s }: SavedWorkspace) => {
+    useExplorerStore.getState().restoreWorkspace(s.paths, s.activeIndex)
+    setView(s.view)
+    setSortKey(s.sortKey)
+    setSortDirection(s.sortDirection)
+    setQuery(s.query)
+    search.refresh()
+    setDetailsPane(s.detailsPane)
+    setSplit(s.split)
+    setSecondaryPath(s.secondaryPath)
+    setPaneRevision((value) => value + 1)
+    setShowHidden(s.showHidden)
+    setSelected([])
+    setActiveEntry(null)
+  }
   const previousPath = useRef(currentPath)
   const selectionAnchor = useRef<string | null>(null)
   useEffect(() => {
@@ -87,6 +122,10 @@ export function useFileBrowser(compact: boolean) {
     if (selected.length) return available.filter((item) => selected.includes(item.path))
     return activeEntry ? [activeEntry] : []
   }
+  const detailsEntry =
+    visibleEntries.find((entry) => selected.includes(entry.path) && entry.path === activeEntry?.path) ??
+    visibleEntries.find((entry) => selected.includes(entry.path)) ??
+    null
   const copy = (mode: 'copy' | 'cut', entry?: FileEntry) => {
     const targets = targetsFor(entry)
     if (targets.length)
@@ -136,7 +175,9 @@ export function useFileBrowser(compact: boolean) {
       else actions.setDeleteTargets(targets)
     }
   }
-  const hasOverlay = Boolean(actions.hasDialog || transfers.conflictState || inspection.hasDialog || menu || backgroundMenu)
+  const hasOverlay = Boolean(
+    actions.hasDialog || transfers.conflictState || transfers.rehearsalState || productivityOpen || inspection.hasDialog || menu || backgroundMenu
+  )
   useShortcuts({
     enabled: !hasOverlay,
     hasTargets: selected.length > 0 || Boolean(activeEntry),
@@ -146,7 +187,9 @@ export function useFileBrowser(compact: boolean) {
         searchRef.current?.select()
       },
       toggleHidden: () => setShowHidden(!showHidden),
-      toggleDetailsPane: () => setDetailsPane(!detailsPane),
+      toggleDetailsPane: () => {
+        if (detailsEntry) setDetailsPane(!detailsPane)
+      },
       cycleView: () => setView(view === 'grid' ? 'list' : 'grid'),
       copy: () => copy('copy'),
       cut: () => copy('cut'),
@@ -190,6 +233,7 @@ export function useFileBrowser(compact: boolean) {
     setQuery,
     search,
     detailsPane,
+    detailsEntry,
     setDetailsPane,
     menu,
     setMenu,
@@ -204,6 +248,13 @@ export function useFileBrowser(compact: boolean) {
     setRecentsToken,
     split,
     setSplit,
+    secondaryPath,
+    setSecondaryPath,
+    paneRevision,
+    productivityOpen,
+    setProductivityOpen,
+    snapshotWorkspace,
+    restoreWorkspace,
     folderSizes,
     searchRef,
     tagsOf,

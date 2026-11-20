@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --text: #f2f2f2;
   --muted: #aaa;
   --subtle: #777;
@@ -6,15 +7,16 @@
   --surface-2: #272727;
   --surface-3: #323232;
   --surface-4: #3b3b3b;
-  --surface-hover: #3a3a3a;
+  --surface-hover: var(--hover);
   --line: #ffffff14;
   --line-strong: #4a4a4a;
-  --accent-fg: #9ec9e8;
+  --accent-fg: color-mix(in srgb, var(--accent) 35%, var(--text));
+  --on-accent: #20242d;
   --accent: #9b7cff;
   --accent-soft: #9b7cff24;
   --accent-line: var(--accent);
-  --selected: #193e5a;
-  --selected-2: #26475e;
+  --selected: color-mix(in srgb, var(--accent) 24%, var(--surface));
+  --selected-2: color-mix(in srgb, var(--accent) 34%, var(--surface));
   --menu: #302b32;
   --menu-line: #504853;
   --menu-hover: #433b46;
@@ -24,6 +26,12 @@
   --status-divider: #564c58;
   --track: #5a5a5a;
   --danger: #ed7373;
+  --danger-fill: #c42b1c;
+  --on-danger: #fff;
+  --warning: #e0a33a;
+  --overlay: #08090c88;
+  --card-bg: var(--surface-3);
+  --card-border: var(--line);
   --media-bg: #090a0d;
   --thumb-bg: #1a1a1a;
   --win-hover: #ffffff14;
@@ -43,6 +51,7 @@
 }
 
 :root[data-theme='light'] {
+  color-scheme: light;
   --text: #20242d;
   --muted: #6d7482;
   --subtle: #9198a5;
@@ -50,13 +59,9 @@
   --surface-2: #ffffff;
   --surface-3: #f1f2f5;
   --surface-4: #e9ebef;
-  --surface-hover: #e9ebef;
   --line: #e4e6ea;
   --line-strong: #cfd4dc;
-  --accent-fg: #1f6f9e;
   --accent-line: color-mix(in srgb, var(--accent) 60%, #101319);
-  --selected: #d3e7f7;
-  --selected-2: #dcecfb;
   --menu: #ffffff;
   --menu-line: #dfe2e8;
   --menu-hover: #eceef2;
@@ -66,6 +71,8 @@
   --status-divider: #ccd1da;
   --track: #dfe2e8;
   --danger: #c0392b;
+  --warning: #8a5800;
+  --overlay: #20242d55;
   --media-bg: #1a1a1d;
   --thumb-bg: #e9ebef;
   --win-hover: #00000014;
@@ -80,12 +87,8 @@
 
 :root {
   font-family: 'Segoe UI Variable', 'Segoe UI', Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #eef1f7;
+  color: var(--text);
   font-synthesis: none;
-}
-
-:root[data-theme='light'] {
-  color: #20242d;
 }
 
 [data-fui-icon] {

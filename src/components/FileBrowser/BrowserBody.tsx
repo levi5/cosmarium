@@ -57,7 +57,7 @@ export function BrowserBody({ browser: b, compact }: { browser: FileBrowserContr
   if (compact) return status ?? (rows.length ? <RecentsList {...shared} /> : empty)
   return (
     <div className={b.split ? 'workspace-split' : 'browser-body'}>
-      <div className={b.split ? 'workspace-pane' : 'browser-body'}>
+      <div className="workspace-pane">
         {b.split && (
           <PaneToolbar path={w.currentPath} language={p.language} onNavigate={w.navigateTo} onUp={() => void w.goUp()} onRefresh={() => void w.refresh()} />
         )}
@@ -86,26 +86,29 @@ export function BrowserBody({ browser: b, compact }: { browser: FileBrowserContr
             ) : (
               empty
             ))}
-          {b.detailsPane && (
+          {b.detailsPane && b.detailsEntry && (
             <DetailsPane
-              entry={b.activeEntry}
+              entry={b.detailsEntry}
               folderSizes={b.folderSizes}
-              tags={b.activeEntry ? b.tagsOf(b.activeEntry.path) : []}
+              tags={b.tagsOf(b.detailsEntry.path)}
               language={p.language}
               folderLabel={t('folder')}
               fileLabel={t('file')}
               fileTypeLabel={t('fileType')}
               onUnassign={(entry, tagId) => b.organizer.unassignTag(entry.path, tagId)}
+              onClose={() => b.setDetailsPane(false)}
             />
           )}
         </div>
       </div>
       {b.split && (
         <SecondaryPane
+          key={b.paneRevision}
           view={b.view}
           sortKey={b.sortKey}
           sortDirection={b.sortDirection}
-          initialPath={w.currentPath}
+          initialPath={b.secondaryPath || w.currentPath}
+          onPathChange={b.setSecondaryPath}
           primaryPath={w.currentPath}
           primarySources={b.targetsFor().map((entry) => entry.path)}
           onChanged={() => void w.refresh()}

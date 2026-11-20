@@ -12,29 +12,29 @@
   transition: 0.18s ease;
 }
 .button--primary {
-  color: #fff;
-  background: var(--accent, #9b7cff);
-  box-shadow: 0 6px 18px var(--accent-soft, #9b7cff24);
+  color: var(--on-accent);
+  background: var(--accent);
+  box-shadow: 0 6px 18px var(--accent-soft);
 }
-.button--primary:hover {
+.button--primary:not(:disabled):hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
 }
 .button--secondary {
   color: var(--text);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
 }
-.button--secondary:hover {
-  background: var(--surface-3);
+.button--secondary:not(:disabled):hover {
+  background: var(--hover);
 }
 .button--ghost {
   color: var(--muted);
   background: transparent;
 }
-.button--ghost:hover {
+.button--ghost:not(:disabled):hover {
   color: var(--text);
-  background: var(--surface-2);
+  background: var(--hover);
 }
 .button:disabled {
   opacity: 0.45;

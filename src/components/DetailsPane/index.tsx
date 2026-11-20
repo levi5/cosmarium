@@ -6,6 +6,7 @@ import type { Language } from '../../lib/preferences'
 import { filesystem } from '../../services/tauri/filesystem'
 import type { FileEntry, FolderStats } from '../../types/explorer'
 import { Icon } from '../base/Icon'
+import { IconButton } from '../base/IconButton'
 import { FileIcon } from '../FileIcon'
 import '../FileIcon/styles.css'
 import './styles.css'
@@ -38,6 +39,7 @@ type Props = {
   fileLabel: string
   fileTypeLabel: string
   onUnassign: (entry: FileEntry, tagId: string) => void
+  onClose?: () => void
 }
 
 function loadFolderStats(path: string, isStale: () => boolean, onStats: (value: FolderStats | null) => void) {
@@ -63,7 +65,7 @@ function loadTextPreview(path: string, isStale: () => boolean, onPreview: (isTex
     })
 }
 
-export function DetailsPane({ entry, folderSizes, tags, language, folderLabel, fileLabel, fileTypeLabel, onUnassign }: Props) {
+export function DetailsPane({ entry, folderSizes, tags, language, folderLabel, fileLabel, fileTypeLabel, onUnassign, onClose }: Props) {
   const translateText = createTranslator(language)
   const [stats, setStats] = useState<FolderStats | null>(null)
   const [text, setText] = useState<string | null>(null)
@@ -89,7 +91,11 @@ export function DetailsPane({ entry, folderSizes, tags, language, folderLabel, f
     }
   }, [entry])
 
-  if (!entry) return null
+  useEffect(() => {
+    if (!copied) return
+    const timer = window.setTimeout(() => setCopied(false), 1400)
+    return () => window.clearTimeout(timer)
+  }, [copied])
 
   const labels: Labels = {
     details: translateText('detailsPane'),
@@ -110,83 +116,94 @@ export function DetailsPane({ entry, folderSizes, tags, language, folderLabel, f
     copied: translateText('copied')
   }
 
-  const copyPath = () => {
-    void navigator.clipboard.writeText(entry.path).then(() => {
+  const copyPath = async () => {
+    if (!entry) return
+    try {
+      await navigator.clipboard.writeText(entry.path)
       setCopied(true)
-      window.setTimeout(() => setCopied(false), 1400)
-    })
+    } catch {
+      setCopied(false)
+    }
   }
 
   return (
     <aside className="details-pane" aria-label={labels.details}>
       <div className="details-pane__head">
         <strong>{labels.details}</strong>
-        <button type="button" onClick={copyPath} aria-label={labels.copyPath} title={labels.copyPath}>
-          <Icon name={copied ? 'check' : 'copy'} size={14} />
-        </button>
-      </div>
-
-      <div className="details-pane__hero">
-        <FileIcon entry={entry} size="large" />
-        <strong title={entry.name}>{entry.name}</strong>
-      </div>
-
-      <dl className="details-pane__props">
-        <dt>{labels.type}</dt>
-        <dd>{entryType(entry, folderLabel, fileLabel, fileTypeLabel)}</dd>
-        <dt>{labels.size}</dt>
-        <dd>{sizeLabel(entry, folderSizes, language)}</dd>
-        <dt>{labels.modified}</dt>
-        <dd>{formatDate(entry.modified, language)}</dd>
-        {entry.accessed ? (
-          <>
-            <dt>{labels.accessed}</dt>
-            <dd>{formatDate(entry.accessed, language)}</dd>
-          </>
-        ) : null}
-        {entry.created ? (
-          <>
-            <dt>{labels.created}</dt>
-            <dd>{formatDate(entry.created, language)}</dd>
-          </>
-        ) : null}
-        {entry.kind === 'directory' && stats && (
-          <>
-            <dt>{labels.contains}</dt>
-            <dd>
-              {stats.files} {labels.items}
-              {stats.truncated && <em className="details-pane__note"> ({labels.truncated})</em>}
-            </dd>
-            <dt>{labels.size}</dt>
-            <dd>{formatSize(stats.size, language)}</dd>
-          </>
-        )}
-      </dl>
-
-      <div className="details-pane__section">
-        <h4>{labels.tags}</h4>
-        {tags.length === 0 ? (
-          <p className="details-pane__empty">{labels.noTags}</p>
-        ) : (
-          <ul className="details-pane__tags">
-            {tags.map((tag) => (
-              <li key={tag.id} style={{ '--tag-color': tag.color } as React.CSSProperties}>
-                <i style={{ background: tag.color }} />
-                {tag.emoji} {tag.name}
-                <button type="button" onClick={() => onUnassign(entry, tag.id)} aria-label={tag.name}>
-                  <Icon name="close" size={11} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {isText && text !== null && (
-        <div className="details-pane__section">
-          <h4>{labels.name}</h4>
-          <pre className="details-pane__text">{text.slice(0, 4000)}</pre>
+        <div className="details-pane__actions">
+          <IconButton icon={copied ? 'check' : 'copy'} onClick={copyPath} disabled={!entry} label={copied ? labels.copied : labels.copyPath} />
+          {onClose && <IconButton icon="close" onClick={onClose} label={labels.close} />}
         </div>
+      </div>
+      {!entry ? (
+        <p className="details-pane__placeholder">{translateText('detailsEmpty')}</p>
+      ) : (
+        <>
+          <div className="details-pane__hero">
+            <FileIcon entry={entry} size="large" />
+            <strong title={entry.name}>{entry.name}</strong>
+          </div>
+
+          <dl className="details-pane__props">
+            <dt>{labels.type}</dt>
+            <dd>{entryType(entry, folderLabel, fileLabel, fileTypeLabel)}</dd>
+            <dt>{labels.size}</dt>
+            <dd>{(entry.kind === 'directory' && stats ? formatSize(stats.size, language) : sizeLabel(entry, folderSizes, language)) || '—'}</dd>
+            <dt>{labels.modified}</dt>
+            <dd>{formatDate(entry.modified, language)}</dd>
+            <dt>{labels.path}</dt>
+            <dd>{entry.path}</dd>
+            {entry.accessed ? (
+              <>
+                <dt>{labels.accessed}</dt>
+                <dd>{formatDate(entry.accessed, language)}</dd>
+              </>
+            ) : null}
+            {entry.created ? (
+              <>
+                <dt>{labels.created}</dt>
+                <dd>{formatDate(entry.created, language)}</dd>
+              </>
+            ) : null}
+            {entry.kind === 'directory' && stats && (
+              <>
+                <dt>{labels.contains}</dt>
+                <dd>
+                  {stats.files + stats.dirs} {labels.items}
+                  {stats.truncated && <em className="details-pane__note"> ({labels.truncated})</em>}
+                </dd>
+              </>
+            )}
+          </dl>
+
+          <div className="details-pane__section">
+            <h4>{labels.tags}</h4>
+            {tags.length === 0 ? (
+              <p className="details-pane__empty">{labels.noTags}</p>
+            ) : (
+              <ul className="details-pane__tags">
+                {tags.map((tag) => (
+                  <li key={tag.id} style={{ '--tag-color': tag.color } as React.CSSProperties}>
+                    <i style={{ background: tag.color }} aria-hidden="true" />
+                    <span>
+                      {tag.emoji} {tag.name}
+                    </span>
+                    <button type="button" onClick={() => onUnassign(entry, tag.id)} aria-label={`${translateText('removeTag')}: ${tag.name}`}>
+                      <Icon name="close" size={11} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {isText && text !== null && (
+            <div className="details-pane__section">
+              <h4>{translateText('textPreview')}</h4>
+              <pre className="details-pane__text">{text.slice(0, 4000)}</pre>
+            </div>
+          )}
+        </>
       )}
     </aside>
   )

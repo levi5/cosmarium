@@ -43,7 +43,7 @@
   height: 16px;
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
   border-radius: 50%;
 }
@@ -60,7 +60,7 @@
   place-items: center;
   border: 2px solid transparent;
   border-radius: 50%;
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   transition: transform 0.15s ease;
 }
@@ -102,7 +102,7 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   cursor: pointer;
-  color: #fff;
+  color: var(--text);
   transition:
     transform 0.15s ease,
     border-color 0.15s ease;
@@ -146,8 +146,8 @@
   height: 22px;
   flex: 0 0 40px;
   padding: 0;
-  background: var(--surface-4);
-  border: 1px solid var(--line-strong);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 999px;
   cursor: pointer;
   transition:
@@ -169,8 +169,8 @@
   min-height: 62px;
   padding: 8px 6px;
   color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 8px;
   cursor: pointer;
   font-size: 11px;
@@ -223,8 +223,8 @@
   min-height: 38px;
   padding: 4px 9px;
   color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 8px;
   cursor: pointer;
   font-size: 12px;
@@ -237,8 +237,8 @@
   display: grid;
   place-items: center;
   color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -303,7 +303,7 @@
 }
 
 .switch.is-on i {
-  background: #fff;
+  background: var(--on-accent);
   transform: translateX(18px);
 }
 
@@ -368,14 +368,6 @@
 
 :root[data-theme='light'] .material-swatch--acrylic {
   background: linear-gradient(155deg, #e6ecf7 0%, #f0e5f2 100%);
-}
-
-:root[data-theme='light'] .material-swatch {
-  border-color: #dfe2e8;
-}
-
-:root[data-theme='light'] .material-swatch.selected {
-  color: #fff;
 }
 
 .icon-size-option:has(.icon-size-option__input:checked) {

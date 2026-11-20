@@ -7,6 +7,7 @@ import { Portal } from '../base/Portal'
 
 type Labels = {
   open: string
+  openWith: string
   openInNewTab: string
   openTerminal: string
   openTerminalRoot: string
@@ -31,6 +32,7 @@ type Props = {
   canPaste: boolean
   labels: Labels
   onOpen: () => void
+  onOpenWith: () => void
   onOpenInNewTab: () => void
   onOpenTerminal: () => void
   onOpenTerminalRoot: () => void
@@ -56,6 +58,7 @@ export function FileContextMenu({
   canPaste,
   labels,
   onOpen,
+  onOpenWith,
   onOpenInNewTab,
   onOpenTerminal,
   onOpenTerminalRoot,
@@ -117,6 +120,12 @@ export function FileContextMenu({
           <button type="button" onClick={run(onOpenInNewTab)}>
             <Icon name="plus" size={14} />
             {labels.openInNewTab}
+          </button>
+        )}
+        {!isDirectory && (
+          <button type="button" onClick={run(onOpenWith)}>
+            <Icon name="grid" size={14} />
+            {labels.openWith}
           </button>
         )}
         {canPreview && (

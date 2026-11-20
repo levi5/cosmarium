@@ -5,11 +5,15 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: #08090c88;
+  background: var(--overlay);
   animation: fade-in 0.15s ease-out;
 }
 .tag-dialog {
   width: min(390px, 100%);
+  min-width: 0;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
   padding: 17px;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -101,7 +105,7 @@
 }
 .tag-dialog__existing .tag-chip__remove:hover {
   color: var(--danger);
-  background: #00000022;
+  background: var(--press-strong);
 }
 .tag-dialog__existing .tag-chip__delete {
   display: grid;
@@ -115,24 +119,27 @@
   cursor: pointer;
 }
 .tag-dialog__existing .tag-chip__delete:hover {
-  color: #fff;
-  background: var(--danger);
+  color: var(--on-danger);
+  background: var(--danger-fill);
 }
 .tag-dialog__choices {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
   margin: 14px 0;
 }
 .tag-dialog__choices > div {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 .tag-dialog__choices button:not(.tag-color) {
   width: 29px;
   height: 29px;
   color: var(--text);
-  background: var(--surface-2);
+  background: var(--field-bg);
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
@@ -148,6 +155,7 @@
   border: 2px solid transparent;
   border-radius: 50%;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .tag-color.selected {
   outline: 2px solid var(--text);
@@ -169,6 +177,7 @@
 }
 .tag-dialog__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 7px;
 }

@@ -1,4 +1,5 @@
 .dropdown {
+  box-sizing: border-box;
   position: fixed;
   z-index: 60;
   min-width: min(200px, calc(100vw - 16px));
@@ -21,6 +22,7 @@
   font-weight: 600;
 }
 .dropdown__item {
+  box-sizing: border-box;
   width: 100%;
   display: flex;
   align-items: center;
@@ -87,13 +89,14 @@
   background: var(--menu-divider);
 }
 .dropdown__switch {
+  box-sizing: border-box;
   position: relative;
   width: 32px;
   height: 18px;
   flex: 0 0 32px;
   margin-left: auto;
-  background: var(--surface-4);
-  border: 1px solid var(--line-strong);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 999px;
 }
 .dropdown__switch i {
@@ -113,7 +116,7 @@
   border-color: var(--accent);
 }
 .dropdown__switch.is-on i {
-  background: #fff;
+  background: var(--on-accent);
   transform: translateX(14px);
 }
 @keyframes dropdown-in {

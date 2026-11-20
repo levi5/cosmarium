@@ -67,10 +67,10 @@ export function ViewMenu({ iconSize, showSize, labels, onIconSize, onShowSize }:
           ))}
           <div className="dropdown__divider" />
           <button type="button" role="menuitemcheckbox" aria-checked={showSize} className="dropdown__item" onClick={() => onShowSize(!showSize)}>
+            <span>{labels.showSize}</span>
             <span className={`dropdown__switch ${showSize ? 'is-on' : ''}`} aria-hidden="true">
               <i />
             </span>
-            {labels.showSize}
           </button>
         </Dropdown>
       )}

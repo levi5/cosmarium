@@ -5,13 +5,14 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: #08090c88;
+  background: var(--overlay);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: fade-in 0.15s ease-out;
 }
 .conflict-dialog {
   width: min(520px, 100%);
+  min-width: 0;
   max-height: min(640px, calc(100vh - 60px));
   display: flex;
   flex-direction: column;
@@ -51,10 +52,11 @@
 }
 .conflict-dialog__top > button:hover {
   color: var(--text);
-  background: var(--surface-3);
+  background: var(--hover);
 }
 .conflict-dialog__apply-all {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -68,6 +70,7 @@
 }
 .conflict-dialog__apply-all > div {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .conflict-dialog__apply-all button {
@@ -81,7 +84,7 @@
 }
 .conflict-dialog__apply-all button:hover {
   color: var(--text);
-  background: var(--surface-3);
+  background: var(--hover);
 }
 .conflict-dialog__list {
   display: flex;
@@ -94,6 +97,7 @@
 }
 .conflict-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 9px;
   padding: 7px 8px;
@@ -102,7 +106,7 @@
   border-radius: 8px;
 }
 .conflict-row__name {
-  flex: 1;
+  flex: 1 1 100px;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -111,6 +115,8 @@
 }
 .conflict-row__choices {
   display: flex;
+  flex-wrap: wrap;
+  margin-left: auto;
   gap: 2px;
   padding: 2px;
   background: var(--focus-bg);
@@ -136,6 +142,7 @@
 }
 .conflict-dialog__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 7px;
 }

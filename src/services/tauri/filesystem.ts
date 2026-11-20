@@ -17,6 +17,8 @@ import type {
 } from '../../types/explorer'
 
 export const filesystem = {
+  listApplications: (path: string) => invoke<FileApplication[]>('list_applications', { path }),
+  openWithApplication: (path: string, appId: string) => invoke('open_with_application', { path, appId }),
   getLocations: () => invoke<Locations>('get_locations'),
   getVolumes: () => invoke<Volume[]>('get_volumes'),
   trashCount: () => invoke<number>('trash_count'),
@@ -49,3 +51,5 @@ export const filesystem = {
   watchDirectory: (path: string) => invoke('watch_directory', { path }),
   unwatchDirectory: (path: string) => invoke('unwatch_directory', { path })
 }
+
+export type FileApplication = { id: string; name: string; isDefault: boolean }

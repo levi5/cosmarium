@@ -6,6 +6,7 @@ import { previewType } from '../../lib/format'
 import { createTranslator } from '../../lib/i18n'
 import { useOrganizer } from '../../lib/organizer'
 import type { Language } from '../../lib/preferences'
+import { OpenWithDialog } from '../OpenWithDialog'
 import type { Inspection } from './useInspection'
 
 export function InspectionDialogs({ inspection: i, language }: { inspection: Inspection; language: Language }) {
@@ -16,6 +17,7 @@ export function InspectionDialogs({ inspection: i, language }: { inspection: Ins
   const deleteTagId = i.deleteTagId
   return (
     <>
+      {i.openWithTarget && <OpenWithDialog entry={i.openWithTarget} language={language} onClose={() => i.setOpenWithTarget(null)} />}
       {i.propertiesTarget && (
         <PropertiesDialog
           entry={i.propertiesTarget}

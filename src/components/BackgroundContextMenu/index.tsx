@@ -29,6 +29,7 @@ type Props = {
   showHidden: boolean
   view: ViewMode
   detailsPane: boolean
+  canShowDetailsPane: boolean
   labels: Labels
   onNewFolder: () => void
   onNewFile: () => void
@@ -54,6 +55,7 @@ export function BackgroundContextMenu({
   showHidden,
   view,
   detailsPane,
+  canShowDetailsPane,
   labels,
   onNewFolder,
   onNewFile,
@@ -156,16 +158,20 @@ export function BackgroundContextMenu({
             </button>
           </>
         )}
-        <div className="background-context-menu__divider" />
-        <button type="button" onClick={run(onToggleDetailsPane)}>
-          <Icon name="info" size={14} />
-          {labels.showDetailsPane}
-          {detailsPane && (
-            <span className="menu-check">
-              <Icon name="check" size={12} />
-            </span>
-          )}
-        </button>
+        {canShowDetailsPane && (
+          <>
+            <div className="background-context-menu__divider" />
+            <button type="button" onClick={run(onToggleDetailsPane)}>
+              <Icon name="info" size={14} />
+              {labels.showDetailsPane}
+              {detailsPane && (
+                <span className="menu-check">
+                  <Icon name="check" size={12} />
+                </span>
+              )}
+            </button>
+          </>
+        )}
       </div>
     </Portal>
   )

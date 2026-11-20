@@ -11,9 +11,12 @@
   --press-bg: #ffffff1f;
   --focus-bg: #ffffff17;
   --active-strong: #ffffff2e;
+  --card-bg: var(--mat-card);
+  --card-border: var(--mat-border);
   --mat-background:
-    radial-gradient(120% 90% at 12% 8%, #4b3f8f 0%, transparent 55%), radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%),
-    radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%), linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
+    radial-gradient(120% 90% at 12% 8%, color-mix(in srgb, var(--accent) 50%, #1d2030) 0%, transparent 55%),
+    radial-gradient(100% 80% at 88% 12%, #1f5f86 0%, transparent 52%), radial-gradient(120% 100% at 50% 105%, #6b3350 0%, transparent 58%),
+    linear-gradient(160deg, #1d2030 0%, #241d2e 52%, #17232e 100%);
   --mat-content: #24252775;
   --mat-status: #2b262e8f;
   --mat-control: #ffffff12;
