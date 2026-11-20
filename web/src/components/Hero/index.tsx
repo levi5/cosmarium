@@ -47,22 +47,7 @@ export function Hero() {
         <div className="hero__visual" role="img" aria-label={t.hero.previewAlt} data-reveal>
           <div className="hero__halo" aria-hidden="true" />
           <AppWindow />
-          <div className="hero__transfer">
-            <div className="hero__transfer-head">
-              <span className="hero__transfer-title">
-                <span className="hero__pulse" />
-                {t.preview.transferTitle}
-              </span>
-              <span className="hero__transfer-percent">68%</span>
-            </div>
-            <div className="hero__progress" aria-hidden="true">
-              <span />
-            </div>
-            <div className="hero__transfer-meta">
-              <span>{t.preview.transferMeta}</span>
-              <span>{t.preview.transferEta}</span>
-            </div>
-          </div>
+          <p className="hero__demo-note">{t.preview.demoNote}</p>
         </div>
       </div>
     </section>

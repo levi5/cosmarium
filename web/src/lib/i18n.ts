@@ -1,13 +1,5 @@
 import type { Language } from './preferences'
 
-type PreviewRow = {
-  name: string
-  modified: string
-  size: string
-  kind: 'file' | 'directory'
-  selected: boolean
-}
-
 const pt = {
   title: 'Cosmarium — gerenciador de arquivos para desktop',
   description:
@@ -39,52 +31,7 @@ const pt = {
       'Prévia da interface do Cosmarium: abas, barra lateral de acesso rápido, lista de arquivos e painel de detalhes.'
   },
   preview: {
-    tabs: ['Início', 'Projetos'],
-    path: 'C:\\Users\\levi\\Projetos',
-    quickGroup: 'Acesso rápido',
-    favoriteGroup: 'Favoritos',
-    quick: {
-      home: 'Início',
-      documents: 'Documentos',
-      downloads: 'Downloads',
-      pictures: 'Imagens',
-      music: 'Músicas',
-      videos: 'Vídeos',
-      trash: 'Lixeira'
-    },
-    favorites: {
-      cosmarium: 'cosmarium',
-      brand: 'Identidade visual'
-    },
-    title: 'Projetos',
-    newFolder: 'Nova pasta',
-    table: {
-      name: 'Nome',
-      modified: 'Modificado',
-      size: 'Tamanho'
-    },
-    rows: [
-      { name: 'cosmarium', modified: 'Hoje, 14:32', size: '—', kind: 'directory', selected: false },
-      { name: 'site-institucional', modified: 'Ontem, 18:04', size: '—', kind: 'directory', selected: false },
-      { name: 'capturas', modified: '12 out, 09:21', size: '—', kind: 'directory', selected: false },
-      { name: 'notas.md', modified: 'Hoje, 11:08', size: '4 KB', kind: 'file', selected: false },
-      { name: 'proposta.pdf', modified: '28 out, 15:42', size: '1,8 MB', kind: 'file', selected: true },
-      { name: 'capa.png', modified: '25 out, 17:10', size: '2,4 MB', kind: 'file', selected: false },
-      { name: 'trilha.mp3', modified: '20 out, 20:15', size: '6,1 MB', kind: 'file', selected: false }
-    ] as PreviewRow[],
-    detailsTitle: 'Detalhes',
-    detailsName: 'proposta.pdf',
-    tagsLabel: 'Tags',
-    tags: ['Cliente', 'Urgente'],
-    sizeLabel: 'Tamanho',
-    sizeValue: '1,8 MB',
-    modifiedLabel: 'Modificado',
-    modifiedValue: '28 out 2026, 15:42',
-    status: '7 itens',
-    statusSelected: '1 selecionado',
-    transferTitle: 'Transferindo 3 arquivos',
-    transferMeta: '68% · 24 MB/s',
-    transferEta: 'Restam 12 s'
+    demoNote: 'Demonstração com pastas e nomes fictícios.'
   },
   features: {
     eyebrow: 'Recursos',
@@ -247,52 +194,7 @@ const en: typeof pt = {
       'Preview of the Cosmarium interface: tabs, quick access sidebar, file list and details pane.'
   },
   preview: {
-    tabs: ['Home', 'Projects'],
-    path: 'C:\\Users\\levi\\Projects',
-    quickGroup: 'Quick access',
-    favoriteGroup: 'Favorites',
-    quick: {
-      home: 'Home',
-      documents: 'Documents',
-      downloads: 'Downloads',
-      pictures: 'Pictures',
-      music: 'Music',
-      videos: 'Videos',
-      trash: 'Trash'
-    },
-    favorites: {
-      cosmarium: 'cosmarium',
-      brand: 'Brand kit'
-    },
-    title: 'Projects',
-    newFolder: 'New folder',
-    table: {
-      name: 'Name',
-      modified: 'Modified',
-      size: 'Size'
-    },
-    rows: [
-      { name: 'cosmarium', modified: 'Today, 2:32 PM', size: '—', kind: 'directory', selected: false },
-      { name: 'marketing-site', modified: 'Yesterday, 6:04 PM', size: '—', kind: 'directory', selected: false },
-      { name: 'screenshots', modified: 'Oct 12, 9:21 AM', size: '—', kind: 'directory', selected: false },
-      { name: 'notes.md', modified: 'Today, 11:08 AM', size: '4 KB', kind: 'file', selected: false },
-      { name: 'proposal.pdf', modified: 'Oct 28, 3:42 PM', size: '1.8 MB', kind: 'file', selected: true },
-      { name: 'cover.png', modified: 'Oct 25, 5:10 PM', size: '2.4 MB', kind: 'file', selected: false },
-      { name: 'soundtrack.mp3', modified: 'Oct 20, 8:15 PM', size: '6.1 MB', kind: 'file', selected: false }
-    ],
-    detailsTitle: 'Details',
-    detailsName: 'proposal.pdf',
-    tagsLabel: 'Tags',
-    tags: ['Client', 'Urgent'],
-    sizeLabel: 'Size',
-    sizeValue: '1.8 MB',
-    modifiedLabel: 'Modified',
-    modifiedValue: 'Oct 28, 2026, 3:42 PM',
-    status: '7 items',
-    statusSelected: '1 selected',
-    transferTitle: 'Transferring 3 files',
-    transferMeta: '68% · 24 MB/s',
-    transferEta: '12 s left'
+    demoNote: 'Demo with fictional folders and names.'
   },
   features: {
     eyebrow: 'Features',
