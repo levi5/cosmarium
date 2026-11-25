@@ -39,23 +39,20 @@ pub fn take_startup_path(state: State<'_, StartupState>) -> Option<PendingPath> 
 }
 
 pub fn startup_path_from_args() -> Option<PendingPath> {
-    std::env::args()
-        .skip(1)
-        .filter_map(|argument| {
-            let trimmed = argument.trim_start_matches('-');
-            if trimmed.is_empty() {
-                return None;
-            }
-            let path = Path::new(trimmed);
-            if !path.is_absolute() || !path.exists() {
-                return None;
-            }
-            Some(PendingPath {
-                path: trimmed.to_string(),
-                is_directory: path.is_dir(),
-            })
+    path_from_args(std::env::args().skip(1))
+}
+
+fn path_from_args(args: impl IntoIterator<Item = String>) -> Option<PendingPath> {
+    args.into_iter().find_map(|argument| {
+        if argument.is_empty() || argument.starts_with('-') {
+            return None;
+        }
+        let path = Path::new(&argument).canonicalize().ok()?;
+        Some(PendingPath {
+            path: path.to_string_lossy().into_owned(),
+            is_directory: path.is_dir(),
         })
-        .next()
+    })
 }
 
 pub fn register_pending_path(app: &AppHandle) -> Option<PendingPath> {
@@ -68,6 +65,31 @@ pub fn register_pending_path(app: &AppHandle) -> Option<PendingPath> {
 
 #[cfg(test)]
 mod tests {
+    use super::path_from_args;
+
+    #[test]
+    fn resolves_relative_startup_paths() {
+        let pending = path_from_args([".".to_string()]).unwrap();
+        assert_eq!(
+            pending.path,
+            std::env::current_dir()
+                .unwrap()
+                .canonicalize()
+                .unwrap()
+                .to_string_lossy()
+        );
+        assert!(pending.is_directory);
+    }
+
+    #[test]
+    fn ignores_options_and_missing_paths() {
+        assert!(path_from_args([
+            "--help".to_string(),
+            "nonexistent-cosmarium-path".to_string()
+        ])
+        .is_none());
+    }
+
     #[test]
     fn linux_packages_register_as_a_file_manager() {
         let config: serde_json::Value =

@@ -212,7 +212,9 @@ export function FileTable({
           >
             <div className="file-name">
               <FileIcon entry={row.entry} size={iconSize} />
-              <span className="file-title">{row.entry.name}</span>
+              <span className="file-title" title={row.entry.name}>
+                {row.entry.name}
+              </span>
               {!isGrid &&
                 !isCompact &&
                 row.tags.map((tag) => (
