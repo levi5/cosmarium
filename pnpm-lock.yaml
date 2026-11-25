@@ -18,8 +18,8 @@ importers:
         specifier: ^2.12.6
         version: 2.12.6
       funcio:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.1.0
+        version: 0.1.0
       pdfjs-dist:
         specifier: ^6.5.438
         version: 6.5.438
@@ -750,9 +750,6 @@ packages:
   csstype@3.2.4:
     resolution: {integrity: sha512-PoKaoPzQapnEoqUSnHx1u6W6ku8CVEgKsnpmmzU3m1nwkidpPBQ8V/Zq2+bWNrsOKoKLwTGdbx6xF7BXP1zLVQ==}
 
-  csstype@3.2.4:
-    resolution: {integrity: sha512-PoKaoPzQapnEoqUSnHx1u6W6ku8CVEgKsnpmmzU3m1nwkidpPBQ8V/Zq2+bWNrsOKoKLwTGdbx6xF7BXP1zLVQ==}
-
   data-urls@8.0.0:
     resolution: {integrity: sha512-JQUCCK+/CAGbGGx618PlFZMXH81Jtj7t73CHv9dd/zVWvxgGT2zLFRjnKb+Ng46GIwcy+f7f88qd4duqllK+WQ==}
     engines: {node: ^22.14.0 || >=24.0.0}
@@ -809,8 +806,8 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  funcio@0.2.0:
-    resolution: {integrity: sha512-LNRXZFL0/KmEGCpHp9xn7KIO8Kcv1a5whGw1kF3xegMApV2XlAW+ksBGaHCJ3BcwnUrnvODC5R7JlY88O55hVw==}
+  funcio@0.1.0:
+    resolution: {integrity: sha512-POUnTVigN9SR6A8ZtRwmUptUTw2abKMCDAF8VGAqTY46RXTeNJQzBddxSZMMGpAXb3eBIPu7G/nL2gXoco60cw==}
 
   html-encoding-sniffer@7.0.0:
     resolution: {integrity: sha512-UikN5yr7xsCDAq87Or5or0PAlD3HJJOKVzM05az588WnpDJ4Ux7a2A53Qi6gofGg2/EtvF/H4hCi/TXfCW4Y6w==}
@@ -1689,8 +1686,6 @@ snapshots:
 
   csstype@3.2.4: {}
 
-  csstype@3.2.4: {}
-
   data-urls@8.0.0:
     dependencies:
       whatwg-mimetype: 5.0.0
@@ -1729,7 +1724,7 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  funcio@0.2.0: {}
+  funcio@0.1.0: {}
 
   html-encoding-sniffer@7.0.0:
     dependencies:
