@@ -139,12 +139,11 @@ fn scan_with_filesystem(
     })
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use super::*;
 
     #[test]
-    #[cfg(unix)]
     fn corrected_names_are_checked_against_existing_destinations() {
         let root = tempfile::tempdir().unwrap();
         let source = root.path().join("Terreno ");
