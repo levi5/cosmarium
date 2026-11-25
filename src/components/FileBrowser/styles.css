@@ -325,10 +325,8 @@
 .file-table--grid .file-title {
   max-width: 100%;
   font-size: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow: visible;
+  overflow-wrap: anywhere;
   white-space: normal;
   line-height: 1.3;
 }

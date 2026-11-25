@@ -99,7 +99,9 @@ export function RecentsList({
           >
             <div className="file-name">
               <FileIcon entry={row.entry} size={iconSize} />
-              <span className="file-title">{row.entry.name}</span>
+              <span className="file-title" title={row.entry.name}>
+                {row.entry.name}
+              </span>
             </div>
           </div>
         ))}
@@ -130,7 +132,9 @@ export function RecentsList({
         >
           <span className="recents-row__name">
             <FileIcon entry={row.entry} size={iconSize} />
-            <span className="file-title">{row.entry.name}</span>
+            <span className="file-title" title={row.entry.name}>
+              {row.entry.name}
+            </span>
           </span>
           <span className="recents-row__date">{formatDate(recencyOf(row.entry), language)}</span>
           <span className="recents-row__path" title={row.entry.path}>
