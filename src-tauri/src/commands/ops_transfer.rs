@@ -6,8 +6,15 @@ use crate::operations::undo::UndoStack;
 use tauri::{AppHandle, Emitter, State};
 
 #[tauri::command]
-pub async fn scan_transfer(sources: Vec<String>, dest: String) -> Result<TransferScan, String> {
-    off_thread(move || transfer::scan_transfer(&sources, &dest)).await
+pub async fn scan_transfer(
+    sources: Vec<String>,
+    dest: String,
+    fix_incompatible_names: Option<bool>,
+) -> Result<TransferScan, String> {
+    off_thread(move || {
+        transfer::scan_transfer(&sources, &dest, fix_incompatible_names.unwrap_or(false))
+    })
+    .await
 }
 
 #[tauri::command]

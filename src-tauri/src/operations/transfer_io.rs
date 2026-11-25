@@ -3,6 +3,29 @@ use std::io::{Read, Write};
 use std::path::Path;
 use std::time::{Duration, Instant};
 
+pub(super) fn destination_error(source: &Path, target: &Path, error: std::io::Error) -> String {
+    let name = source.file_name().unwrap_or_default().to_string_lossy();
+    let reason = if name.ends_with(' ') || name.ends_with('.') {
+        Some("it ends with a space or a dot")
+    } else if name
+        .chars()
+        .any(|character| character.is_control() || "<>:\"\\|?*".contains(character))
+    {
+        Some("it contains characters forbidden by FAT/exFAT/NTFS")
+    } else {
+        None
+    };
+    if error.kind() == std::io::ErrorKind::InvalidInput || error.raw_os_error() == Some(22) {
+        if let Some(reason) = reason {
+            return format!(
+                "Cannot copy {source:?}: the destination filesystem rejected the name {name:?}; \
+                 {reason}. Rename this item at the source and try again. ({error})"
+            );
+        }
+    }
+    format!("Cannot copy {source:?} to {target:?}: {error}")
+}
+
 pub fn checkpoint(id: &str, controls: &TransferCancels) -> Result<(), String> {
     loop {
         if is_cancelled(id, controls) {
@@ -38,7 +61,7 @@ pub fn copy_file(
         .write(true)
         .create_new(true)
         .open(target)
-        .map_err(|error| error.to_string())?;
+        .map_err(|error| destination_error(source, target, error))?;
     let result = (|| {
         let mut buffer = vec![0; 1024 * 1024];
         let mut last_emit = Instant::now();

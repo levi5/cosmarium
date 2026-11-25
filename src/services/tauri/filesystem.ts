@@ -39,9 +39,10 @@ export const filesystem = {
   recordCreated: (paths: string[]) => invoke('record_created', { paths }),
   recordRename: (from: string, to: string) => invoke('record_rename', { from, to }),
   undoLast: () => invoke<UndoStep>('undo_last'),
-  scanTransfer: (sources: string[], dest: string) => invoke<TransferScan>('scan_transfer', { sources, dest }),
-  transferEntries: (id: string, sources: string[], dest: string, cut: boolean, resolutions: ConflictResolution[]) =>
-    invoke<TransferSummary>('transfer_entries', { request: { id, sources, dest, cut, resolutions } }),
+  scanTransfer: (sources: string[], dest: string, fixIncompatibleNames = false) =>
+    invoke<TransferScan>('scan_transfer', { sources, dest, fixIncompatibleNames }),
+  transferEntries: (id: string, sources: string[], dest: string, cut: boolean, resolutions: ConflictResolution[], fixIncompatibleNames = false) =>
+    invoke<TransferSummary>('transfer_entries', { request: { id, sources, dest, cut, resolutions, fix_incompatible_names: fixIncompatibleNames } }),
   cancelTransfer: (id: string) => invoke('cancel_transfer', { id }),
   pauseTransfer: (id: string, paused: boolean) => invoke('pause_transfer', { id, paused }),
   openWithDefault: (path: string) => invoke('open_with_default', { path }),

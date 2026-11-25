@@ -24,6 +24,18 @@ export function TransferProgress({ labels, language }: { labels: Labels; languag
   const { items: transfers, panelOpen, setPanelOpen, receive, dismiss, pause } = useTransferStore()
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [copyFailedId, setCopyFailedId] = useState<string | null>(null)
+  const copyMessage = async (item: Progress) => {
+    try {
+      await navigator.clipboard.writeText(item.error ?? '')
+      setCopiedId(item.id)
+      setCopyFailedId(null)
+    } catch {
+      setCopiedId(null)
+      setCopyFailedId(item.id)
+    }
+  }
   const interacting = hovered || focused
   const tools = toolMessages(language)
   const items = Object.values(transfers)
@@ -125,7 +137,7 @@ export function TransferProgress({ labels, language }: { labels: Labels; languag
               </div>
               <small>
                 {item.error
-                  ? `${labels.failed}: ${item.error.split('\n')[0]}`
+                  ? `${labels.failed}: ${item.error}`
                   : item.finished
                     ? item.cancelled
                       ? tools.cancelled
@@ -136,6 +148,20 @@ export function TransferProgress({ labels, language }: { labels: Labels; languag
                         ? tools.pause
                         : `${percent}% — ${item.done_files}/${item.total_files} · ${formatSize(item.done_bytes, language)} / ${formatSize(item.total_bytes, language)} · ${formatSize(item.speed, language)}/s${remaining === null ? '' : ` · ${remaining}s ${tools.remaining}`}`}
               </small>
+              {item.error && (
+                <div className="transfer-card__error-actions">
+                  <button type="button" onClick={() => void copyMessage(item)}>
+                    {copiedId === item.id ? (language === 'pt-BR' ? 'Copiado!' : 'Copied!') : language === 'pt-BR' ? 'Copiar mensagem' : 'Copy message'}
+                  </button>
+                  {copyFailedId === item.id && (
+                    <small role="status">
+                      {language === 'pt-BR'
+                        ? 'Não foi possível copiar. Selecione a mensagem e copie manualmente.'
+                        : 'Could not copy. Select the message and copy it manually.'}
+                    </small>
+                  )}
+                </div>
+              )}
             </section>
           )
         })}

@@ -15,6 +15,7 @@ fn cancelled_replacement_preserves_the_existing_destination() {
         sources: vec![source.join("file").to_string_lossy().into_owned()],
         dest: destination.to_string_lossy().into_owned(),
         cut: false,
+        fix_incompatible_names: false,
         resolutions: vec![ConflictResolution {
             name: "file".into(),
             action: "replace".into(),

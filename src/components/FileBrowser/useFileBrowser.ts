@@ -177,7 +177,14 @@ export function useFileBrowser(compact: boolean) {
     }
   }
   const hasOverlay = Boolean(
-    actions.hasDialog || transfers.conflictState || transfers.rehearsalState || productivityOpen || inspection.hasDialog || menu || backgroundMenu
+    actions.hasDialog ||
+      transfers.conflictState ||
+      transfers.rehearsalState ||
+      transfers.nameCorrectionState ||
+      productivityOpen ||
+      inspection.hasDialog ||
+      menu ||
+      backgroundMenu
   )
   useShortcuts({
     enabled: !hasOverlay,

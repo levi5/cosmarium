@@ -14,6 +14,29 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
+  vi.unstubAllGlobals()
+})
+
+it('shows and copies the complete error including all lines', async () => {
+  const writeText = vi.fn().mockResolvedValue(undefined)
+  vi.stubGlobal('navigator', { clipboard: { writeText } })
+  useTransferStore.getState().enqueue('a', false)
+  useTransferStore.getState().finish('a', 'First error\nSecond error')
+  const { getByRole, getByText } = render(<TransferProgress labels={labels} language="pt-BR" />)
+  expect(getByText(/First error.*Second error/s)).toBeTruthy()
+  await act(async () => fireEvent.click(getByRole('button', { name: 'Copiar mensagem' })))
+  expect(writeText).toHaveBeenCalledWith('First error\nSecond error')
+  expect(getByRole('button', { name: 'Copiado!' })).toBeTruthy()
+})
+
+it('keeps the original error visible if clipboard access fails', async () => {
+  vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn().mockRejectedValue(new Error('denied')) } })
+  useTransferStore.getState().enqueue('a', false)
+  useTransferStore.getState().finish('a', 'Original failure')
+  const { getByRole, getByText } = render(<TransferProgress labels={labels} language="pt-BR" />)
+  await act(async () => fireEvent.click(getByRole('button', { name: 'Copiar mensagem' })))
+  expect(getByText('Falhou: Original failure')).toBeTruthy()
+  expect(getByRole('status').textContent).toContain('Não foi possível copiar')
 })
 
 it('collapses active notices without removing operations and lets them reopen', () => {

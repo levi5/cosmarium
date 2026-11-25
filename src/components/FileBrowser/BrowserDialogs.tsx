@@ -1,4 +1,5 @@
 import { ConflictDialog } from '../ConflictDialog'
+import { NameCorrectionDialog } from '../ConflictDialog/NameCorrectionDialog'
 import { EntryDialogs } from '../EntryDialogs'
 import { InspectionDialogs } from '../EntryDialogs/InspectionDialogs'
 import { Productivity } from '../Productivity'
@@ -9,6 +10,14 @@ export function BrowserDialogs({ browser: b }: { browser: FileBrowserController 
   const { t, transfers: x } = b
   return (
     <>
+      {x.nameCorrectionState && (
+        <NameCorrectionDialog
+          changes={x.nameCorrectionState.scan.name_changes ?? []}
+          language={b.preferences.language}
+          onConfirm={() => void x.confirmNameCorrection()}
+          onClose={() => x.setNameCorrectionState(null)}
+        />
+      )}
       {b.productivityOpen && (
         <Productivity
           language={b.preferences.language}
@@ -49,7 +58,7 @@ export function BrowserDialogs({ browser: b }: { browser: FileBrowserController 
             const state = x.conflictState
             if (!state) return
             x.setConflictState(null)
-            void x.runTransfer(state.sources, state.dest, state.cut, resolutions)
+            void x.runTransfer(state.sources, state.dest, state.cut, resolutions, state.fixNames)
           }}
           onClose={() => x.setConflictState(null)}
         />

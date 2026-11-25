@@ -66,12 +66,16 @@ export type ConflictAction = 'replace' | 'skip' | 'keep_both'
 export type TransferConflict = {
   name: string
   is_dir: boolean
+  destination_name?: string | null
 }
+
+export type TransferNameChange = { source: string; suggested_name: string }
 
 export type TransferScan = {
   files: number
   bytes: number
   conflicts: TransferConflict[]
+  name_changes?: TransferNameChange[]
 }
 
 export type ConflictResolution = {

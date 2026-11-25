@@ -22,12 +22,21 @@ pub struct TransferRequest {
     pub dest: String,
     pub cut: bool,
     pub resolutions: Vec<ConflictResolution>,
+    #[serde(default)]
+    pub fix_incompatible_names: bool,
 }
 
 #[derive(Serialize)]
 pub struct TransferConflict {
     pub name: String,
     pub is_dir: bool,
+    pub destination_name: Option<String>,
+}
+
+#[derive(Serialize)]
+pub struct TransferNameChange {
+    pub source: String,
+    pub suggested_name: String,
 }
 
 #[derive(Serialize)]
@@ -35,6 +44,7 @@ pub struct TransferScan {
     pub files: u64,
     pub bytes: u64,
     pub conflicts: Vec<TransferConflict>,
+    pub name_changes: Vec<TransferNameChange>,
 }
 
 #[derive(Serialize, Clone)]
