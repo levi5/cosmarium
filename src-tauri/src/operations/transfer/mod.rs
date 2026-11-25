@@ -1,5 +1,6 @@
 mod cleanup;
 mod models;
+mod names;
 mod paths;
 mod scan;
 #[cfg(test)]
@@ -46,12 +47,25 @@ struct TransferContext<'a> {
 
 impl TransferContext<'_> {
     fn target(&self, source: &Path) -> Result<Option<(PathBuf, bool)>, String> {
-        let name = source
+        self.target_with_names(source, names::enabled(self.request))
+    }
+
+    fn target_with_names(
+        &self,
+        source: &Path,
+        fix_names: bool,
+    ) -> Result<Option<(PathBuf, bool)>, String> {
+        let original_name = source
             .file_name()
             .and_then(|name| name.to_str())
             .ok_or("Invalid file name.")?;
         let destination = Path::new(&self.request.dest);
-        let target = destination.join(name);
+        let name = if fix_names {
+            names::compatible_name(original_name)
+        } else {
+            original_name.into()
+        };
+        let target = destination.join(&name);
         if target.symlink_metadata().is_err() {
             return Ok(Some((target, false)));
         }
@@ -59,11 +73,11 @@ impl TransferContext<'_> {
             .request
             .resolutions
             .iter()
-            .find(|resolution| resolution.name == name)
+            .find(|resolution| resolution.name == original_name)
             .map(|resolution| resolution.action.as_str())
             .unwrap_or("skip");
         match action {
-            "keep_both" => unique_target(destination, name).map(|target| Some((target, false))),
+            "keep_both" => unique_target(destination, &name).map(|target| Some((target, false))),
             "replace" => Ok(Some((target, true))),
             "skip" => Ok(None),
             _ => Err("Invalid conflict resolution.".into()),
@@ -72,10 +86,17 @@ impl TransferContext<'_> {
 
     fn copy(&mut self, source: &Path, target: &Path) -> Result<(), String> {
         if source.is_dir() {
-            std::fs::create_dir(target).map_err(|error| error.to_string())?;
-            if let Err(error) =
-                tree::copy_tree(source, target, &mut self.progress, self.emit, self.controls)
-            {
+            std::fs::create_dir(target)
+                .map_err(|error| transfer_io::destination_error(source, target, error))?;
+            if let Err(error) = tree::copy_tree(
+                source,
+                target,
+                &mut self.progress,
+                self.emit,
+                self.controls,
+                names::enabled(self.request),
+                &self.request.resolutions,
+            ) {
                 let cleanup = remove_target(target);
                 return Err(match cleanup {
                     Ok(()) => error,
@@ -139,7 +160,7 @@ fn record_undo(request: &TransferRequest, summary: &TransferSummary, undo: &Undo
     if summary.touched.is_empty() {
         return;
     }
-    let targets = summary
+    let targets: Vec<String> = summary
         .touched
         .iter()
         .map(|(_, target)| target.clone())
@@ -155,10 +176,20 @@ fn record_undo(request: &TransferRequest, summary: &TransferSummary, undo: &Undo
             count: summary.copied as usize,
         }
     } else {
-        UndoStep::RemoveCopies {
-            paths: targets,
-            count: summary.copied as usize,
-        }
+        let insensitive = names::enabled(request);
+        let mut seen = std::collections::HashSet::new();
+        let paths: Vec<_> = targets
+            .into_iter()
+            .filter(|target| {
+                seen.insert(if insensitive {
+                    target.to_lowercase()
+                } else {
+                    target.clone()
+                })
+            })
+            .collect();
+        let count = paths.len();
+        UndoStep::RemoveCopies { paths, count }
     };
     undo.push(step);
 }

@@ -156,3 +156,12 @@
     transform: none;
   }
 }
+.name-correction-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  user-select: text;
+}

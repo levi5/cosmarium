@@ -70,9 +70,9 @@ export function ConflictDialog({ conflicts, fileCount, labels, onConfirm, onClos
         <div className="conflict-dialog__list">
           {conflicts.map((item) => (
             <div className="conflict-row" key={item.name}>
-              <FileIcon entry={{ name: item.name, kind: item.is_dir ? 'directory' : 'file' }} size="small" />
+              <FileIcon entry={{ name: item.destination_name ?? item.name, kind: item.is_dir ? 'directory' : 'file' }} size="small" />
               <span className="conflict-row__name" title={item.name}>
-                {item.name}
+                {item.destination_name ? `${JSON.stringify(item.name)} → ${JSON.stringify(item.destination_name)}` : item.name}
               </span>
               <div className="conflict-row__choices">
                 {actions.map((action) => (

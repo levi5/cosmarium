@@ -75,28 +75,99 @@ pub fn validate(sources: &[String], destination: &Path) -> Result<(), String> {
     Ok(())
 }
 
-pub fn scan_transfer(sources: &[String], destination: &str) -> Result<TransferScan, String> {
+pub fn scan_transfer(
+    sources: &[String],
+    destination: &str,
+    fix_names: bool,
+) -> Result<TransferScan, String> {
     let destination = Path::new(destination);
+    scan_with_filesystem(
+        sources,
+        destination,
+        fix_names,
+        super::names::restricted_filesystem(destination),
+    )
+}
+
+fn scan_with_filesystem(
+    sources: &[String],
+    destination: &Path,
+    fix_names: bool,
+    restricted: bool,
+) -> Result<TransferScan, String> {
     validate(sources, destination)?;
     let measured = scan_sources(sources);
-    let conflicts = sources
+    let (name_changes, nested_conflicts) = if restricted {
+        super::names::inspect(sources)?
+    } else {
+        (Vec::new(), Vec::new())
+    };
+    let fix_names = fix_names && restricted;
+    let mut seen = std::collections::HashSet::new();
+    let mut conflicts: Vec<_> = sources
         .iter()
         .filter_map(|source| {
             let path = Path::new(source);
             let name = path.file_name()?.to_str()?;
-            destination
-                .join(name)
-                .symlink_metadata()
-                .is_ok()
-                .then(|| TransferConflict {
+            let corrected = if fix_names {
+                super::names::compatible_name(name)
+            } else {
+                name.into()
+            };
+            let duplicate = !seen.insert(if fix_names {
+                corrected.to_lowercase()
+            } else {
+                corrected.clone()
+            });
+            (duplicate || destination.join(&corrected).symlink_metadata().is_ok()).then(|| {
+                TransferConflict {
                     name: name.into(),
                     is_dir: path.is_dir(),
-                })
+                    destination_name: (corrected != name).then_some(corrected),
+                }
+            })
         })
         .collect();
+    if fix_names {
+        conflicts.extend(nested_conflicts);
+    }
     Ok(TransferScan {
         files: measured.files,
         bytes: measured.bytes,
         conflicts,
+        name_changes,
     })
+}
+
+#[cfg(all(test, unix))]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn corrected_names_are_checked_against_existing_destinations() {
+        let root = tempfile::tempdir().unwrap();
+        let source = root.path().join("Terreno ");
+        let destination = root.path().join("destination");
+        std::fs::write(&source, b"new").unwrap();
+        std::fs::create_dir(&destination).unwrap();
+        std::fs::write(destination.join("Terreno"), b"existing").unwrap();
+        let sources = vec![source.to_string_lossy().into_owned()];
+        let preview = scan_with_filesystem(&sources, &destination, false, true).unwrap();
+        assert_eq!(preview.name_changes.len(), 1);
+        assert!(preview.conflicts.is_empty());
+        let corrected = scan_with_filesystem(&sources, &destination, true, true).unwrap();
+        assert_eq!(corrected.conflicts.len(), 1);
+        assert_eq!(corrected.conflicts[0].name, "Terreno ");
+        assert_eq!(
+            corrected.conflicts[0].destination_name.as_deref(),
+            Some("Terreno")
+        );
+        let unrestricted = scan_with_filesystem(&sources, &destination, false, false).unwrap();
+        assert!(unrestricted.name_changes.is_empty());
+        assert!(unrestricted.conflicts.is_empty());
+        assert_eq!(
+            std::fs::read(destination.join("Terreno")).unwrap(),
+            b"existing"
+        );
+    }
 }
